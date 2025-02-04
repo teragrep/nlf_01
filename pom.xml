@@ -148,13 +148,24 @@
             </goals>
             <configuration>
               <rules>
+                <bannedDependencies>
+                  <excludes>
+                    <!-- We generally do not want to use junit4, only junit5 -->
+                    <exclude>junit:junit</exclude>
+                  </excludes>
+                </bannedDependencies>
                 <requireMavenVersion>
                   <version>3.2.5</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
                   <version>[11,12)</version>
                 </requireJavaVersion>
-                <banDynamicVersions></banDynamicVersions>
+                <banDynamicVersions>
+                  <ignores>
+                    <!-- Allow only local development builds by default -->
+                    <ignore>com.teragrep:*:0.0.1-SNAPSHOT</ignore>
+                  </ignores>
+                </banDynamicVersions>
                 <requirePluginVersions>
                   <message>All plugins are required to contain specific version.</message>
                   <unCheckedPluginList>org.apache.maven.plugins:maven-site-plugin,org.apache.maven.plugins:maven-resources-plugin,org.apache.maven.plugins:maven-clean-plugin,org.apache.maven.plugins:maven-install-plugin,org.apache.maven.plugins:maven-deploy-plugin,org.apache.maven.plugins:maven-compiler-plugin,org.apache.maven.plugins:maven-jar-plugin</unCheckedPluginList>
@@ -171,7 +182,7 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.30.0</version>
+        <version>2.43.0</version>
         <configuration>
           <java>
             <eclipse>
