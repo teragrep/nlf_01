@@ -28,7 +28,6 @@
     <url>https://github.com/teragrep/nlf_01/tree/master</url>
   </scm>
   <properties>
-    <!-- indentation is intentionally broken -->
     <changelist>-SNAPSHOT</changelist>
     <java.version>11</java.version>
     <maven.compiler.source>11</maven.compiler.source>
