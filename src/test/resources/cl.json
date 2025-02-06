@@ -1,0 +1,11 @@
+{
+  "TimeGenerated":"2020-01-01T01:02:34.5678999Z",
+  "RawData":"raw data",
+  "FilePath":"/xxxxx.log",
+  "Computer":"computer",
+  "_ItemId":"123",
+  "_Internal_WorkspaceResourceId":"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+  "Type":"xx_CL",
+  "TenantId":"12-xx-34-xx",
+  "_ResourceId":"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}"
+}
