@@ -63,7 +63,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-public final class AppInsightType {
+public final class AppInsightType implements EventType {
 
     private final ParsedEvent parsedEvent;
 

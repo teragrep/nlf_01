@@ -43,71 +43,13 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.nlf_01;
+package com.teragrep.nlf_01.types;
 
-import com.teragrep.akv_01.event.ParsedEvent;
-import com.teragrep.akv_01.plugin.Plugin;
-import com.teragrep.nlf_01.types.*;
-import com.teragrep.nlf_01.util.EnvironmentSource;
-import com.teragrep.nlf_01.util.Sourceable;
 import com.teragrep.rlo_14.SyslogMessage;
-import jakarta.json.JsonException;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
 
 import java.util.List;
 
-public final class NLFPlugin implements Plugin {
+public interface EventType {
 
-    private final Sourceable source;
-
-    public NLFPlugin() {
-        this(new EnvironmentSource());
-    }
-
-    public NLFPlugin(final Sourceable source) {
-        this.source = source;
-    }
-
-    @Override
-    public List<SyslogMessage> syslogMessage(final ParsedEvent parsedEvent) {
-        EventType eventType = new StubType();
-
-        if (!parsedEvent.isJsonStructure()) {
-            // non-applicable
-            throw new JsonException("Event was not a JSON structure");
-        }
-
-        final JsonStructure json = parsedEvent.asJsonStructure();
-        // Check if main structure is JsonObject
-        if (!json.getValueType().equals(JsonValue.ValueType.OBJECT)) {
-            throw new JsonException("Event was not a JSON object");
-        }
-
-        final JsonObject jsonObject = json.asJsonObject();
-
-        if (
-            jsonObject.containsKey("records")
-                    && jsonObject.get("records").getValueType().equals(JsonValue.ValueType.ARRAY)
-        ) {
-            eventType = new AppInsightType(parsedEvent);
-        }
-
-        if (
-            jsonObject.containsKey("Type") && jsonObject.get("Type").getValueType().equals(JsonValue.ValueType.STRING)
-        ) {
-
-            if (jsonObject.getString("Type").endsWith("_CL")) {
-                eventType = new CLType(parsedEvent);
-            }
-
-            if (jsonObject.getString("Type").equals("ContainerLogV2")) {
-                eventType = new ContainerType(source, parsedEvent);
-            }
-
-        }
-
-        return eventType.syslogMessages();
-    }
+    public abstract List<SyslogMessage> syslogMessages();
 }

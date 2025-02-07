@@ -63,7 +63,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public final class CLType {
+public final class CLType implements EventType {
 
     private final ParsedEvent parsedEvent;
 
@@ -134,9 +134,9 @@ public final class CLType {
         final String internalWorkspaceResourceId = mainObject.getString("_Internal_WorkspaceResourceId");
 
         // hostname = internal workspace resource id MD5 + resourceName from resourceId, with non-ascii chars removed
-        final String hostname = new MD5Hash(
-                internalWorkspaceResourceId
-        ).md5().concat(new ASCIIString(new ResourceId(internalWorkspaceResourceId).resourceName()).withNonAsciiCharsRemoved());
+        final String hostname = new MD5Hash(internalWorkspaceResourceId)
+                .md5()
+                .concat(new ASCIIString(new ResourceId(internalWorkspaceResourceId).resourceName()).withNonAsciiCharsRemoved());
 
         final SyslogMessage msg = new SyslogMessage()
                 .withSeverity(Severity.INFORMATIONAL)

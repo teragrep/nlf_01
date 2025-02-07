@@ -63,7 +63,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public final class ContainerType {
+public final class ContainerType implements EventType {
 
     private final Sourceable source;
     private final ParsedEvent parsedEvent;
@@ -162,8 +162,7 @@ public final class ContainerType {
         ).withNonAsciiCharsRemoved();
 
         final String appName = new ASCIIString(
-                podAnnotations.getString(source.source("containerlog.appname.annotation"))
-                        + logSourceSuffix
+                podAnnotations.getString(source.source("containerlog.appname.annotation")) + logSourceSuffix
         ).withNonAsciiCharsRemoved();
 
         final SyslogMessage msg = new SyslogMessage()
