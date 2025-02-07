@@ -46,10 +46,7 @@
 package com.teragrep.nlf_01.types;
 
 import com.teragrep.akv_01.event.ParsedEvent;
-import com.teragrep.nlf_01.util.RealHostname;
-import com.teragrep.nlf_01.util.ResourceId;
-import com.teragrep.nlf_01.util.Sourceable;
-import com.teragrep.nlf_01.util.ASCIIString;
+import com.teragrep.nlf_01.util.*;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
@@ -157,13 +154,13 @@ public final class ContainerType implements EventType {
         assertKey(kubernetesMetadata, "podAnnotations", JsonValue.ValueType.OBJECT);
         final JsonObject podAnnotations = kubernetesMetadata.getJsonObject("podAnnotations");
 
-        final String hostname = new ASCIIString(
+        final String hostname = new ValidRFC5424Hostname(
                 podAnnotations.getString(source.source("containerlog.hostname.annotation"))
-        ).withNonAsciiCharsRemoved();
+        ).validateOrThrow();
 
-        final String appName = new ASCIIString(
+        final String appName = new ValidRFC5424Appname(
                 podAnnotations.getString(source.source("containerlog.appname.annotation")) + logSourceSuffix
-        ).withNonAsciiCharsRemoved();
+        ).validateOrThrow();
 
         final SyslogMessage msg = new SyslogMessage()
                 .withSeverity(Severity.INFORMATIONAL)

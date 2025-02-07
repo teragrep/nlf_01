@@ -46,10 +46,7 @@
 package com.teragrep.nlf_01.types;
 
 import com.teragrep.akv_01.event.ParsedEvent;
-import com.teragrep.nlf_01.util.MD5Hash;
-import com.teragrep.nlf_01.util.RealHostname;
-import com.teragrep.nlf_01.util.ResourceId;
-import com.teragrep.nlf_01.util.ASCIIString;
+import com.teragrep.nlf_01.util.*;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
@@ -123,12 +120,12 @@ public final class AppInsightType implements EventType {
             final String timeGenerated = record.getString("TimeGenerated");
             assertKey(record, "_ResourceId", JsonValue.ValueType.STRING);
             final String resourceId = record.getString("_ResourceId");
-            final String hostname = new MD5Hash(resourceId)
-                    .md5()
-                    .concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved());
+            final String hostname = new ValidRFC5424Hostname(
+                    "md5-".concat(new MD5Hash(resourceId).md5().concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+            ).validateOrThrow();
 
             assertKey(record, "AppRoleName", JsonValue.ValueType.STRING);
-            final String appRoleName = record.getString("AppRoleName");
+            final String appRoleName = new ValidRFC5424Appname(record.getString("AppRoleName")).validateOrThrow();
 
             return new SyslogMessage()
                     .withSeverity(Severity.INFORMATIONAL)

@@ -46,10 +46,7 @@
 package com.teragrep.nlf_01.types;
 
 import com.teragrep.akv_01.event.ParsedEvent;
-import com.teragrep.nlf_01.util.MD5Hash;
-import com.teragrep.nlf_01.util.RealHostname;
-import com.teragrep.nlf_01.util.ResourceId;
-import com.teragrep.nlf_01.util.ASCIIString;
+import com.teragrep.nlf_01.util.*;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
@@ -128,15 +125,16 @@ public final class CLType implements EventType {
         final String filename = Paths.get(filePath).getFileName().toString();
         final String truncatedFilePath = filename.length() < 39 ? filename : filename.substring(0, 39);
         // appname = first 8 chars of filePath MD5 + dash (-) + filename truncated to max 39 chars
-        final String appName = truncatedMd5.concat("-").concat(truncatedFilePath);
+        final String appName = new ValidRFC5424Appname(truncatedMd5.concat("-").concat(truncatedFilePath))
+                .validateOrThrow();
 
         assertKey(mainObject, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
         final String internalWorkspaceResourceId = mainObject.getString("_Internal_WorkspaceResourceId");
 
         // hostname = internal workspace resource id MD5 + resourceName from resourceId, with non-ascii chars removed
-        final String hostname = new MD5Hash(internalWorkspaceResourceId)
-                .md5()
-                .concat(new ASCIIString(new ResourceId(internalWorkspaceResourceId).resourceName()).withNonAsciiCharsRemoved());
+        final String hostname = new ValidRFC5424Hostname(
+                "md5-".concat(new MD5Hash(internalWorkspaceResourceId).md5().concat(new ASCIIString(new ResourceId(internalWorkspaceResourceId).resourceName()).withNonAsciiCharsRemoved()))
+        ).validateOrThrow();
 
         final SyslogMessage msg = new SyslogMessage()
                 .withSeverity(Severity.INFORMATIONAL)
