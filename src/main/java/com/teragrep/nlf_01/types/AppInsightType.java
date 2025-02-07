@@ -50,15 +50,13 @@ import com.teragrep.nlf_01.util.*;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
-import com.teragrep.rlo_14.SyslogMessage;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public final class AppInsightType implements EventType {
 
@@ -78,22 +76,77 @@ public final class AppInsightType implements EventType {
         }
     }
 
-    public List<SyslogMessage> syslogMessages() {
-        final SDElement sdId = new SDElement("event_id@48577")
-                .addSDParam("uuid", UUID.randomUUID().toString())
-                .addSDParam("hostname", new RealHostname("localhost").hostname())
-                .addSDParam("unixtime", Instant.now().toString())
-                .addSDParam("id_source", "aer_02");
+    @Override
+    public List<Severity> severities() {
+        return Collections.singletonList(Severity.INFORMATIONAL);
+    }
 
-        final SDElement sdPartition = new SDElement("aer_02_partition@48577")
-                .addSDParam(
-                        "fully_qualified_namespace",
-                        String.valueOf(parsedEvent.partitionContext().getOrDefault("FullyQualifiedNamespace", ""))
-                )
-                .addSDParam(
-                        "eventhub_name", String.valueOf(parsedEvent.partitionContext().getOrDefault("EventHubName", ""))
-                )
-                .addSDParam("partition_id", String.valueOf(parsedEvent.partitionContext().getOrDefault("PartitionId", ""))).addSDParam("consumer_group", String.valueOf(parsedEvent.partitionContext().getOrDefault("ConsumerGroup", "")));
+    @Override
+    public List<Facility> facilities() {
+        return Collections.singletonList(Facility.LOCAL0);
+    }
+
+    @Override
+    public List<String> hostnames() {
+        final JsonArray recordsArray = parsedEvent.asJsonStructure().asJsonObject().getJsonArray("records");
+
+        return recordsArray.getValuesAs((jsonValue) -> {
+            if (!jsonValue.getValueType().equals(JsonValue.ValueType.OBJECT)) {
+                throw new JsonException("Expected JsonObject as record but got: " + jsonValue.getValueType());
+            }
+
+            final JsonObject record = jsonValue.asJsonObject();
+            assertKey(record, "_ResourceId", JsonValue.ValueType.STRING);
+            final String resourceId = record.getString("_ResourceId");
+
+            return new ValidRFC5424Hostname(
+                    "md5-".concat(new MD5Hash(resourceId).md5().concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+            ).validateOrThrow();
+        });
+    }
+
+    @Override
+    public List<String> appNames() {
+        final JsonArray recordsArray = parsedEvent.asJsonStructure().asJsonObject().getJsonArray("records");
+
+        return recordsArray.getValuesAs((jsonValue) -> {
+            if (!jsonValue.getValueType().equals(JsonValue.ValueType.OBJECT)) {
+                throw new JsonException("Expected JsonObject as record but got: " + jsonValue.getValueType());
+            }
+
+            final JsonObject record = jsonValue.asJsonObject();
+
+            assertKey(record, "AppRoleName", JsonValue.ValueType.STRING);
+
+            return new ValidRFC5424Appname(record.getString("AppRoleName")).validateOrThrow();
+        });
+    }
+
+    @Override
+    public List<String> timestamps() {
+        final JsonArray recordsArray = parsedEvent.asJsonStructure().asJsonObject().getJsonArray("records");
+
+        return recordsArray.getValuesAs((jsonValue) -> {
+            if (!jsonValue.getValueType().equals(JsonValue.ValueType.OBJECT)) {
+                throw new JsonException("Expected JsonObject as record but got: " + jsonValue.getValueType());
+            }
+
+            final JsonObject record = jsonValue.asJsonObject();
+            assertKey(record, "TimeGenerated", JsonValue.ValueType.STRING);
+
+            return record.getString("TimeGenerated");
+        });
+    }
+
+    @Override
+    public List<Set<SDElement>> sdElements() {
+        Set<SDElement> elems = new HashSet<>();
+
+        elems
+                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", new RealHostname("localhost").hostname()).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
+
+        elems
+                .add(new SDElement("aer_02_partition@48577").addSDParam("fully_qualified_namespace", String.valueOf(parsedEvent.partitionContext().getOrDefault("FullyQualifiedNamespace", ""))).addSDParam("eventhub_name", String.valueOf(parsedEvent.partitionContext().getOrDefault("EventHubName", ""))).addSDParam("partition_id", String.valueOf(parsedEvent.partitionContext().getOrDefault("PartitionId", ""))).addSDParam("consumer_group", String.valueOf(parsedEvent.partitionContext().getOrDefault("ConsumerGroup", ""))));
 
         final String partitionKey = String.valueOf(parsedEvent.systemProperties().getOrDefault("PartitionKey", ""));
 
@@ -104,10 +157,22 @@ public final class AppInsightType implements EventType {
                 )
                 .addSDParam("partition_key", partitionKey == null ? "" : partitionKey);
         parsedEvent.properties().forEach((key, value) -> sdEvent.addSDParam("property_" + key, value.toString()));
+        elems.add(sdEvent);
 
-        final SDElement sdComponentInfo = new SDElement("aer_02@48577")
-                .addSDParam("timestamp_source", parsedEvent.enqueuedTime() == null ? "generated" : "timeEnqueued");
+        elems
+                .add(new SDElement("aer_02@48577").addSDParam("timestamp_source", parsedEvent.enqueuedTime() == null ? "generated" : "timeEnqueued"));
 
+        return Collections.singletonList(elems);
+    }
+
+    @Override
+    public List<String> msgIds() {
+        return Collections
+                .singletonList(String.valueOf(parsedEvent.systemProperties().getOrDefault("SequenceNumber", "0")));
+    }
+
+    @Override
+    public List<String> msgs() {
         final JsonArray recordsArray = parsedEvent.asJsonStructure().asJsonObject().getJsonArray("records");
 
         return recordsArray.getValuesAs((jsonValue) -> {
@@ -115,30 +180,7 @@ public final class AppInsightType implements EventType {
                 throw new JsonException("Expected JsonObject as record but got: " + jsonValue.getValueType());
             }
 
-            final JsonObject record = jsonValue.asJsonObject();
-            assertKey(record, "TimeGenerated", JsonValue.ValueType.STRING);
-            final String timeGenerated = record.getString("TimeGenerated");
-            assertKey(record, "_ResourceId", JsonValue.ValueType.STRING);
-            final String resourceId = record.getString("_ResourceId");
-            final String hostname = new ValidRFC5424Hostname(
-                    "md5-".concat(new MD5Hash(resourceId).md5().concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
-            ).validateOrThrow();
-
-            assertKey(record, "AppRoleName", JsonValue.ValueType.STRING);
-            final String appRoleName = new ValidRFC5424Appname(record.getString("AppRoleName")).validateOrThrow();
-
-            return new SyslogMessage()
-                    .withSeverity(Severity.INFORMATIONAL)
-                    .withFacility(Facility.LOCAL0)
-                    .withHostname(hostname)
-                    .withAppName(appRoleName)
-                    .withTimestamp(timeGenerated)
-                    .withSDElement(sdId)
-                    .withSDElement(sdPartition)
-                    .withSDElement(sdEvent)
-                    .withSDElement(sdComponentInfo)
-                    .withMsgId(String.valueOf(parsedEvent.systemProperties().getOrDefault("SequenceNumber", "0")))
-                    .withMsg(jsonValue.toString());
+            return jsonValue.asJsonObject().toString();
         });
     }
 }

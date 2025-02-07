@@ -45,14 +45,52 @@
  */
 package com.teragrep.nlf_01.types;
 
-import com.teragrep.rlo_14.SyslogMessage;
+import com.teragrep.rlo_14.Facility;
+import com.teragrep.rlo_14.SDElement;
+import com.teragrep.rlo_14.Severity;
 
 import java.util.List;
+import java.util.Set;
 
 public class StubType implements EventType {
 
     @Override
-    public List<SyslogMessage> syslogMessages() {
+    public List<Severity> severities() {
+        throw new UnsupportedOperationException("Stub object does not implement this function");
+    }
+
+    @Override
+    public List<Facility> facilities() {
+        throw new UnsupportedOperationException("Stub object does not implement this function");
+    }
+
+    @Override
+    public List<String> hostnames() {
+        throw new UnsupportedOperationException("Stub object does not implement this function");
+    }
+
+    @Override
+    public List<String> appNames() {
+        throw new UnsupportedOperationException("Stub object does not implement this function");
+    }
+
+    @Override
+    public List<String> timestamps() {
+        throw new UnsupportedOperationException("Stub object does not implement this function");
+    }
+
+    @Override
+    public List<Set<SDElement>> sdElements() {
+        throw new UnsupportedOperationException("Stub object does not implement this function");
+    }
+
+    @Override
+    public List<String> msgIds() {
+        throw new UnsupportedOperationException("Stub object does not implement this function");
+    }
+
+    @Override
+    public List<String> msgs() {
         throw new UnsupportedOperationException("Stub object does not implement this function");
     }
 }

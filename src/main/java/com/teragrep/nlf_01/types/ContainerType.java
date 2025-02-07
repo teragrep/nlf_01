@@ -50,15 +50,12 @@ import com.teragrep.nlf_01.util.*;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
-import com.teragrep.rlo_14.SyslogMessage;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 import java.time.Instant;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public final class ContainerType implements EventType {
 
@@ -80,22 +77,78 @@ public final class ContainerType implements EventType {
         }
     }
 
-    public List<SyslogMessage> syslogMessages() {
-        final SDElement sdId = new SDElement("event_id@48577")
-                .addSDParam("uuid", UUID.randomUUID().toString())
-                .addSDParam("hostname", new RealHostname("localhost").hostname())
-                .addSDParam("unixtime", Instant.now().toString())
-                .addSDParam("id_source", "aer_02");
+    @Override
+    public List<Severity> severities() {
+        return Collections.singletonList(Severity.INFORMATIONAL);
+    }
 
-        final SDElement sdPartition = new SDElement("aer_02_partition@48577")
-                .addSDParam(
-                        "fully_qualified_namespace",
-                        String.valueOf(parsedEvent.partitionContext().getOrDefault("FullyQualifiedNamespace", ""))
-                )
-                .addSDParam(
-                        "eventhub_name", String.valueOf(parsedEvent.partitionContext().getOrDefault("EventHubName", ""))
-                )
-                .addSDParam("partition_id", String.valueOf(parsedEvent.partitionContext().getOrDefault("PartitionId", ""))).addSDParam("consumer_group", String.valueOf(parsedEvent.partitionContext().getOrDefault("ConsumerGroup", "")));
+    @Override
+    public List<Facility> facilities() {
+        return Collections.singletonList(Facility.LOCAL0);
+    }
+
+    @Override
+    public List<String> hostnames() {
+        final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
+
+        assertKey(mainObject, "KubernetesMetadata", JsonValue.ValueType.OBJECT);
+        final JsonObject kubernetesMetadata = mainObject.getJsonObject("KubernetesMetadata");
+        assertKey(kubernetesMetadata, "podAnnotations", JsonValue.ValueType.OBJECT);
+        final JsonObject podAnnotations = kubernetesMetadata.getJsonObject("podAnnotations");
+
+        return Collections
+                .singletonList(
+                        new ValidRFC5424Hostname(
+                                podAnnotations.getString(source.source("containerlog.hostname.annotation"))
+                        ).validateOrThrow()
+                );
+    }
+
+    @Override
+    public List<String> appNames() {
+        final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
+
+        assertKey(mainObject, "KubernetesMetadata", JsonValue.ValueType.OBJECT);
+        final JsonObject kubernetesMetadata = mainObject.getJsonObject("KubernetesMetadata");
+        assertKey(kubernetesMetadata, "podAnnotations", JsonValue.ValueType.OBJECT);
+        final JsonObject podAnnotations = kubernetesMetadata.getJsonObject("podAnnotations");
+
+        assertKey(mainObject, "LogSource", JsonValue.ValueType.STRING);
+        final String logSource = mainObject.getString("LogSource");
+        final String logSourceSuffix;
+
+        if ("stdout".equals(logSource)) {
+            logSourceSuffix = ":o";
+        }
+        else if ("stderr".equals(logSource)) {
+            logSourceSuffix = ":e";
+        }
+        else {
+            throw new JsonException("Unknown log source: " + logSource);
+        }
+
+        return Collections
+                .singletonList(
+                        new ValidRFC5424Appname(podAnnotations.getString(source.source("containerlog.appname.annotation")) + logSourceSuffix).validateOrThrow()
+                );
+    }
+
+    @Override
+    public List<String> timestamps() {
+        final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
+        assertKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING);
+
+        return Collections.singletonList(mainObject.getString("TimeGenerated"));
+    }
+
+    @Override
+    public List<Set<SDElement>> sdElements() {
+        final Set<SDElement> elems = new HashSet<>();
+        elems
+                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", new RealHostname("localhost").hostname()).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
+
+        elems
+                .add(new SDElement("aer_02_partition@48577").addSDParam("fully_qualified_namespace", String.valueOf(parsedEvent.partitionContext().getOrDefault("FullyQualifiedNamespace", ""))).addSDParam("eventhub_name", String.valueOf(parsedEvent.partitionContext().getOrDefault("EventHubName", ""))).addSDParam("partition_id", String.valueOf(parsedEvent.partitionContext().getOrDefault("PartitionId", ""))).addSDParam("consumer_group", String.valueOf(parsedEvent.partitionContext().getOrDefault("ConsumerGroup", ""))));
 
         final String partitionKey = String.valueOf(parsedEvent.systemProperties().getOrDefault("PartitionKey", ""));
 
@@ -106,9 +159,10 @@ public final class ContainerType implements EventType {
                 )
                 .addSDParam("partition_key", partitionKey == null ? "" : partitionKey);
         parsedEvent.properties().forEach((key, value) -> sdEvent.addSDParam("property_" + key, value.toString()));
+        elems.add(sdEvent);
 
-        final SDElement sdComponentInfo = new SDElement("aer_02@48577")
-                .addSDParam("timestamp_source", parsedEvent.enqueuedTime() == null ? "generated" : "timeEnqueued");
+        elems
+                .add(new SDElement("aer_02@48577").addSDParam("timestamp_source", parsedEvent.enqueuedTime() == null ? "generated" : "timeEnqueued"));
 
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
@@ -126,56 +180,20 @@ public final class ContainerType implements EventType {
         assertKey(mainObject, "ContainerId", JsonValue.ValueType.STRING);
         final String containerId = mainObject.getString("ContainerId");
 
-        final SDElement origin = new SDElement("origin@48577")
-                .addSDParam("subscription", subscriptionId)
-                .addSDParam("clusterName", clusterName)
-                .addSDParam("namespace", podNamespace)
-                .addSDParam("pod", podName)
-                .addSDParam("containerId", containerId);
+        elems
+                .add(new SDElement("origin@48577").addSDParam("subscription", subscriptionId).addSDParam("clusterName", clusterName).addSDParam("namespace", podNamespace).addSDParam("pod", podName).addSDParam("containerId", containerId));
 
-        assertKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING);
-        final String timeGenerated = mainObject.getString("TimeGenerated");
-        assertKey(mainObject, "LogSource", JsonValue.ValueType.STRING);
-        final String logSource = mainObject.getString("LogSource");
-        final String logSourceSuffix;
+        return Collections.singletonList(elems);
+    }
 
-        if ("stdout".equals(logSource)) {
-            logSourceSuffix = ":o";
-        }
-        else if ("stderr".equals(logSource)) {
-            logSourceSuffix = ":e";
-        }
-        else {
-            throw new JsonException("Unknown log source: " + logSource);
-        }
+    @Override
+    public List<String> msgIds() {
+        return Collections
+                .singletonList(String.valueOf(parsedEvent.systemProperties().getOrDefault("SequenceNumber", "0")));
+    }
 
-        assertKey(mainObject, "KubernetesMetadata", JsonValue.ValueType.OBJECT);
-        final JsonObject kubernetesMetadata = mainObject.getJsonObject("KubernetesMetadata");
-        assertKey(kubernetesMetadata, "podAnnotations", JsonValue.ValueType.OBJECT);
-        final JsonObject podAnnotations = kubernetesMetadata.getJsonObject("podAnnotations");
-
-        final String hostname = new ValidRFC5424Hostname(
-                podAnnotations.getString(source.source("containerlog.hostname.annotation"))
-        ).validateOrThrow();
-
-        final String appName = new ValidRFC5424Appname(
-                podAnnotations.getString(source.source("containerlog.appname.annotation")) + logSourceSuffix
-        ).validateOrThrow();
-
-        final SyslogMessage msg = new SyslogMessage()
-                .withSeverity(Severity.INFORMATIONAL)
-                .withFacility(Facility.LOCAL0)
-                .withHostname(hostname)
-                .withAppName(appName)
-                .withTimestamp(timeGenerated)
-                .withSDElement(sdId)
-                .withSDElement(sdPartition)
-                .withSDElement(sdEvent)
-                .withSDElement(sdComponentInfo)
-                .withSDElement(origin)
-                .withMsgId(String.valueOf(parsedEvent.systemProperties().getOrDefault("SequenceNumber", "0")))
-                .withMsg(parsedEvent.asString());
-
-        return Collections.singletonList(msg);
+    @Override
+    public List<String> msgs() {
+        return Collections.singletonList(parsedEvent.asString());
     }
 }

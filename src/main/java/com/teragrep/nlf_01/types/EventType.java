@@ -45,11 +45,28 @@
  */
 package com.teragrep.nlf_01.types;
 
-import com.teragrep.rlo_14.SyslogMessage;
+import com.teragrep.rlo_14.Facility;
+import com.teragrep.rlo_14.SDElement;
+import com.teragrep.rlo_14.Severity;
 
 import java.util.List;
+import java.util.Set;
 
 public interface EventType {
 
-    public abstract List<SyslogMessage> syslogMessages();
+    public abstract List<Severity> severities();
+
+    public abstract List<Facility> facilities();
+
+    public abstract List<String> hostnames();
+
+    public abstract List<String> appNames();
+
+    public abstract List<String> timestamps();
+
+    public abstract List<Set<SDElement>> sdElements();
+
+    public abstract List<String> msgIds();
+
+    public abstract List<String> msgs();
 }

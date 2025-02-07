@@ -50,15 +50,12 @@ import com.teragrep.nlf_01.util.*;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
-import com.teragrep.rlo_14.SyslogMessage;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public final class CLType implements EventType {
 
@@ -78,45 +75,30 @@ public final class CLType implements EventType {
         }
     }
 
-    public List<SyslogMessage> syslogMessages() {
-        final SDElement sdId = new SDElement("event_id@48577")
-                .addSDParam("uuid", UUID.randomUUID().toString())
-                .addSDParam("hostname", new RealHostname("localhost").hostname())
-                .addSDParam("unixtime", Instant.now().toString())
-                .addSDParam("id_source", "aer_02");
+    @Override
+    public List<Severity> severities() {
+        return Collections.singletonList(Severity.INFORMATIONAL);
+    }
 
-        final SDElement sdPartition = new SDElement("aer_02_partition@48577")
-                .addSDParam(
-                        "fully_qualified_namespace",
-                        String.valueOf(parsedEvent.partitionContext().getOrDefault("FullyQualifiedNamespace", ""))
-                )
-                .addSDParam(
-                        "eventhub_name", String.valueOf(parsedEvent.partitionContext().getOrDefault("EventHubName", ""))
-                )
-                .addSDParam("partition_id", String.valueOf(parsedEvent.partitionContext().getOrDefault("PartitionId", ""))).addSDParam("consumer_group", String.valueOf(parsedEvent.partitionContext().getOrDefault("ConsumerGroup", "")));
+    @Override
+    public List<Facility> facilities() {
+        return Collections.singletonList(Facility.LOCAL0);
+    }
 
-        final String partitionKey = String.valueOf(parsedEvent.systemProperties().getOrDefault("PartitionKey", ""));
-
-        final SDElement sdEvent = new SDElement("aer_02_event@48577")
-                .addSDParam("offset", parsedEvent.offset() == null ? "" : parsedEvent.offset())
-                .addSDParam(
-                        "enqueued_time", parsedEvent.enqueuedTime() == null ? "" : parsedEvent.enqueuedTime().toString()
-                )
-                .addSDParam("partition_key", partitionKey == null ? "" : partitionKey);
-        parsedEvent.properties().forEach((key, value) -> sdEvent.addSDParam("property_" + key, value.toString()));
-
-        final SDElement sdComponentInfo = new SDElement("aer_02@48577")
-                .addSDParam("timestamp_source", parsedEvent.enqueuedTime() == null ? "generated" : "timeEnqueued");
-
+    @Override
+    public List<String> hostnames() {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
+        assertKey(mainObject, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
+        final String internalWorkspaceResourceId = mainObject.getString("_Internal_WorkspaceResourceId");
 
-        assertKey(mainObject, "_ResourceId", JsonValue.ValueType.STRING);
-        final String resourceId = mainObject.getString("_ResourceId");
+        // hostname = internal workspace resource id MD5 + resourceName from resourceId, with non-ascii chars removed
+        return Collections
+                .singletonList(new ValidRFC5424Hostname("md5-".concat(new MD5Hash(internalWorkspaceResourceId).md5().concat(new ASCIIString(new ResourceId(internalWorkspaceResourceId).resourceName()).withNonAsciiCharsRemoved()))).validateOrThrow());
+    }
 
-        final SDElement origin = new SDElement("origin@48577").addSDParam("_ResourceId", resourceId);
-
-        assertKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING);
-        final String timeGenerated = mainObject.getString("TimeGenerated");
+    @Override
+    public List<String> appNames() {
+        final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "FilePath", JsonValue.ValueType.STRING);
         final String filePath = mainObject.getString("FilePath");
 
@@ -124,32 +106,61 @@ public final class CLType implements EventType {
 
         final String filename = Paths.get(filePath).getFileName().toString();
         final String truncatedFilePath = filename.length() < 39 ? filename : filename.substring(0, 39);
+
         // appname = first 8 chars of filePath MD5 + dash (-) + filename truncated to max 39 chars
-        final String appName = new ValidRFC5424Appname(truncatedMd5.concat("-").concat(truncatedFilePath))
-                .validateOrThrow();
+        return Collections
+                .singletonList(new ValidRFC5424Appname(truncatedMd5.concat("-").concat(truncatedFilePath)).validateOrThrow());
+    }
 
-        assertKey(mainObject, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
-        final String internalWorkspaceResourceId = mainObject.getString("_Internal_WorkspaceResourceId");
+    @Override
+    public List<String> timestamps() {
+        final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
+        assertKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING);
 
-        // hostname = internal workspace resource id MD5 + resourceName from resourceId, with non-ascii chars removed
-        final String hostname = new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(internalWorkspaceResourceId).md5().concat(new ASCIIString(new ResourceId(internalWorkspaceResourceId).resourceName()).withNonAsciiCharsRemoved()))
-        ).validateOrThrow();
+        return Collections.singletonList(mainObject.getString("TimeGenerated"));
+    }
 
-        final SyslogMessage msg = new SyslogMessage()
-                .withSeverity(Severity.INFORMATIONAL)
-                .withFacility(Facility.LOCAL0)
-                .withHostname(hostname)
-                .withAppName(appName)
-                .withTimestamp(timeGenerated)
-                .withSDElement(sdId)
-                .withSDElement(sdPartition)
-                .withSDElement(sdEvent)
-                .withSDElement(sdComponentInfo)
-                .withSDElement(origin)
-                .withMsgId(String.valueOf(parsedEvent.systemProperties().getOrDefault("SequenceNumber", "0")))
-                .withMsg(parsedEvent.asString());
+    @Override
+    public List<Set<SDElement>> sdElements() {
+        final Set<SDElement> elems = new HashSet<>();
 
-        return Collections.singletonList(msg);
+        elems
+                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", new RealHostname("localhost").hostname()).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
+
+        elems
+                .add(new SDElement("aer_02_partition@48577").addSDParam("fully_qualified_namespace", String.valueOf(parsedEvent.partitionContext().getOrDefault("FullyQualifiedNamespace", ""))).addSDParam("eventhub_name", String.valueOf(parsedEvent.partitionContext().getOrDefault("EventHubName", ""))).addSDParam("partition_id", String.valueOf(parsedEvent.partitionContext().getOrDefault("PartitionId", ""))).addSDParam("consumer_group", String.valueOf(parsedEvent.partitionContext().getOrDefault("ConsumerGroup", ""))));
+
+        final String partitionKey = String.valueOf(parsedEvent.systemProperties().getOrDefault("PartitionKey", ""));
+        final SDElement sdEvent = new SDElement("aer_02_event@48577")
+                .addSDParam("offset", parsedEvent.offset() == null ? "" : parsedEvent.offset())
+                .addSDParam(
+                        "enqueued_time", parsedEvent.enqueuedTime() == null ? "" : parsedEvent.enqueuedTime().toString()
+                )
+                .addSDParam("partition_key", partitionKey == null ? "" : partitionKey);
+        parsedEvent.properties().forEach((key, value) -> sdEvent.addSDParam("property_" + key, value.toString()));
+        elems.add(sdEvent);
+
+        elems
+                .add(new SDElement("aer_02@48577").addSDParam("timestamp_source", parsedEvent.enqueuedTime() == null ? "generated" : "timeEnqueued"));
+
+        final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
+
+        assertKey(mainObject, "_ResourceId", JsonValue.ValueType.STRING);
+        final String resourceId = mainObject.getString("_ResourceId");
+
+        elems.add(new SDElement("origin@48577").addSDParam("_ResourceId", resourceId));
+
+        return Collections.singletonList(elems);
+    }
+
+    @Override
+    public List<String> msgIds() {
+        return Collections
+                .singletonList(String.valueOf(parsedEvent.systemProperties().getOrDefault("SequenceNumber", "0")));
+    }
+
+    @Override
+    public List<String> msgs() {
+        return Collections.singletonList(parsedEvent.asString());
     }
 }

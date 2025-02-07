@@ -50,13 +50,18 @@ import com.teragrep.akv_01.plugin.Plugin;
 import com.teragrep.nlf_01.types.*;
 import com.teragrep.nlf_01.util.EnvironmentSource;
 import com.teragrep.nlf_01.util.Sourceable;
+import com.teragrep.rlo_14.Facility;
+import com.teragrep.rlo_14.SDElement;
+import com.teragrep.rlo_14.Severity;
 import com.teragrep.rlo_14.SyslogMessage;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public final class NLFPlugin implements Plugin {
 
@@ -93,21 +98,43 @@ public final class NLFPlugin implements Plugin {
         ) {
             eventType = new AppInsightType(parsedEvent);
         }
-
-        if (
+        else if (
             jsonObject.containsKey("Type") && jsonObject.get("Type").getValueType().equals(JsonValue.ValueType.STRING)
         ) {
 
             if (jsonObject.getString("Type").endsWith("_CL")) {
                 eventType = new CLType(parsedEvent);
             }
-
-            if (jsonObject.getString("Type").equals("ContainerLogV2")) {
+            else if (jsonObject.getString("Type").equals("ContainerLogV2")) {
                 eventType = new ContainerType(source, parsedEvent);
             }
 
         }
 
-        return eventType.syslogMessages();
+        final List<SyslogMessage> rv = new ArrayList<>();
+
+        final List<Facility> facilities = eventType.facilities();
+        final List<Severity> severities = eventType.severities();
+        final List<String> timestamps = eventType.timestamps();
+        final List<String> appNames = eventType.appNames();
+        final List<String> hostnames = eventType.hostnames();
+        final List<String> msgIds = eventType.msgIds();
+        final List<String> msgs = eventType.msgs();
+        final List<Set<SDElement>> sdElements = eventType.sdElements();
+
+        for (int i = 0; i < msgs.size(); i++) {
+            final SyslogMessage syslogMessage = new SyslogMessage()
+                    .withFacility(facilities.get(i))
+                    .withSeverity(severities.get(i))
+                    .withTimestamp(timestamps.get(i))
+                    .withAppName(appNames.get(i))
+                    .withHostname(hostnames.get(i))
+                    .withMsgId(msgIds.get(i))
+                    .withMsg(msgs.get(i));
+            syslogMessage.setSDElements(sdElements.get(i));
+            rv.add(syslogMessage);
+        }
+
+        return rv;
     }
 }
