@@ -145,7 +145,7 @@ public class NLFPluginTest {
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals("0ded52ef915af563e25778bf26b0f129{resourceName}", syslogMessage.getHostname());
-        Assertions.assertEquals("97bd8f02xxxxx.log", syslogMessage.getAppName());
+        Assertions.assertEquals("97bd8f02-xxxxx.log", syslogMessage.getAppName());
         Assertions.assertEquals("2020-01-01T01:02:34.567899900Z", syslogMessage.getTimestamp());
         final List<SDElement> origin = syslogMessage
                 .getSDElements()

@@ -126,9 +126,9 @@ public final class CLType implements EventType {
         final String truncatedMd5 = new MD5Hash(filePath).md5().substring(0, 8);
 
         final String filename = Paths.get(filePath).getFileName().toString();
-        final String truncatedFilePath = filename.length() < 40 ? filename : filename.substring(0, 40);
-        // appname = first 8 chars of filePath MD5 + filename truncated to max 40 chars
-        final String appName = truncatedMd5.concat(truncatedFilePath);
+        final String truncatedFilePath = filename.length() < 39 ? filename : filename.substring(0, 39);
+        // appname = first 8 chars of filePath MD5 + dash (-) + filename truncated to max 39 chars
+        final String appName = truncatedMd5.concat("-").concat(truncatedFilePath);
 
         assertKey(mainObject, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
         final String internalWorkspaceResourceId = mainObject.getString("_Internal_WorkspaceResourceId");
