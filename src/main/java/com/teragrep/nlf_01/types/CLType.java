@@ -55,7 +55,10 @@ import jakarta.json.JsonValue;
 
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.*;
+import java.time.format.DateTimeParseException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public final class CLType implements EventType {
 
@@ -76,28 +79,29 @@ public final class CLType implements EventType {
     }
 
     @Override
-    public List<Severity> severities() {
-        return Collections.singletonList(Severity.INFORMATIONAL);
+    public Severity severity() {
+        return Severity.INFORMATIONAL;
     }
 
     @Override
-    public List<Facility> facilities() {
-        return Collections.singletonList(Facility.LOCAL0);
+    public Facility facility() {
+        return Facility.LOCAL0;
     }
 
     @Override
-    public List<String> hostnames() {
+    public String hostname() {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
         final String internalWorkspaceResourceId = mainObject.getString("_Internal_WorkspaceResourceId");
 
         // hostname = internal workspace resource id MD5 + resourceName from resourceId, with non-ascii chars removed
-        return Collections
-                .singletonList(new ValidRFC5424Hostname("md5-".concat(new MD5Hash(internalWorkspaceResourceId).md5().concat(new ASCIIString(new ResourceId(internalWorkspaceResourceId).resourceName()).withNonAsciiCharsRemoved()))).validateOrThrow());
+        return new ValidRFC5424Hostname(
+                "md5-".concat(new MD5Hash(internalWorkspaceResourceId).md5().concat(new ASCIIString(new ResourceId(internalWorkspaceResourceId).resourceName()).withNonAsciiCharsRemoved()))
+        ).validateOrThrow();
     }
 
     @Override
-    public List<String> appNames() {
+    public String appName() {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "FilePath", JsonValue.ValueType.STRING);
         final String filePath = mainObject.getString("FilePath");
@@ -108,21 +112,27 @@ public final class CLType implements EventType {
         final String truncatedFilePath = filename.length() < 39 ? filename : filename.substring(0, 39);
 
         // appname = first 8 chars of filePath MD5 + dash (-) + filename truncated to max 39 chars
-        return Collections
-                .singletonList(new ValidRFC5424Appname(truncatedMd5.concat("-").concat(truncatedFilePath)).validateOrThrow());
+        return new ValidRFC5424Appname(truncatedMd5.concat("-").concat(truncatedFilePath)).validateOrThrow();
     }
 
     @Override
-    public List<String> timestamps() {
+    public String timestamp() {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING);
 
-        return Collections.singletonList(mainObject.getString("TimeGenerated"));
+        return mainObject.getString("TimeGenerated");
     }
 
     @Override
-    public List<Set<SDElement>> sdElements() {
+    public Set<SDElement> sdElements() {
         final Set<SDElement> elems = new HashSet<>();
+        String time;
+        try {
+            time = parsedEvent.enqueuedTime().zonedDateTime().toString();
+        }
+        catch (DateTimeParseException ignored) {
+            time = "";
+        }
 
         elems
                 .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", new RealHostname("localhost").hostname()).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
@@ -133,15 +143,13 @@ public final class CLType implements EventType {
         final String partitionKey = String.valueOf(parsedEvent.systemProperties().getOrDefault("PartitionKey", ""));
         final SDElement sdEvent = new SDElement("aer_02_event@48577")
                 .addSDParam("offset", parsedEvent.offset() == null ? "" : parsedEvent.offset())
-                .addSDParam(
-                        "enqueued_time", parsedEvent.enqueuedTime() == null ? "" : parsedEvent.enqueuedTime().toString()
-                )
+                .addSDParam("enqueued_time", time)
                 .addSDParam("partition_key", partitionKey == null ? "" : partitionKey);
         parsedEvent.properties().forEach((key, value) -> sdEvent.addSDParam("property_" + key, value.toString()));
         elems.add(sdEvent);
 
         elems
-                .add(new SDElement("aer_02@48577").addSDParam("timestamp_source", parsedEvent.enqueuedTime() == null ? "generated" : "timeEnqueued"));
+                .add(new SDElement("aer_02@48577").addSDParam("timestamp_source", time.isEmpty() ? "generated" : "timeEnqueued"));
 
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
@@ -150,17 +158,16 @@ public final class CLType implements EventType {
 
         elems.add(new SDElement("origin@48577").addSDParam("_ResourceId", resourceId));
 
-        return Collections.singletonList(elems);
+        return elems;
     }
 
     @Override
-    public List<String> msgIds() {
-        return Collections
-                .singletonList(String.valueOf(parsedEvent.systemProperties().getOrDefault("SequenceNumber", "0")));
+    public String msgId() {
+        return String.valueOf(parsedEvent.systemProperties().getOrDefault("SequenceNumber", "0"));
     }
 
     @Override
-    public List<String> msgs() {
-        return Collections.singletonList(parsedEvent.asString());
+    public String msg() {
+        return parsedEvent.asString();
     }
 }

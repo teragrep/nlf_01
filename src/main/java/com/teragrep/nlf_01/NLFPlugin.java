@@ -45,14 +45,15 @@
  */
 package com.teragrep.nlf_01;
 
+import com.teragrep.akv_01.event.MultiRecordEvent;
 import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.Plugin;
-import com.teragrep.nlf_01.types.*;
+import com.teragrep.nlf_01.types.AppInsightType;
+import com.teragrep.nlf_01.types.CLType;
+import com.teragrep.nlf_01.types.ContainerType;
+import com.teragrep.nlf_01.types.EventType;
 import com.teragrep.nlf_01.util.EnvironmentSource;
 import com.teragrep.nlf_01.util.Sourceable;
-import com.teragrep.rlo_14.Facility;
-import com.teragrep.rlo_14.SDElement;
-import com.teragrep.rlo_14.Severity;
 import com.teragrep.rlo_14.SyslogMessage;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
@@ -61,7 +62,6 @@ import jakarta.json.JsonValue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public final class NLFPlugin implements Plugin {
 
@@ -77,7 +77,8 @@ public final class NLFPlugin implements Plugin {
 
     @Override
     public List<SyslogMessage> syslogMessage(final ParsedEvent parsedEvent) {
-        EventType eventType = new StubType();
+        final List<EventType> eventTypes = new ArrayList<>();
+        final List<SyslogMessage> syslogMessages = new ArrayList<>();
 
         if (!parsedEvent.isJsonStructure()) {
             // non-applicable
@@ -91,50 +92,42 @@ public final class NLFPlugin implements Plugin {
         }
 
         final JsonObject jsonObject = json.asJsonObject();
-
-        if (
-            jsonObject.containsKey("records")
-                    && jsonObject.get("records").getValueType().equals(JsonValue.ValueType.ARRAY)
-        ) {
-            eventType = new AppInsightType(parsedEvent);
+        final MultiRecordEvent mre = new MultiRecordEvent(parsedEvent);
+        if (mre.isValid()) {
+            for (final ParsedEvent recordEvent : mre.records()) {
+                eventTypes.add(new AppInsightType(recordEvent));
+            }
         }
         else if (
             jsonObject.containsKey("Type") && jsonObject.get("Type").getValueType().equals(JsonValue.ValueType.STRING)
         ) {
 
             if (jsonObject.getString("Type").endsWith("_CL")) {
-                eventType = new CLType(parsedEvent);
+                eventTypes.add(new CLType(parsedEvent));
             }
             else if (jsonObject.getString("Type").equals("ContainerLogV2")) {
-                eventType = new ContainerType(source, parsedEvent);
+                eventTypes.add(new ContainerType(source, parsedEvent));
             }
 
         }
 
-        final List<SyslogMessage> rv = new ArrayList<>();
-
-        final List<Facility> facilities = eventType.facilities();
-        final List<Severity> severities = eventType.severities();
-        final List<String> timestamps = eventType.timestamps();
-        final List<String> appNames = eventType.appNames();
-        final List<String> hostnames = eventType.hostnames();
-        final List<String> msgIds = eventType.msgIds();
-        final List<String> msgs = eventType.msgs();
-        final List<Set<SDElement>> sdElements = eventType.sdElements();
-
-        for (int i = 0; i < msgs.size(); i++) {
+        for (final EventType eventType : eventTypes) {
             final SyslogMessage syslogMessage = new SyslogMessage()
-                    .withFacility(facilities.get(i))
-                    .withSeverity(severities.get(i))
-                    .withTimestamp(timestamps.get(i))
-                    .withAppName(appNames.get(i))
-                    .withHostname(hostnames.get(i))
-                    .withMsgId(msgIds.get(i))
-                    .withMsg(msgs.get(i));
-            syslogMessage.setSDElements(sdElements.get(i));
-            rv.add(syslogMessage);
+                    .withFacility(eventType.facility())
+                    .withSeverity(eventType.severity())
+                    .withTimestamp(eventType.timestamp())
+                    .withAppName(eventType.appName())
+                    .withHostname(eventType.hostname())
+                    .withMsgId(eventType.msgId())
+                    .withMsg(eventType.msg());
+            syslogMessage.setSDElements(eventType.sdElements());
+            syslogMessages.add(syslogMessage);
         }
 
-        return rv;
+        if (syslogMessages.isEmpty()) {
+            throw new IllegalArgumentException("No events processable by NLFPlugin found");
+        }
+
+        return syslogMessages;
     }
 }
