@@ -68,5 +68,9 @@ public final class ResourceIdTest {
     void testWithInvalidResourceId() {
         final ResourceId r = new ResourceId("/foo/bar");
         Assertions.assertThrows(IllegalArgumentException.class, r::subscriptionId);
+        Assertions.assertThrows(IllegalArgumentException.class, r::resourceGroupName);
+        Assertions.assertThrows(IllegalArgumentException.class, r::resourceProviderNamespace);
+        Assertions.assertThrows(IllegalArgumentException.class, r::resourceType);
+        Assertions.assertThrows(IllegalArgumentException.class, r::resourceName);
     }
 }
