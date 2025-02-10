@@ -127,6 +127,39 @@ public class NLFPluginTest {
     }
 
     @Test
+    void appInsightType_MultipleRecords() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/appinsight_2.json")));
+        final ParsedEvent parsedEvent = new EventImpl(
+                json,
+                new HashMap<>(),
+                new HashMap<>(),
+                new HashMap<>(),
+                "2020-01-01T00:00:00",
+                "0"
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin();
+        final List<SyslogMessage> syslogMessages = plugin.syslogMessage(parsedEvent);
+        Assertions.assertEquals(3, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129{resourceName}", syslogMessage.getHostname());
+        Assertions.assertEquals("app-role-name", syslogMessage.getAppName());
+        Assertions.assertEquals("2020-01-01T01:02:34.567899900Z", syslogMessage.getTimestamp());
+
+        final SyslogMessage syslogMessage2 = syslogMessages.get(1);
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129{resourceName}", syslogMessage2.getHostname());
+        Assertions.assertEquals("app-role-name2", syslogMessage2.getAppName());
+        Assertions.assertEquals("2020-01-02T01:02:34.567899900Z", syslogMessage2.getTimestamp());
+
+        final SyslogMessage syslogMessage3 = syslogMessages.get(2);
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129{resourceName}", syslogMessage3.getHostname());
+        Assertions.assertEquals("app-role-name3", syslogMessage3.getAppName());
+        Assertions.assertEquals("2020-01-03T01:02:34.567899900Z", syslogMessage3.getTimestamp());
+    }
+
+    @Test
     void clType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/cl.json")));
