@@ -80,7 +80,7 @@ public final class CLType implements EventType {
 
     @Override
     public Severity severity() {
-        return Severity.INFORMATIONAL;
+        return Severity.NOTICE;
     }
 
     @Override
