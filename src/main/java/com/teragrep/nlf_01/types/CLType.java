@@ -97,7 +97,7 @@ public final class CLType implements EventType {
         // hostname = internal workspace resource id MD5 + resourceName from resourceId, with non-ascii chars removed
         return new ValidRFC5424Hostname(
                 "md5-".concat(new MD5Hash(internalWorkspaceResourceId).md5().concat(new ASCIIString(new ResourceId(internalWorkspaceResourceId).resourceName()).withNonAsciiCharsRemoved()))
-        ).validHostname();
+        ).hostnameWithInvalidCharsRemoved();
     }
 
     @Override

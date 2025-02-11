@@ -71,11 +71,69 @@ public final class ValidRFC5424Hostname {
                 throw new IllegalArgumentException(String.format("Hostname cannot end with character '%s'", c));
             }
 
-            if (c < 33 || c > 126) {
-                throw new IllegalArgumentException(String.format("Hostname cannot contain character '%s'", c));
+            // 0-9
+            if (Character.isDigit(c)) {
+                continue;
             }
+
+            // . or -
+            if (c == '.' || c == '-') {
+                continue;
+            }
+
+            // A-Z or a-z
+            if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z') {
+                continue;
+            }
+
+            throw new IllegalArgumentException(String.format("Hostname cannot contain character '%s'", c));
         }
 
         return uncheckedHostname;
+    }
+
+    public String hostnameWithInvalidCharsRemoved() {
+        final StringBuilder hostname = new StringBuilder();
+        int skippedChars = 0; // How many characters are skipped from unvalidated hostname
+        int maxLength = Math.min(uncheckedHostname.length(), 255); // max length is either hostname length or 255
+        final StringBuilder invalidChars = new StringBuilder(); // Holds invalid final characters
+
+        for (int i = 0; i < uncheckedHostname.length(); i++) {
+            final char c = uncheckedHostname.charAt(i);
+            // Update max length based on skipped characters
+            int currentMaxLength = maxLength - skippedChars;
+
+            if (hostname.length() == currentMaxLength) {
+                // produced hostname is at max length, stop processing
+                break;
+            }
+            else if (hostname.length() == 0 && (c == '.' || c == '-' || Character.isDigit(c))) {
+                // skip 0-9, '.' and '-' in the beginning
+                skippedChars++;
+            }
+            else if (c == '.' || c == '-') {
+                // mid-hostname, encountered illegal hostname last char
+                invalidChars.append(c);
+            }
+            else if (Character.isDigit(c) || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+                // append '.', '-', 0-9, A-Z and a-z
+                // also means illegal last chars are not last chars, append them before
+                if (hostname.length() + invalidChars.length() > currentMaxLength) {
+                    // in case hostname + invalidChars is more than max length, add invalid chars up to max length - 1
+                    final int overlap = (hostname.length() + invalidChars.length()) - currentMaxLength;
+                    hostname.append(invalidChars, 0, invalidChars.length() - overlap - 1);
+                }
+                else {
+                    hostname.append(invalidChars);
+                }
+                invalidChars.setLength(0);
+                hostname.append(c);
+            }
+            else {
+                skippedChars++;
+            }
+        }
+
+        return hostname.toString();
     }
 }
