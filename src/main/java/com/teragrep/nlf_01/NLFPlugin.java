@@ -108,7 +108,13 @@ public final class NLFPlugin implements Plugin {
             else if (jsonObject.getString("Type").equals("ContainerLogV2")) {
                 eventTypes.add(new ContainerType(source, parsedEvent));
             }
+            else {
+                throw new IllegalArgumentException("Invalid event type: " + jsonObject.getString("Type"));
+            }
 
+        }
+        else {
+            throw new IllegalArgumentException("Event was not of expected log format");
         }
 
         for (final EventType eventType : eventTypes) {
