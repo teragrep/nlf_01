@@ -54,18 +54,23 @@ public final class ValidRFC5424AppName {
     }
 
     public String validAppName() {
-        if (uncheckedAppName.length() > 48) {
+        String rv = uncheckedAppName;
+        if (rv.length() > 48) {
             throw new IllegalArgumentException(
-                    "Appname is too long: " + uncheckedAppName.length() + "; exceeds maximum of 48 characters"
+                    "Appname is too long: " + rv.length() + "; exceeds maximum of 48 characters"
             );
         }
 
-        for (final char c : uncheckedAppName.toCharArray()) {
+        for (final char c : rv.toCharArray()) {
             if (c < 33 || c > 126) {
                 throw new IllegalArgumentException(String.format("Appname cannot contain character '%s'", c));
             }
         }
 
-        return uncheckedAppName;
+        if (rv.isEmpty()) {
+            rv = "-";
+        }
+
+        return rv;
     }
 }

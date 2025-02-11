@@ -72,6 +72,6 @@ public final class ValidRFC5424AppNameTest {
     @Test
     void testEmptyString() {
         final ValidRFC5424AppName appname = new ValidRFC5424AppName("");
-        Assertions.assertDoesNotThrow(appname::validAppName);
+        Assertions.assertEquals("-", appname.validAppName());
     }
 }

@@ -54,20 +54,21 @@ public final class ValidRFC5424Hostname {
     }
 
     public String validHostname() {
-        if (uncheckedHostname.length() > 255) {
+        String rv = uncheckedHostname;
+        if (rv.length() > 255) {
             throw new IllegalArgumentException(
-                    "Hostname is too long: " + uncheckedHostname.length() + "; exceeds maximum of 255 characters"
+                    "Hostname is too long: " + rv.length() + "; exceeds maximum of 255 characters"
             );
         }
 
-        for (int i = 0; i < uncheckedHostname.length(); i++) {
-            final char c = uncheckedHostname.charAt(i);
+        for (int i = 0; i < rv.length(); i++) {
+            final char c = rv.charAt(i);
 
             if (i == 0 && (Character.isDigit(c) || c == '.' || c == '-')) {
                 throw new IllegalArgumentException(String.format("Hostname cannot start with character '%s'", c));
             }
 
-            if (i == uncheckedHostname.length() - 1 && (c == '.' || c == '-')) {
+            if (i == rv.length() - 1 && (c == '.' || c == '-')) {
                 throw new IllegalArgumentException(String.format("Hostname cannot end with character '%s'", c));
             }
 
@@ -89,10 +90,15 @@ public final class ValidRFC5424Hostname {
             throw new IllegalArgumentException(String.format("Hostname cannot contain character '%s'", c));
         }
 
-        return uncheckedHostname;
+        if (rv.isEmpty()) {
+            rv = "-";
+        }
+
+        return rv;
     }
 
     public String hostnameWithInvalidCharsRemoved() {
+        String rv;
         final StringBuilder hostname = new StringBuilder();
         int skippedChars = 0; // How many characters are skipped from unvalidated hostname
         int maxLength = Math.min(uncheckedHostname.length(), 255); // max length is either hostname length or 255
@@ -134,6 +140,13 @@ public final class ValidRFC5424Hostname {
             }
         }
 
-        return hostname.toString();
+        if (uncheckedHostname.isEmpty()) {
+            rv = "-";
+        }
+        else {
+            rv = hostname.toString();
+        }
+
+        return rv;
     }
 }

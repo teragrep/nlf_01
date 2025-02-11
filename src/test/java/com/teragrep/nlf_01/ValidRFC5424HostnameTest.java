@@ -189,7 +189,7 @@ public class ValidRFC5424HostnameTest {
     @Test
     void testEmptyString() {
         final ValidRFC5424Hostname hostname = new ValidRFC5424Hostname("");
-        Assertions.assertDoesNotThrow(hostname::validHostname);
-        Assertions.assertEquals("", hostname.hostnameWithInvalidCharsRemoved());
+        Assertions.assertEquals("-", hostname.validHostname());
+        Assertions.assertEquals("-", hostname.hostnameWithInvalidCharsRemoved());
     }
 }
