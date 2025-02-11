@@ -45,33 +45,33 @@
  */
 package com.teragrep.nlf_01;
 
-import com.teragrep.nlf_01.util.ValidRFC5424Appname;
+import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public final class ValidRFC5424AppnameTest {
+public final class ValidRFC5424AppNameTest {
 
     @Test
     void testNonAsciiCharacters() {
-        final ValidRFC5424Appname appname = new ValidRFC5424Appname("äppnämë");
-        Assertions.assertThrows(IllegalArgumentException.class, appname::validateOrThrow);
+        final ValidRFC5424AppName appname = new ValidRFC5424AppName("äppnämë");
+        Assertions.assertThrows(IllegalArgumentException.class, appname::validAppName);
     }
 
     @Test
     void testTooManyCharacters() {
-        final ValidRFC5424Appname appname = new ValidRFC5424Appname("a".repeat(49));
-        Assertions.assertThrows(IllegalArgumentException.class, appname::validateOrThrow);
+        final ValidRFC5424AppName appname = new ValidRFC5424AppName("a".repeat(49));
+        Assertions.assertThrows(IllegalArgumentException.class, appname::validAppName);
     }
 
     @Test
     void testMaxCharacters() {
-        final ValidRFC5424Appname appname = new ValidRFC5424Appname("a".repeat(48));
-        Assertions.assertDoesNotThrow(appname::validateOrThrow);
+        final ValidRFC5424AppName appname = new ValidRFC5424AppName("a".repeat(48));
+        Assertions.assertDoesNotThrow(appname::validAppName);
     }
 
     @Test
     void testEmptyString() {
-        final ValidRFC5424Appname appname = new ValidRFC5424Appname("");
-        Assertions.assertDoesNotThrow(appname::validateOrThrow);
+        final ValidRFC5424AppName appname = new ValidRFC5424AppName("");
+        Assertions.assertDoesNotThrow(appname::validAppName);
     }
 }

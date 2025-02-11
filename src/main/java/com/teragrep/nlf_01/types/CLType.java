@@ -97,7 +97,7 @@ public final class CLType implements EventType {
         // hostname = internal workspace resource id MD5 + resourceName from resourceId, with non-ascii chars removed
         return new ValidRFC5424Hostname(
                 "md5-".concat(new MD5Hash(internalWorkspaceResourceId).md5().concat(new ASCIIString(new ResourceId(internalWorkspaceResourceId).resourceName()).withNonAsciiCharsRemoved()))
-        ).validateOrThrow();
+        ).validHostname();
     }
 
     @Override
@@ -112,7 +112,7 @@ public final class CLType implements EventType {
         final String truncatedFilePath = filename.length() < 39 ? filename : filename.substring(0, 39);
 
         // appname = first 8 chars of filePath MD5 + dash (-) + filename truncated to max 39 chars
-        return new ValidRFC5424Appname(truncatedMd5.concat("-").concat(truncatedFilePath)).validateOrThrow();
+        return new ValidRFC5424AppName(truncatedMd5.concat("-").concat(truncatedFilePath)).validAppName();
     }
 
     @Override

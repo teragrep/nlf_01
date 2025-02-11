@@ -45,27 +45,27 @@
  */
 package com.teragrep.nlf_01.util;
 
-public final class ValidRFC5424Appname {
+public final class ValidRFC5424AppName {
 
-    private final String uncheckedAppname;
+    private final String uncheckedAppName;
 
-    public ValidRFC5424Appname(final String uncheckedAppname) {
-        this.uncheckedAppname = uncheckedAppname;
+    public ValidRFC5424AppName(final String uncheckedAppName) {
+        this.uncheckedAppName = uncheckedAppName;
     }
 
-    public String validateOrThrow() {
-        if (uncheckedAppname.length() > 48) {
+    public String validAppName() {
+        if (uncheckedAppName.length() > 48) {
             throw new IllegalArgumentException(
-                    "Appname is too long: " + uncheckedAppname.length() + "; exceeds maximum of 48 characters"
+                    "Appname is too long: " + uncheckedAppName.length() + "; exceeds maximum of 48 characters"
             );
         }
 
-        for (final char c : uncheckedAppname.toCharArray()) {
+        for (final char c : uncheckedAppName.toCharArray()) {
             if (c < 33 || c > 126) {
                 throw new IllegalArgumentException(String.format("Appname cannot contain character '%s'", c));
             }
         }
 
-        return uncheckedAppname;
+        return uncheckedAppName;
     }
 }

@@ -100,7 +100,7 @@ public final class ContainerType implements EventType {
         final JsonObject podAnnotations = kubernetesMetadata.getJsonObject("podAnnotations");
 
         return new ValidRFC5424Hostname(podAnnotations.getString(source.source("containerlog.hostname.annotation")))
-                .validateOrThrow();
+                .validHostname();
     }
 
     @Override
@@ -126,9 +126,9 @@ public final class ContainerType implements EventType {
             throw new JsonException("Unknown log source: " + logSource);
         }
 
-        return new ValidRFC5424Appname(
+        return new ValidRFC5424AppName(
                 podAnnotations.getString(source.source("containerlog.appname.annotation")) + logSourceSuffix
-        ).validateOrThrow();
+        ).validAppName();
     }
 
     @Override

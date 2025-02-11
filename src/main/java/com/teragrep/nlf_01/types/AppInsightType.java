@@ -96,7 +96,7 @@ public final class AppInsightType implements EventType {
 
         return new ValidRFC5424Hostname(
                 "md5-".concat(new MD5Hash(resourceId).md5().concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
-        ).validateOrThrow();
+        ).validHostname();
 
     }
 
@@ -106,7 +106,7 @@ public final class AppInsightType implements EventType {
 
         assertKey(record, "AppRoleName", JsonValue.ValueType.STRING);
 
-        return new ValidRFC5424Appname(record.getString("AppRoleName")).validateOrThrow();
+        return new ValidRFC5424AppName(record.getString("AppRoleName")).validAppName();
 
     }
 

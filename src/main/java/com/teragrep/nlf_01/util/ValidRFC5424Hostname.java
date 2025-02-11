@@ -53,7 +53,7 @@ public final class ValidRFC5424Hostname {
         this.uncheckedHostname = uncheckedHostname;
     }
 
-    public String validateOrThrow() {
+    public String validHostname() {
         if (uncheckedHostname.length() > 255) {
             throw new IllegalArgumentException(
                     "Hostname is too long: " + uncheckedHostname.length() + "; exceeds maximum of 255 characters"
