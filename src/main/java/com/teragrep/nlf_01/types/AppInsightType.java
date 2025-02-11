@@ -111,12 +111,12 @@ public final class AppInsightType implements EventType {
     }
 
     @Override
-    public String timestamp() {
+    public long timestamp() {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
         assertKey(record, "TimeGenerated", JsonValue.ValueType.STRING);
 
-        return record.getString("TimeGenerated");
+        return new ValidRFC5424Timestamp(record.getString("TimeGenerated")).validTimestamp();
     }
 
     @Override

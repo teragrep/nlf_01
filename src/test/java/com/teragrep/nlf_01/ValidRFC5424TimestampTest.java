@@ -43,29 +43,45 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.nlf_01.types;
+package com.teragrep.nlf_01;
 
-import com.teragrep.rlo_14.Facility;
-import com.teragrep.rlo_14.SDElement;
-import com.teragrep.rlo_14.Severity;
+import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import java.util.Set;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
 
-public interface EventType {
+public final class ValidRFC5424TimestampTest {
 
-    public abstract Severity severity();
+    @Test
+    void testWithIdealCase() {
+        final String timestamp = "2020-01-01T00:00:00.123Z";
+        final ValidRFC5424Timestamp validRFC5424Timestamp = new ValidRFC5424Timestamp(timestamp);
+        Assertions.assertEquals(timestamp, Instant.ofEpochMilli(validRFC5424Timestamp.validTimestamp()).toString());
+    }
 
-    public abstract Facility facility();
+    @Test
+    void testWith6Fractions() {
+        final String timestamp = "2020-01-01T00:00:00.123456Z";
+        final ValidRFC5424Timestamp validRFC5424Timestamp = new ValidRFC5424Timestamp(timestamp);
+        Assertions
+                .assertEquals("2020-01-01T00:00:00.123Z", Instant.ofEpochMilli(validRFC5424Timestamp.validTimestamp()).toString());
+    }
 
-    public abstract String hostname();
+    @Test
+    void testWith9Fractions() {
+        final String timestamp = "2020-01-01T00:00:00.123456789Z";
+        final ValidRFC5424Timestamp validRFC5424Timestamp = new ValidRFC5424Timestamp(timestamp);
+        Assertions
+                .assertEquals("2020-01-01T00:00:00.123Z", Instant.ofEpochMilli(validRFC5424Timestamp.validTimestamp()).toString());
+    }
 
-    public abstract String appName();
+    @Test
+    void testWithInvalidTimestamp() {
+        final String timestamp = "invalid timestamp";
+        final ValidRFC5424Timestamp validRFC5424Timestamp = new ValidRFC5424Timestamp(timestamp);
+        Assertions.assertThrows(DateTimeParseException.class, validRFC5424Timestamp::validTimestamp);
+    }
 
-    public abstract long timestamp();
-
-    public abstract Set<SDElement> sdElements();
-
-    public abstract String msgId();
-
-    public abstract String msg();
 }

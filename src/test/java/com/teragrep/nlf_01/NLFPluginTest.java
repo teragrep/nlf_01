@@ -84,7 +84,7 @@ public class NLFPluginTest {
         Assertions.assertEquals(json, syslogMessage.getMsg());
         Assertions.assertEquals("HOST-NAME", syslogMessage.getHostname());
         Assertions.assertEquals("APP-NAME:o", syslogMessage.getAppName());
-        Assertions.assertEquals("2020-01-01T01:23:34.567899900Z", syslogMessage.getTimestamp());
+        Assertions.assertEquals("2020-01-01T01:23:34.567Z", syslogMessage.getTimestamp());
         final List<SDElement> origin = syslogMessage
                 .getSDElements()
                 .stream()
@@ -129,7 +129,7 @@ public class NLFPluginTest {
                 );
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129{resourceName}", syslogMessage.getHostname());
         Assertions.assertEquals("app-role-name", syslogMessage.getAppName());
-        Assertions.assertEquals("2020-01-01T01:02:34.567899900Z", syslogMessage.getTimestamp());
+        Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
     }
 
     @Test
@@ -152,7 +152,7 @@ public class NLFPluginTest {
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129{resourceName}", syslogMessage.getHostname());
         Assertions.assertEquals("app-role-name", syslogMessage.getAppName());
-        Assertions.assertEquals("2020-01-01T01:02:34.567899900Z", syslogMessage.getTimestamp());
+        Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
         Assertions
                 .assertEquals(
                         "{\"AppRoleInstance\":\"app-role-instance\",\"AppRoleName\":\"app-role-name\",\"ClientIP\":\"192.168.1.2\",\"ClientType\":\"client-type\",\"IKey\":\"i-key\",\"ItemCount\":1,\"Message\":\"message\",\"OperationId\":\"123\",\"ParentId\":\"456\",\"Properties\":{\"ProcessId\":\"1234\",\"HostInstanceId\":\"123456\",\"prop__{OriginalFormat}\":\"abc\",\"prop__RouteName\":\"xyz\",\"LogLevel\":\"Debug\",\"EventId\":\"1\",\"prop__RouteTemplate\":\"route/template\",\"Category\":\"192.168.3.1\",\"EventName\":\"event-name\"},\"ResourceGUID\":\"123456789\",\"SDKVersion\":\"12: 192.168.x.x\",\"SeverityLevel\":0,\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-01T01:02:34.5678999Z\",\"Type\":\"AppTraces\",\"_BilledSize\":1,\"_ItemId\":\"12-34-56-78\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
@@ -162,7 +162,7 @@ public class NLFPluginTest {
         final SyslogMessage syslogMessage2 = syslogMessages.get(1);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129{resourceName}", syslogMessage2.getHostname());
         Assertions.assertEquals("app-role-name2", syslogMessage2.getAppName());
-        Assertions.assertEquals("2020-01-02T01:02:34.567899900Z", syslogMessage2.getTimestamp());
+        Assertions.assertEquals("2020-01-02T01:02:34.567Z", syslogMessage2.getTimestamp());
         Assertions
                 .assertEquals(
                         "{\"AppRoleInstance\":\"app-role-instance2\",\"AppRoleName\":\"app-role-name2\",\"ClientIP\":\"192.168.1.2\",\"ClientType\":\"client-type\",\"IKey\":\"i-key\",\"ItemCount\":1,\"Message\":\"message2\",\"OperationId\":\"123\",\"ParentId\":\"456\",\"Properties\":{\"ProcessId\":\"1234\",\"HostInstanceId\":\"123456\",\"prop__{OriginalFormat}\":\"abc\",\"prop__RouteName\":\"xyz\",\"LogLevel\":\"Debug\",\"EventId\":\"1\",\"prop__RouteTemplate\":\"route/template\",\"Category\":\"192.168.3.1\",\"EventName\":\"event-name2\"},\"ResourceGUID\":\"123456789\",\"SDKVersion\":\"12: 192.168.x.x\",\"SeverityLevel\":0,\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-02T01:02:34.5678999Z\",\"Type\":\"AppTraces\",\"_BilledSize\":1,\"_ItemId\":\"12-34-56-78\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
@@ -172,7 +172,7 @@ public class NLFPluginTest {
         final SyslogMessage syslogMessage3 = syslogMessages.get(2);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129{resourceName}", syslogMessage3.getHostname());
         Assertions.assertEquals("app-role-name3", syslogMessage3.getAppName());
-        Assertions.assertEquals("2020-01-03T01:02:34.567899900Z", syslogMessage3.getTimestamp());
+        Assertions.assertEquals("2020-01-03T01:02:34.567Z", syslogMessage3.getTimestamp());
         Assertions
                 .assertEquals(
                         "{\"AppRoleInstance\":\"app-role-instance3\",\"AppRoleName\":\"app-role-name3\",\"ClientIP\":\"192.168.1.2\",\"ClientType\":\"client-type\",\"IKey\":\"i-key\",\"ItemCount\":1,\"Message\":\"message3\",\"OperationId\":\"123\",\"ParentId\":\"456\",\"Properties\":{\"ProcessId\":\"1234\",\"HostInstanceId\":\"123456\",\"prop__{OriginalFormat}\":\"abc\",\"prop__RouteName\":\"xyz\",\"LogLevel\":\"Debug\",\"EventId\":\"1\",\"prop__RouteTemplate\":\"route/template\",\"Category\":\"192.168.3.1\",\"EventName\":\"event-name3\"},\"ResourceGUID\":\"123456789\",\"SDKVersion\":\"12: 192.168.x.x\",\"SeverityLevel\":0,\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-03T01:02:34.5678999Z\",\"Type\":\"AppTraces\",\"_BilledSize\":1,\"_ItemId\":\"12-34-56-78\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
@@ -200,7 +200,7 @@ public class NLFPluginTest {
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129{resourceName}", syslogMessage.getHostname());
         Assertions.assertEquals("97bd8f02-xxxxx.log", syslogMessage.getAppName());
-        Assertions.assertEquals("2020-01-01T01:02:34.567899900Z", syslogMessage.getTimestamp());
+        Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
         Assertions.assertEquals(json, syslogMessage.getMsg());
         final List<SDElement> origin = syslogMessage
                 .getSDElements()

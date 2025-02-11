@@ -132,11 +132,11 @@ public final class ContainerType implements EventType {
     }
 
     @Override
-    public String timestamp() {
+    public long timestamp() {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING);
 
-        return mainObject.getString("TimeGenerated");
+        return new ValidRFC5424Timestamp(mainObject.getString("TimeGenerated")).validTimestamp();
     }
 
     @Override

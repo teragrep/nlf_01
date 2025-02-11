@@ -43,29 +43,27 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.nlf_01.types;
+package com.teragrep.nlf_01.util;
 
-import com.teragrep.rlo_14.Facility;
-import com.teragrep.rlo_14.SDElement;
-import com.teragrep.rlo_14.Severity;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
 
-import java.util.Set;
+public final class ValidRFC5424Timestamp {
 
-public interface EventType {
+    private final String uncheckedTimestamp;
 
-    public abstract Severity severity();
+    public ValidRFC5424Timestamp(final String uncheckedTimestamp) {
+        this.uncheckedTimestamp = uncheckedTimestamp;
+    }
 
-    public abstract Facility facility();
+    /**
+     * Parses the timestamp to Instant and returns unix epoch in milliseconds
+     * 
+     * @throws DateTimeParseException if timestamp cannot be parsed
+     * @return unix epoch, in milliseconds
+     */
+    public long validTimestamp() throws DateTimeParseException {
+        return Instant.parse(uncheckedTimestamp).toEpochMilli();
+    }
 
-    public abstract String hostname();
-
-    public abstract String appName();
-
-    public abstract long timestamp();
-
-    public abstract Set<SDElement> sdElements();
-
-    public abstract String msgId();
-
-    public abstract String msg();
 }
