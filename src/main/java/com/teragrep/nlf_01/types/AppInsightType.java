@@ -158,6 +158,6 @@ public final class AppInsightType implements EventType {
 
     @Override
     public String msg() {
-        return parsedEvent.asJsonStructure().asJsonObject().toString();
+        return parsedEvent.asString();
     }
 }
