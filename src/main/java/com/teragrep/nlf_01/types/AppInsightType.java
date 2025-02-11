@@ -84,7 +84,7 @@ public final class AppInsightType implements EventType {
 
     @Override
     public Facility facility() {
-        return Facility.LOCAL0;
+        return Facility.AUDIT;
     }
 
     @Override

@@ -85,7 +85,7 @@ public final class CLType implements EventType {
 
     @Override
     public Facility facility() {
-        return Facility.LOCAL0;
+        return Facility.AUDIT;
     }
 
     @Override
