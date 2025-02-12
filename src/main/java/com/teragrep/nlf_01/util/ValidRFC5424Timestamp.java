@@ -45,6 +45,8 @@
  */
 package com.teragrep.nlf_01.util;
 
+import com.teragrep.akv_01.plugin.PluginException;
+
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 
@@ -62,8 +64,14 @@ public final class ValidRFC5424Timestamp {
      * @throws DateTimeParseException if timestamp cannot be parsed
      * @return unix epoch, in milliseconds
      */
-    public long validTimestamp() throws DateTimeParseException {
-        return Instant.parse(uncheckedTimestamp).toEpochMilli();
+    public long validTimestamp() throws PluginException {
+        try {
+            return Instant.parse(uncheckedTimestamp).toEpochMilli();
+        }
+        catch (DateTimeParseException e) {
+            throw new PluginException(e);
+        }
+
     }
 
 }

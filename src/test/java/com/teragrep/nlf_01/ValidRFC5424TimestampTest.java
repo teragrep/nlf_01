@@ -45,12 +45,12 @@
  */
 package com.teragrep.nlf_01;
 
+import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.time.format.DateTimeParseException;
 
 public final class ValidRFC5424TimestampTest {
 
@@ -58,7 +58,11 @@ public final class ValidRFC5424TimestampTest {
     void testWithIdealCase() {
         final String timestamp = "2020-01-01T00:00:00.123Z";
         final ValidRFC5424Timestamp validRFC5424Timestamp = new ValidRFC5424Timestamp(timestamp);
-        Assertions.assertEquals(timestamp, Instant.ofEpochMilli(validRFC5424Timestamp.validTimestamp()).toString());
+        Assertions
+                .assertEquals(
+                        timestamp,
+                        Assertions.assertDoesNotThrow(() -> Instant.ofEpochMilli(validRFC5424Timestamp.validTimestamp()).toString())
+                );
     }
 
     @Test
@@ -66,7 +70,10 @@ public final class ValidRFC5424TimestampTest {
         final String timestamp = "2020-01-01T00:00:00.123456Z";
         final ValidRFC5424Timestamp validRFC5424Timestamp = new ValidRFC5424Timestamp(timestamp);
         Assertions
-                .assertEquals("2020-01-01T00:00:00.123Z", Instant.ofEpochMilli(validRFC5424Timestamp.validTimestamp()).toString());
+                .assertEquals(
+                        "2020-01-01T00:00:00.123Z",
+                        Assertions.assertDoesNotThrow(() -> Instant.ofEpochMilli(validRFC5424Timestamp.validTimestamp()).toString())
+                );
     }
 
     @Test
@@ -74,14 +81,17 @@ public final class ValidRFC5424TimestampTest {
         final String timestamp = "2020-01-01T00:00:00.123456789Z";
         final ValidRFC5424Timestamp validRFC5424Timestamp = new ValidRFC5424Timestamp(timestamp);
         Assertions
-                .assertEquals("2020-01-01T00:00:00.123Z", Instant.ofEpochMilli(validRFC5424Timestamp.validTimestamp()).toString());
+                .assertEquals(
+                        "2020-01-01T00:00:00.123Z",
+                        Assertions.assertDoesNotThrow(() -> Instant.ofEpochMilli(validRFC5424Timestamp.validTimestamp()).toString())
+                );
     }
 
     @Test
     void testWithInvalidTimestamp() {
         final String timestamp = "invalid timestamp";
         final ValidRFC5424Timestamp validRFC5424Timestamp = new ValidRFC5424Timestamp(timestamp);
-        Assertions.assertThrows(DateTimeParseException.class, validRFC5424Timestamp::validTimestamp);
+        Assertions.assertThrows(PluginException.class, validRFC5424Timestamp::validTimestamp);
     }
 
 }

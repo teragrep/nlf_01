@@ -45,10 +45,12 @@
  */
 package com.teragrep.nlf_01.util;
 
+import com.teragrep.akv_01.plugin.PluginException;
+
 public interface Sourceable {
 
     public abstract String source(String name, String defaultValue);
 
-    public abstract String source(String name);
+    public abstract String source(String name) throws PluginException;
 
 }

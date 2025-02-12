@@ -45,6 +45,8 @@
  */
 package com.teragrep.nlf_01.util;
 
+import com.teragrep.akv_01.plugin.PluginException;
+
 import java.util.Map;
 
 public class EnvironmentSource implements Sourceable {
@@ -57,10 +59,10 @@ public class EnvironmentSource implements Sourceable {
         return rv;
     }
 
-    public String source(String name) {
+    public String source(String name) throws PluginException {
         String variable = name.toUpperCase().replace(".", "_");
         if (!envValues.containsKey(variable)) {
-            throw new IllegalArgumentException("No such environment variable: " + variable);
+            throw new PluginException(new IllegalArgumentException("No such environment variable: " + variable));
         }
         return envValues.get(variable);
     }

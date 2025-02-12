@@ -45,6 +45,8 @@
  */
 package com.teragrep.nlf_01.util;
 
+import com.teragrep.akv_01.plugin.PluginException;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -57,14 +59,14 @@ public final class MD5Hash {
         this.input = input;
     }
 
-    public String md5() {
+    public String md5() throws PluginException {
         final StringBuilder result = new StringBuilder();
         final MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("MD5");
         }
         catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Could not calculate MD5 checksum", e);
+            throw new PluginException("Could not calculate MD5 checksum", e);
         }
         digest.update(input.getBytes(StandardCharsets.UTF_8));
         final byte[] hash = digest.digest();

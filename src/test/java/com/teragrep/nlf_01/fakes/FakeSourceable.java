@@ -45,6 +45,7 @@
  */
 package com.teragrep.nlf_01.fakes;
 
+import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.util.Sourceable;
 
 public final class FakeSourceable implements Sourceable {
@@ -61,13 +62,13 @@ public final class FakeSourceable implements Sourceable {
     }
 
     @Override
-    public String source(final String name) {
+    public String source(final String name) throws PluginException {
         if (name.equals("containerlog.hostname.annotation")) {
             return "hostname-annotation";
         }
         else if (name.equals("containerlog.appname.annotation")) {
             return "appname-annotation";
         }
-        throw new IllegalArgumentException("No such fake variable: " + name);
+        throw new PluginException(new IllegalArgumentException("No such fake variable: " + name));
     }
 }

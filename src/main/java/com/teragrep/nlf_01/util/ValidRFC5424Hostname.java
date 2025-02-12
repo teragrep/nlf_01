@@ -45,6 +45,8 @@
  */
 package com.teragrep.nlf_01.util;
 
+import com.teragrep.akv_01.plugin.PluginException;
+
 public final class ValidRFC5424Hostname {
 
     private final String uncheckedHostname;
@@ -53,11 +55,13 @@ public final class ValidRFC5424Hostname {
         this.uncheckedHostname = uncheckedHostname;
     }
 
-    public String validHostname() {
+    public String validHostname() throws PluginException {
         String rv = uncheckedHostname;
         if (rv.length() > 255) {
-            throw new IllegalArgumentException(
-                    "Hostname is too long: " + rv.length() + "; exceeds maximum of 255 characters"
+            throw new PluginException(
+                    new IllegalArgumentException(
+                            "Hostname is too long: " + rv.length() + "; exceeds maximum of 255 characters"
+                    )
             );
         }
 
@@ -65,11 +69,15 @@ public final class ValidRFC5424Hostname {
             final char c = rv.charAt(i);
 
             if (i == 0 && (Character.isDigit(c) || c == '.' || c == '-')) {
-                throw new IllegalArgumentException(String.format("Hostname cannot start with character '%s'", c));
+                throw new PluginException(
+                        new IllegalArgumentException(String.format("Hostname cannot start with character '%s'", c))
+                );
             }
 
             if (i == rv.length() - 1 && (c == '.' || c == '-')) {
-                throw new IllegalArgumentException(String.format("Hostname cannot end with character '%s'", c));
+                throw new PluginException(
+                        new IllegalArgumentException(String.format("Hostname cannot end with character '%s'", c))
+                );
             }
 
             // 0-9
@@ -87,7 +95,9 @@ public final class ValidRFC5424Hostname {
                 continue;
             }
 
-            throw new IllegalArgumentException(String.format("Hostname cannot contain character '%s'", c));
+            throw new PluginException(
+                    new IllegalArgumentException(String.format("Hostname cannot contain character '%s'", c))
+            );
         }
 
         if (rv.isEmpty()) {
