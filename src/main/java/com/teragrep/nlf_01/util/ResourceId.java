@@ -45,6 +45,8 @@
  */
 package com.teragrep.nlf_01.util;
 
+import com.teragrep.akv_01.plugin.PluginException;
+
 public final class ResourceId {
 
     private final String[] splitResourceId;
@@ -57,33 +59,33 @@ public final class ResourceId {
         this.splitResourceId = splitResourceId;
     }
 
-    private void validate() {
+    private void validate() throws PluginException {
         if (splitResourceId.length != 9) {
-            throw new IllegalArgumentException("ResourceId must have 9 elements");
+            throw new PluginException(new IllegalArgumentException("ResourceId must have 9 elements"));
         }
     }
 
-    public String subscriptionId() {
+    public String subscriptionId() throws PluginException {
         validate();
         return splitResourceId[2];
     }
 
-    public String resourceGroupName() {
+    public String resourceGroupName() throws PluginException {
         validate();
         return splitResourceId[4];
     }
 
-    public String resourceProviderNamespace() {
+    public String resourceProviderNamespace() throws PluginException {
         validate();
         return splitResourceId[6];
     }
 
-    public String resourceType() {
+    public String resourceType() throws PluginException {
         validate();
         return splitResourceId[7];
     }
 
-    public String resourceName() {
+    public String resourceName() throws PluginException {
         validate();
         return splitResourceId[8];
     }

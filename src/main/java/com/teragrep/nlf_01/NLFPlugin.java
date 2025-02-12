@@ -48,6 +48,7 @@ package com.teragrep.nlf_01;
 import com.teragrep.akv_01.event.MultiRecordEvent;
 import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.Plugin;
+import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.types.AppInsightType;
 import com.teragrep.nlf_01.types.CLType;
 import com.teragrep.nlf_01.types.ContainerType;
@@ -76,19 +77,19 @@ public final class NLFPlugin implements Plugin {
     }
 
     @Override
-    public List<SyslogMessage> syslogMessage(final ParsedEvent parsedEvent) {
+    public List<SyslogMessage> syslogMessage(final ParsedEvent parsedEvent) throws PluginException {
         final List<EventType> eventTypes = new ArrayList<>();
         final List<SyslogMessage> syslogMessages = new ArrayList<>();
 
         if (!parsedEvent.isJsonStructure()) {
             // non-applicable
-            throw new JsonException("Event was not a JSON structure");
+            throw new PluginException(new JsonException("Event was not a JSON structure"));
         }
 
         final JsonStructure json = parsedEvent.asJsonStructure();
         // Check if main structure is JsonObject
         if (!json.getValueType().equals(JsonValue.ValueType.OBJECT)) {
-            throw new JsonException("Event was not a JSON object");
+            throw new PluginException(new JsonException("Event was not a JSON object"));
         }
 
         final JsonObject jsonObject = json.asJsonObject();
@@ -109,12 +110,14 @@ public final class NLFPlugin implements Plugin {
                 eventTypes.add(new ContainerType(source, parsedEvent));
             }
             else {
-                throw new IllegalArgumentException("Invalid event type: " + jsonObject.getString("Type"));
+                throw new PluginException(
+                        new IllegalArgumentException("Invalid event type: " + jsonObject.getString("Type"))
+                );
             }
 
         }
         else {
-            throw new IllegalArgumentException("Event was not of expected log format");
+            throw new PluginException(new IllegalArgumentException("Event was not of expected log format"));
         }
 
         for (final EventType eventType : eventTypes) {
@@ -131,7 +134,7 @@ public final class NLFPlugin implements Plugin {
         }
 
         if (syslogMessages.isEmpty()) {
-            throw new IllegalArgumentException("No events processable by NLFPlugin found");
+            throw new PluginException(new IllegalArgumentException("No events processable by NLFPlugin found"));
         }
 
         return syslogMessages;

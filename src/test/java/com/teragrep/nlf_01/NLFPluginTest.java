@@ -77,7 +77,8 @@ public class NLFPluginTest {
         ).parsedEvent();
 
         final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
-        final List<SyslogMessage> syslogMessages = plugin.syslogMessage(parsedEvent);
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
         Assertions.assertEquals(1, syslogMessages.size());
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
@@ -118,7 +119,8 @@ public class NLFPluginTest {
         ).parsedEvent();
 
         final NLFPlugin plugin = new NLFPlugin();
-        final List<SyslogMessage> syslogMessages = plugin.syslogMessage(parsedEvent);
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
         Assertions.assertEquals(1, syslogMessages.size());
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
@@ -146,7 +148,8 @@ public class NLFPluginTest {
         ).parsedEvent();
 
         final NLFPlugin plugin = new NLFPlugin();
-        final List<SyslogMessage> syslogMessages = plugin.syslogMessage(parsedEvent);
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
         Assertions.assertEquals(3, syslogMessages.size());
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
@@ -194,7 +197,8 @@ public class NLFPluginTest {
         ).parsedEvent();
 
         final NLFPlugin plugin = new NLFPlugin();
-        final List<SyslogMessage> syslogMessages = plugin.syslogMessage(parsedEvent);
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
         Assertions.assertEquals(1, syslogMessages.size());
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);

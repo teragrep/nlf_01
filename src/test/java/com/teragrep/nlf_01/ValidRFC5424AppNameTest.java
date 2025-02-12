@@ -45,6 +45,7 @@
  */
 package com.teragrep.nlf_01;
 
+import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -54,13 +55,13 @@ public final class ValidRFC5424AppNameTest {
     @Test
     void testNonAsciiCharacters() {
         final ValidRFC5424AppName appname = new ValidRFC5424AppName("äppnämë");
-        Assertions.assertThrows(IllegalArgumentException.class, appname::validAppName);
+        Assertions.assertThrows(PluginException.class, appname::validAppName);
     }
 
     @Test
     void testTooManyCharacters() {
         final ValidRFC5424AppName appname = new ValidRFC5424AppName("a".repeat(49));
-        Assertions.assertThrows(IllegalArgumentException.class, appname::validAppName);
+        Assertions.assertThrows(PluginException.class, appname::validAppName);
     }
 
     @Test
@@ -72,6 +73,6 @@ public final class ValidRFC5424AppNameTest {
     @Test
     void testEmptyString() {
         final ValidRFC5424AppName appname = new ValidRFC5424AppName("");
-        Assertions.assertEquals("-", appname.validAppName());
+        Assertions.assertEquals("-", Assertions.assertDoesNotThrow(appname::validAppName));
     }
 }

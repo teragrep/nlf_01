@@ -45,6 +45,7 @@
  */
 package com.teragrep.nlf_01;
 
+import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.util.ResourceId;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -56,21 +57,22 @@ public final class ResourceIdTest {
         final ResourceId r = new ResourceId(
                 "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}"
         );
-        Assertions.assertEquals("{subscriptionId}", r.subscriptionId());
-        Assertions.assertEquals("{resourceGroupName}", r.resourceGroupName());
-        Assertions.assertEquals("{resourceProviderNamespace}", r.resourceProviderNamespace());
-        Assertions.assertEquals("{resourceType}", r.resourceType());
-        Assertions.assertEquals("{resourceName}", r.resourceName());
+        Assertions.assertEquals("{subscriptionId}", Assertions.assertDoesNotThrow(r::subscriptionId));
+        Assertions.assertEquals("{resourceGroupName}", Assertions.assertDoesNotThrow(r::resourceGroupName));
+        Assertions
+                .assertEquals("{resourceProviderNamespace}", Assertions.assertDoesNotThrow(r::resourceProviderNamespace));
+        Assertions.assertEquals("{resourceType}", Assertions.assertDoesNotThrow(r::resourceType));
+        Assertions.assertEquals("{resourceName}", Assertions.assertDoesNotThrow(r::resourceName));
 
     }
 
     @Test
     void testWithInvalidResourceId() {
         final ResourceId r = new ResourceId("/foo/bar");
-        Assertions.assertThrows(IllegalArgumentException.class, r::subscriptionId);
-        Assertions.assertThrows(IllegalArgumentException.class, r::resourceGroupName);
-        Assertions.assertThrows(IllegalArgumentException.class, r::resourceProviderNamespace);
-        Assertions.assertThrows(IllegalArgumentException.class, r::resourceType);
-        Assertions.assertThrows(IllegalArgumentException.class, r::resourceName);
+        Assertions.assertThrows(PluginException.class, r::subscriptionId);
+        Assertions.assertThrows(PluginException.class, r::resourceGroupName);
+        Assertions.assertThrows(PluginException.class, r::resourceProviderNamespace);
+        Assertions.assertThrows(PluginException.class, r::resourceType);
+        Assertions.assertThrows(PluginException.class, r::resourceName);
     }
 }

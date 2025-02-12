@@ -45,6 +45,7 @@
  */
 package com.teragrep.nlf_01.types;
 
+import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
@@ -53,19 +54,19 @@ import java.util.Set;
 
 public interface EventType {
 
-    public abstract Severity severity();
+    public abstract Severity severity() throws PluginException;
 
-    public abstract Facility facility();
+    public abstract Facility facility() throws PluginException;
 
-    public abstract String hostname();
+    public abstract String hostname() throws PluginException;
 
-    public abstract String appName();
+    public abstract String appName() throws PluginException;
 
-    public abstract long timestamp();
+    public abstract long timestamp() throws PluginException;
 
-    public abstract Set<SDElement> sdElements();
+    public abstract Set<SDElement> sdElements() throws PluginException;
 
-    public abstract String msgId();
+    public abstract String msgId() throws PluginException;
 
-    public abstract String msg();
+    public abstract String msg() throws PluginException;
 }

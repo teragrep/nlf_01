@@ -46,6 +46,7 @@
 package com.teragrep.nlf_01.types;
 
 import com.teragrep.akv_01.event.ParsedEvent;
+import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.util.*;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
@@ -70,13 +71,13 @@ public final class ContainerType implements EventType {
         this.parsedEvent = parsedEvent;
     }
 
-    private void assertKey(final JsonObject obj, final String key, JsonValue.ValueType type) {
+    private void assertKey(final JsonObject obj, final String key, JsonValue.ValueType type) throws PluginException {
         if (!obj.containsKey(key)) {
-            throw new IllegalArgumentException("Key " + key + " does not exist");
+            throw new PluginException(new IllegalArgumentException("Key " + key + " does not exist"));
         }
 
         if (!obj.get(key).getValueType().equals(type)) {
-            throw new IllegalArgumentException("Key " + key + " is not of type " + type);
+            throw new PluginException(new IllegalArgumentException("Key " + key + " is not of type " + type));
         }
     }
 
@@ -91,7 +92,7 @@ public final class ContainerType implements EventType {
     }
 
     @Override
-    public String hostname() {
+    public String hostname() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
         assertKey(mainObject, "KubernetesMetadata", JsonValue.ValueType.OBJECT);
@@ -104,7 +105,7 @@ public final class ContainerType implements EventType {
     }
 
     @Override
-    public String appName() {
+    public String appName() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
         assertKey(mainObject, "KubernetesMetadata", JsonValue.ValueType.OBJECT);
@@ -123,7 +124,7 @@ public final class ContainerType implements EventType {
             logSourceSuffix = ":e";
         }
         else {
-            throw new JsonException("Unknown log source: " + logSource);
+            throw new PluginException(new JsonException("Unknown log source: " + logSource));
         }
 
         return new ValidRFC5424AppName(
@@ -132,7 +133,7 @@ public final class ContainerType implements EventType {
     }
 
     @Override
-    public long timestamp() {
+    public long timestamp() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING);
 
@@ -140,7 +141,7 @@ public final class ContainerType implements EventType {
     }
 
     @Override
-    public Set<SDElement> sdElements() {
+    public Set<SDElement> sdElements() throws PluginException {
         final Set<SDElement> elems = new HashSet<>();
         String time;
         try {

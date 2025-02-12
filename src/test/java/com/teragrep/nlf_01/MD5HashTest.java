@@ -54,12 +54,12 @@ public final class MD5HashTest {
     @Test
     void testMd5() {
         final MD5Hash hash = new MD5Hash("input");
-        Assertions.assertEquals("a43c1b0aa53a0c908810c06ab1ff3967", hash.md5());
+        Assertions.assertEquals("a43c1b0aa53a0c908810c06ab1ff3967", Assertions.assertDoesNotThrow(hash::md5));
     }
 
     @Test
     void testMd5_EmptyString() {
         final MD5Hash hash = new MD5Hash("");
-        Assertions.assertEquals("d41d8cd98f00b204e9800998ecf8427e", hash.md5());
+        Assertions.assertEquals("d41d8cd98f00b204e9800998ecf8427e", Assertions.assertDoesNotThrow(hash::md5));
     }
 }
