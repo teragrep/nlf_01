@@ -97,7 +97,7 @@ public final class AppInsightType implements EventType {
         final String resourceId = record.getString("_ResourceId");
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(resourceId).md5().concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(resourceId).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
 
     }
