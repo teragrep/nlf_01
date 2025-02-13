@@ -158,6 +158,7 @@ public final class CLType implements EventType {
         final String resourceId = mainObject.getString("_ResourceId");
 
         elems.add(new SDElement("origin@48577").addSDParam("_ResourceId", resourceId));
+        elems.add(new SDElement("nlf_01@48577").addSDParam("eventType", this.getClass().getSimpleName()));
 
         return elems;
     }
