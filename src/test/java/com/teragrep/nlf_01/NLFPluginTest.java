@@ -48,6 +48,8 @@ package com.teragrep.nlf_01;
 import com.teragrep.akv_01.event.EventImpl;
 import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.nlf_01.fakes.FakeSourceable;
+import com.teragrep.nlf_01.types.AppInsightType;
+import com.teragrep.nlf_01.types.ContainerType;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.SDParam;
 import com.teragrep.rlo_14.SyslogMessage;
@@ -86,23 +88,21 @@ public class NLFPluginTest {
         Assertions.assertEquals("HOST-NAME", syslogMessage.getHostname());
         Assertions.assertEquals("APP-NAME:o", syslogMessage.getAppName());
         Assertions.assertEquals("2020-01-01T01:23:34.567Z", syslogMessage.getTimestamp());
-        final List<SDElement> origin = syslogMessage
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
                 .getSDElements()
                 .stream()
-                .filter(elem -> elem.getSdID().equals("origin@48577"))
-                .collect(Collectors.toList());
-        Assertions.assertEquals(1, origin.size());
-        final Map<String, String> params = origin
-                .get(0)
-                .getSdParams()
-                .stream()
-                .collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue));
-        Assertions.assertEquals(5, params.size());
-        Assertions.assertEquals("{subscriptionId}", params.get("subscription"));
-        Assertions.assertEquals("{resourceName}", params.get("clusterName"));
-        Assertions.assertEquals("pod-namespace", params.get("namespace"));
-        Assertions.assertEquals("pod-name", params.get("pod"));
-        Assertions.assertEquals("container-id", params.get("containerId"));
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(5, sdElementMap.get("origin@48577").size());
+        Assertions.assertEquals("{subscriptionId}", sdElementMap.get("origin@48577").get("subscription"));
+        Assertions.assertEquals("{resourceName}", sdElementMap.get("origin@48577").get("clusterName"));
+        Assertions.assertEquals("pod-namespace", sdElementMap.get("origin@48577").get("namespace"));
+        Assertions.assertEquals("pod-name", sdElementMap.get("origin@48577").get("pod"));
+        Assertions.assertEquals("container-id", sdElementMap.get("origin@48577").get("containerId"));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions.assertEquals(ContainerType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
 
     @Test
@@ -132,6 +132,15 @@ public class NLFPluginTest {
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
         Assertions.assertEquals("app-role-name", syslogMessage.getAppName());
         Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
 
     @Test
@@ -162,6 +171,15 @@ public class NLFPluginTest {
                         syslogMessage.getMsg()
                 );
 
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
         final SyslogMessage syslogMessage2 = syslogMessages.get(1);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage2.getHostname());
         Assertions.assertEquals("app-role-name2", syslogMessage2.getAppName());
@@ -172,6 +190,15 @@ public class NLFPluginTest {
                         syslogMessage2.getMsg()
                 );
 
+        final Map<String, Map<String, String>> sdElementMap2 = syslogMessage2
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap2.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap2.get("nlf_01@48577").get("eventType"));
+
         final SyslogMessage syslogMessage3 = syslogMessages.get(2);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage3.getHostname());
         Assertions.assertEquals("app-role-name3", syslogMessage3.getAppName());
@@ -181,6 +208,15 @@ public class NLFPluginTest {
                         "{\"AppRoleInstance\":\"app-role-instance3\",\"AppRoleName\":\"app-role-name3\",\"ClientIP\":\"192.168.1.2\",\"ClientType\":\"client-type\",\"IKey\":\"i-key\",\"ItemCount\":1,\"Message\":\"message3\",\"OperationId\":\"123\",\"ParentId\":\"456\",\"Properties\":{\"ProcessId\":\"1234\",\"HostInstanceId\":\"123456\",\"prop__{OriginalFormat}\":\"abc\",\"prop__RouteName\":\"xyz\",\"LogLevel\":\"Debug\",\"EventId\":\"1\",\"prop__RouteTemplate\":\"route/template\",\"Category\":\"192.168.3.1\",\"EventName\":\"event-name3\"},\"ResourceGUID\":\"123456789\",\"SDKVersion\":\"12: 192.168.x.x\",\"SeverityLevel\":0,\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-03T01:02:34.5678999Z\",\"Type\":\"AppTraces\",\"_BilledSize\":1,\"_ItemId\":\"12-34-56-78\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
                         syslogMessage3.getMsg()
                 );
+
+        final Map<String, Map<String, String>> sdElementMap3 = syslogMessage3
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap3.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap3.get("nlf_01@48577").get("eventType"));
     }
 
     @Test
