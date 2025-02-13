@@ -242,23 +242,73 @@ public class NLFPluginTest {
         Assertions.assertEquals("97bd8f02-xxxxx.log", syslogMessage.getAppName());
         Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
         Assertions.assertEquals(json, syslogMessage.getMsg());
-        final List<SDElement> origin = syslogMessage
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
                 .getSDElements()
                 .stream()
-                .filter(elem -> elem.getSdID().equals("origin@48577"))
-                .collect(Collectors.toList());
-        Assertions.assertEquals(1, origin.size());
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
 
-        final Map<String, String> params = origin
-                .get(0)
-                .getSdParams()
-                .stream()
-                .collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue));
-        Assertions.assertEquals(1, params.size());
         Assertions
                 .assertEquals(
                         "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
-                        params.get("_ResourceId")
+                        sdElementMap.get("origin@48577").get("_ResourceId")
                 );
     }
+
+    @Test
+    void multiRecordWithDifferentTypes() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/multirecord.json")));
+        final ParsedEvent parsedEvent = new EventImpl(
+                json,
+                new HashMap<>(),
+                new HashMap<>(),
+                new HashMap<>(),
+                "2020-01-01T00:00:00",
+                "0"
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(2, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("app-role-name", syslogMessage.getAppName());
+        Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
+        Assertions
+                .assertEquals(
+                        "{\"AppRoleInstance\":\"app-role-instance\",\"AppRoleName\":\"app-role-name\",\"ClientIP\":\"192.168.1.2\",\"ClientType\":\"client-type\",\"IKey\":\"i-key\",\"ItemCount\":1,\"Message\":\"message\",\"OperationId\":\"123\",\"ParentId\":\"456\",\"Properties\":{\"ProcessId\":\"1234\",\"HostInstanceId\":\"123456\",\"prop__{OriginalFormat}\":\"abc\",\"prop__RouteName\":\"xyz\",\"LogLevel\":\"Debug\",\"EventId\":\"1\",\"prop__RouteTemplate\":\"route/template\",\"Category\":\"192.168.3.1\",\"EventName\":\"event-name\"},\"ResourceGUID\":\"123456789\",\"SDKVersion\":\"12: 192.168.x.x\",\"SeverityLevel\":0,\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-01T01:02:34.5678999Z\",\"Type\":\"AppTraces\",\"_BilledSize\":1,\"_ItemId\":\"12-34-56-78\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        syslogMessage.getMsg()
+                );
+
+        final SyslogMessage syslogMessage2 = syslogMessages.get(1);
+        Assertions.assertEquals("HOST-NAME", syslogMessage2.getHostname());
+        Assertions.assertEquals("APP-NAME:o", syslogMessage2.getAppName());
+        Assertions.assertEquals("2020-01-01T01:23:34.567Z", syslogMessage2.getTimestamp());
+        Assertions
+                .assertEquals(
+                        "{\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Computer\":\"computer\",\"ContainerId\":\"container-id\",\"ContainerName\":\"container-name\",\"PodName\":\"pod-name\",\"PodNamespace\":\"pod-namespace\",\"LogMessage\":{\"level\":\"info\",\"ts\":\"2020-01-01T01:23:45.678Z\",\"logger\":\"logger\",\"msg\":\"message\",\"namespace\":\"namespace\"},\"LogSource\":\"stdout\",\"KubernetesMetadata\":{\"image\":\"image\",\"imageID\":\"123-456-789\",\"imageRepo\":\"imagerepo\",\"imageTag\":\"imagetag\",\"podAnnotations\":{\"appname-annotation\":\"APP-NAME\",\"hostname-annotation\":\"HOST-NAME\"},\"podLabels\":{\"x\":\"y\"},\"podUid\":\"123\"},\"LogLevel\":\"info\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"Type\":\"ContainerLogV2\",\"TenantId\":\"456\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        syslogMessage2.getMsg()
+                );
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        final Map<String, Map<String, String>> sdElementMap2 = syslogMessage2
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(5, sdElementMap.size());
+        Assertions.assertEquals(6, sdElementMap2.size());
+
+        Assertions
+                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+        Assertions
+                .assertEquals(ContainerType.class.getSimpleName(), sdElementMap2.get("nlf_01@48577").get("eventType"));
+    }
+
 }
