@@ -3,25 +3,67 @@
 // 2. Update the issues link in Contributing section in the readme file
 // 3. Update the discussion link in config.yml file in .github/ISSUE_TEMPLATE directory
 
-= repo-template
+= nlf_01 - Teragrep Neon log format plugin for AKV_01
 
 // Add a short description of your project. Tell what your project does and what it's used for.
 
-This is a template repository for Teragrep organization.
+This project implements https://github.com/teragrep/akv_01[AKV_01] `Plugin` and `PluginFactory` interfaces for Neon log formats.
+The plugin is used to set more appropriate values for the fields in the produced SyslogMessage based on the type of
+event processed.
 
 == Features
 
 // List your project's features
+* Detects the type of event based on the event's JSON payload.
+* Appropriate values are inserted into the produced SyslogMessage's fields.
+* In case the event processed is not of expected type, a `PluginException` will be thrown so the
+event processing can fallback to a default `Plugin` implementation.
 
 == Documentation
 
 See the official documentation on https://docs.teragrep.com[docs.teragrep.com].
 
-== Limitations
 
-// If your project has limitations, please list them. Otherwise remove this section.
+== How to compile
+The project can be compiled by using https://maven.apache.org/guides/getting-started/index.html[Maven]. It is recommended to use Java 11.
 
-== How to [compile/use/implement]
+[source,bash]
+----
+$ mvn clean package
+----
+
+== How to use
+
+The following code block is a simple example on how the plugin can be used.
+It demonstrates two things:
+How to initialize a `ParsedEvent` to be used as the input,
+and also how to use the `NLFPluginFactory` to initialize the `NLFPlugin`
+and provide it with the initialized `ParsedEvent` input as a parameter.
+
+[source,java]
+----
+import com.teragrep.akv_01.event.EventImpl;
+import com.teragrep.akv_01.event.ParsedEvent;
+import com.teragrep.nlf_01.NLFPlugin;
+import com.teragrep.nlf_01.NLFPluginFactory;
+import com.teragrep.rlo_14.SyslogMessage;
+
+// The EventImpl object can be used to produce a ParsedEvent
+ParsedEvent parsedEvent = new EventImpl(...).parsedEvent();
+
+// Initialize the plugin via the PluginFactory
+NLFPluginFactory nlfPluginFactory = new NLFPluginFactory();
+NLFPlugin nlfPlugin = nlfPluginFactory.plugin("");
+
+// The plugin can produce syslogMessages from the provided ParsedEvent
+List<SyslogMessage> syslogMessages = nlfPlugin.syslogMessage(parsedEvent);
+----
+
+The plugin uses environment variables `CONTAINERLOG_HOSTNAME_ANNOTATION` and `CONTAINERLOG_APPNAME_ANNOTATION` for Container type events.
+These environment variables should contain the JSON keys from where the values should be gathered.
+`SYSLOGTYPE_PROCESSNAME` environment variable is used for Syslog type events. The environment variable should contain the value
+for the JSON key `ProcessName`, which is used to determine the event type.
+
 
 // add instructions how people can start to use your project
 
@@ -29,7 +71,7 @@ See the official documentation on https://docs.teragrep.com[docs.teragrep.com].
 
 // Change the repository name in the issues link to match with your project's name
 
-You can involve yourself with our project by https://github.com/teragrep/repo-template/issues/new/choose[opening an issue] or submitting a pull request.
+You can involve yourself with our project by https://github.com/teragrep/nlf_01/issues/new/choose[opening an issue] or submitting a pull request.
 
 Contribution requirements:
 
