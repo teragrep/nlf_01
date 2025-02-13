@@ -135,7 +135,9 @@ public final class NLFPlugin implements Plugin {
 
             }
             else {
-                throw new PluginException(new IllegalArgumentException("Event was not of expected log format"));
+                throw new PluginException(
+                        new IllegalArgumentException("Event was not of expected log format or type was not found")
+                );
             }
         }
 
