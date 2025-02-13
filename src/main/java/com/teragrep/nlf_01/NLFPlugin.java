@@ -80,6 +80,7 @@ public final class NLFPlugin implements Plugin {
     public List<SyslogMessage> syslogMessage(final ParsedEvent parsedEvent) throws PluginException {
         final List<EventType> eventTypes = new ArrayList<>();
         final List<SyslogMessage> syslogMessages = new ArrayList<>();
+        final List<ParsedEvent> parsedEvents = new ArrayList<>();
 
         if (!parsedEvent.isJsonStructure()) {
             // non-applicable
@@ -92,32 +93,50 @@ public final class NLFPlugin implements Plugin {
             throw new PluginException(new JsonException("Event was not a JSON object"));
         }
 
-        final JsonObject jsonObject = json.asJsonObject();
         final MultiRecordEvent mre = new MultiRecordEvent(parsedEvent);
         if (mre.isValid()) {
             for (final ParsedEvent recordEvent : mre.records()) {
-                eventTypes.add(new AppInsightType(recordEvent));
-            }
-        }
-        else if (
-            jsonObject.containsKey("Type") && jsonObject.get("Type").getValueType().equals(JsonValue.ValueType.STRING)
-        ) {
+                if (!recordEvent.isJsonStructure()) {
+                    throw new PluginException(new JsonException("Record in MultiRecordEvent was not a JSON structure"));
+                }
+                final JsonStructure recordJson = recordEvent.asJsonStructure();
+                if (!recordJson.getValueType().equals(JsonValue.ValueType.OBJECT)) {
+                    throw new PluginException(new JsonException("Record in MultiRecordEvent was not a JSON object"));
+                }
 
-            if (jsonObject.getString("Type").endsWith("_CL")) {
-                eventTypes.add(new CLType(parsedEvent));
+                parsedEvents.add(recordEvent);
             }
-            else if (jsonObject.getString("Type").equals("ContainerLogV2")) {
-                eventTypes.add(new ContainerType(source, parsedEvent));
-            }
-            else {
-                throw new PluginException(
-                        new IllegalArgumentException("Invalid event type: " + jsonObject.getString("Type"))
-                );
-            }
-
         }
         else {
-            throw new PluginException(new IllegalArgumentException("Event was not of expected log format"));
+            parsedEvents.add(parsedEvent);
+        }
+
+        for (final ParsedEvent pe : parsedEvents) {
+            final JsonObject jsonObject = pe.asJsonStructure().asJsonObject();
+            if (
+                jsonObject.containsKey("Type")
+                        && jsonObject.get("Type").getValueType().equals(JsonValue.ValueType.STRING)
+            ) {
+
+                if (jsonObject.getString("Type").equals("AppTraces")) {
+                    eventTypes.add(new AppInsightType(pe));
+                }
+                else if (jsonObject.getString("Type").endsWith("_CL")) {
+                    eventTypes.add(new CLType(pe));
+                }
+                else if (jsonObject.getString("Type").equals("ContainerLogV2")) {
+                    eventTypes.add(new ContainerType(source, pe));
+                }
+                else {
+                    throw new PluginException(
+                            new IllegalArgumentException("Invalid event type: " + jsonObject.getString("Type"))
+                    );
+                }
+
+            }
+            else {
+                throw new PluginException(new IllegalArgumentException("Event was not of expected log format"));
+            }
         }
 
         for (final EventType eventType : eventTypes) {
