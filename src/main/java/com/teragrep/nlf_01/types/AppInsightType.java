@@ -125,12 +125,13 @@ public final class AppInsightType implements EventType {
     @Override
     public Set<SDElement> sdElements() {
         Set<SDElement> elems = new HashSet<>();
-        String time;
+        String time = "";
         try {
-            time = parsedEvent.enqueuedTime().zonedDateTime().toString();
+            if (parsedEvent.enqueuedTime() != null) {
+                time = parsedEvent.enqueuedTime().zonedDateTime().toString();
+            }
         }
-        catch (DateTimeParseException ignored) {
-            time = "";
+        catch (DateTimeParseException | IllegalArgumentException ignored) {
         }
 
         elems

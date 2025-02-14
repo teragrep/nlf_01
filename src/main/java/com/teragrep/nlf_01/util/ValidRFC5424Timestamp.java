@@ -65,6 +65,10 @@ public final class ValidRFC5424Timestamp {
      * @return unix epoch, in milliseconds
      */
     public long validTimestamp() throws PluginException {
+        if (uncheckedTimestamp == null) {
+            throw new PluginException("Provided timestamp is null");
+        }
+
         try {
             return Instant.parse(uncheckedTimestamp).toEpochMilli();
         }

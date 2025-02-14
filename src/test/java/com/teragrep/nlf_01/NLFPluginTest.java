@@ -105,6 +105,54 @@ public class NLFPluginTest {
         Assertions.assertEquals(ContainerType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
         Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer_02@48577").get("timestamp_source"));
+        Assertions.assertEquals("2020-01-01T00:00Z", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
+    }
+
+    @Test
+    void containerTypeWithNullEnqueuedTime() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/container.json")));
+        final ParsedEvent parsedEvent = new EventImpl(
+                json,
+                new HashMap<>(),
+                new HashMap<>(),
+                new HashMap<>(),
+                null,
+                "0"
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions.assertEquals(json, syslogMessage.getMsg());
+        Assertions.assertEquals("HOST-NAME", syslogMessage.getHostname());
+        Assertions.assertEquals("APP-NAME:o", syslogMessage.getAppName());
+        Assertions.assertEquals("2020-01-01T01:23:34.567Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(5, sdElementMap.get("origin@48577").size());
+        Assertions.assertEquals("{subscriptionId}", sdElementMap.get("origin@48577").get("subscription"));
+        Assertions.assertEquals("{resourceName}", sdElementMap.get("origin@48577").get("clusterName"));
+        Assertions.assertEquals("pod-namespace", sdElementMap.get("origin@48577").get("namespace"));
+        Assertions.assertEquals("pod-name", sdElementMap.get("origin@48577").get("pod"));
+        Assertions.assertEquals("container-id", sdElementMap.get("origin@48577").get("containerId"));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions.assertEquals(ContainerType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+
+        Assertions.assertEquals("generated", sdElementMap.get("aer_02@48577").get("timestamp_source"));
+        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
     }
 
     @Test
