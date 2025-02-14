@@ -47,6 +47,7 @@ package com.teragrep.nlf_01.types;
 
 import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.PluginException;
+import com.teragrep.nlf_01.PropertiesJson;
 import com.teragrep.nlf_01.util.*;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
@@ -158,12 +159,8 @@ public final class ContainerType implements EventType {
 
         final String partitionKey = String.valueOf(parsedEvent.systemProperties().getOrDefault("PartitionKey", ""));
 
-        final SDElement sdEvent = new SDElement("aer_02_event@48577")
-                .addSDParam("offset", parsedEvent.offset() == null ? "" : parsedEvent.offset())
-                .addSDParam("enqueued_time", time)
-                .addSDParam("partition_key", partitionKey == null ? "" : partitionKey);
-        parsedEvent.properties().forEach((key, value) -> sdEvent.addSDParam("property_" + key, value.toString()));
-        elems.add(sdEvent);
+        elems
+                .add(new SDElement("aer_02_event@48577").addSDParam("offset", parsedEvent.offset() == null ? "" : parsedEvent.offset()).addSDParam("enqueued_time", time).addSDParam("partition_key", partitionKey == null ? "" : partitionKey).addSDParam("properties", new PropertiesJson(parsedEvent.properties()).toJsonObject().toString()));
 
         elems
                 .add(new SDElement("aer_02@48577").addSDParam("timestamp_source", time.isEmpty() ? "generated" : "timeEnqueued"));
