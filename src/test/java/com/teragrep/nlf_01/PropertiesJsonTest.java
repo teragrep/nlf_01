@@ -43,7 +43,8 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-import com.teragrep.nlf_01.PropertiesJson;
+package com.teragrep.nlf_01;
+
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
