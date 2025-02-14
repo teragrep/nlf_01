@@ -47,6 +47,7 @@ package com.teragrep.nlf_01.types;
 
 import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.PluginException;
+import com.teragrep.nlf_01.PropertiesJson;
 import com.teragrep.nlf_01.util.*;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
@@ -58,7 +59,6 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -144,14 +144,7 @@ public final class CLType implements EventType {
 
         final String partitionKey = String.valueOf(parsedEvent.systemProperties().getOrDefault("PartitionKey", ""));
         elems
-                .add(new SDElement("aer_02_event@48577").addSDParam("offset", parsedEvent.offset() == null ? "" : parsedEvent.offset()).addSDParam("enqueued_time", time).addSDParam("partition_key", partitionKey == null ? "" : partitionKey));
-
-        final SDElement sdProperties = new SDElement("aer_02_props@48577");
-        for (final Map.Entry<String, Object> propEntry : parsedEvent.properties().entrySet()) {
-            sdProperties.addSDParam(propEntry.getKey(), String.valueOf(propEntry.getValue()));
-        }
-
-        elems.add(sdProperties);
+                .add(new SDElement("aer_02_event@48577").addSDParam("offset", parsedEvent.offset() == null ? "" : parsedEvent.offset()).addSDParam("enqueued_time", time).addSDParam("partition_key", partitionKey == null ? "" : partitionKey).addSDParam("properties", new PropertiesJson(parsedEvent.properties()).toJsonObject().toString()));
 
         elems
                 .add(new SDElement("aer_02@48577").addSDParam("timestamp_source", time.isEmpty() ? "generated" : "timeEnqueued"));

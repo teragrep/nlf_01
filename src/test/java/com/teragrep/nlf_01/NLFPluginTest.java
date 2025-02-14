@@ -104,7 +104,7 @@ public class NLFPluginTest {
         Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
         Assertions.assertEquals(ContainerType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.containsKey("aer_02_props@48577"));
+        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.containsKey("aer_02_props@48577"));
+        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -184,7 +184,7 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.containsKey("aer_02_props@48577"));
+        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
 
         final SyslogMessage syslogMessage2 = syslogMessages.get(1);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage2.getHostname());
@@ -205,7 +205,7 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap2.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap2.containsKey("aer_02_props@48577"));
+        Assertions.assertTrue(sdElementMap2.get("aer_02_event@48577").containsKey("properties"));
 
         final SyslogMessage syslogMessage3 = syslogMessages.get(2);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage3.getHostname());
@@ -226,7 +226,8 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap3.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap3.containsKey("aer_02_props@48577"));
+        Assertions.assertTrue(sdElementMap3.get("aer_02_event@48577").containsKey("properties"));
+
     }
 
     @Test
@@ -263,7 +264,7 @@ public class NLFPluginTest {
                         sdElementMap.get("origin@48577").get("_ResourceId")
                 );
 
-        Assertions.assertTrue(sdElementMap.containsKey("aer_02_props@48577"));
+        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -314,10 +315,11 @@ public class NLFPluginTest {
                 .stream()
                 .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
 
-        Assertions.assertTrue(sdElementMap.containsKey("aer_02_props@48577"));
-        Assertions.assertTrue(sdElementMap2.containsKey("aer_02_props@48577"));
-        Assertions.assertEquals(6, sdElementMap.size());
-        Assertions.assertEquals(7, sdElementMap2.size());
+        Assertions.assertEquals(5, sdElementMap.size());
+        Assertions.assertEquals(6, sdElementMap2.size());
+
+        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap2.get("aer_02_event@48577").containsKey("properties"));
 
         Assertions
                 .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
