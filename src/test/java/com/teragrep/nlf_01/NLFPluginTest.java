@@ -302,8 +302,8 @@ public class NLFPluginTest {
                 .stream()
                 .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
 
-        Assertions.assertEquals(5, sdElementMap.size());
-        Assertions.assertEquals(6, sdElementMap2.size());
+        Assertions.assertEquals(6, sdElementMap.size());
+        Assertions.assertEquals(7, sdElementMap2.size());
 
         Assertions
                 .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));

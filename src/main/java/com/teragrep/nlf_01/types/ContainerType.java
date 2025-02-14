@@ -58,6 +58,7 @@ import jakarta.json.JsonValue;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -158,12 +159,15 @@ public final class ContainerType implements EventType {
 
         final String partitionKey = String.valueOf(parsedEvent.systemProperties().getOrDefault("PartitionKey", ""));
 
-        final SDElement sdEvent = new SDElement("aer_02_event@48577")
-                .addSDParam("offset", parsedEvent.offset() == null ? "" : parsedEvent.offset())
-                .addSDParam("enqueued_time", time)
-                .addSDParam("partition_key", partitionKey == null ? "" : partitionKey);
-        parsedEvent.properties().forEach((key, value) -> sdEvent.addSDParam("property_" + key, value.toString()));
-        elems.add(sdEvent);
+        elems
+                .add(new SDElement("aer_02_event@48577").addSDParam("offset", parsedEvent.offset() == null ? "" : parsedEvent.offset()).addSDParam("enqueued_time", time).addSDParam("partition_key", partitionKey == null ? "" : partitionKey));
+
+        final SDElement sdProperties = new SDElement("aer_02_props@48577");
+        for (final Map.Entry<String, Object> propEntry : parsedEvent.properties().entrySet()) {
+            sdProperties.addSDParam(propEntry.getKey(), String.valueOf(propEntry.getValue()));
+        }
+
+        elems.add(sdProperties);
 
         elems
                 .add(new SDElement("aer_02@48577").addSDParam("timestamp_source", time.isEmpty() ? "generated" : "timeEnqueued"));
