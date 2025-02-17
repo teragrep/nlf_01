@@ -62,7 +62,11 @@ public final class PropertiesJson {
         final JsonObjectBuilder builder = Json.createObjectBuilder();
 
         if (!props.isStub()) {
-            props.asMap().forEach((k, v) -> builder.add(k, String.valueOf(v)));
+            props.asMap().forEach((k, v) -> {
+                if (v != null) {
+                    builder.add(k, String.valueOf(v));
+                }
+            });
         }
 
         return builder.build();
