@@ -45,23 +45,33 @@
  */
 package com.teragrep.nlf_01;
 
+import com.teragrep.akv_01.event.metadata.properties.EventProperties;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 
-import java.util.Map;
-
 public final class PropertiesJson {
 
-    private final Map<String, Object> props;
+    private final EventProperties props;
 
-    public PropertiesJson(final Map<String, Object> props) {
+    public PropertiesJson(final EventProperties props) {
         this.props = props;
     }
 
     public JsonObject toJsonObject() {
         final JsonObjectBuilder builder = Json.createObjectBuilder();
-        props.forEach((k, v) -> builder.add(k, String.valueOf(v)));
+
+        if (!props.isStub()) {
+            props.asMap().forEach((k, v) -> {
+                if (v != null) {
+                    builder.add(k, String.valueOf(v));
+                }
+                else {
+                    builder.addNull(k);
+                }
+            });
+        }
+
         return builder.build();
     }
 }

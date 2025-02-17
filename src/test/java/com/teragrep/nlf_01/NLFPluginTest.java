@@ -45,8 +45,15 @@
  */
 package com.teragrep.nlf_01;
 
-import com.teragrep.akv_01.event.EventImpl;
 import com.teragrep.akv_01.event.ParsedEvent;
+import com.teragrep.akv_01.event.ParsedEventFactory;
+import com.teragrep.akv_01.event.UnparsedEventImpl;
+import com.teragrep.akv_01.event.metadata.offset.EventOffsetImpl;
+import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContextImpl;
+import com.teragrep.akv_01.event.metadata.properties.EventPropertiesImpl;
+import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemPropertiesImpl;
+import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeImpl;
+import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeStub;
 import com.teragrep.nlf_01.fakes.FakeSourceable;
 import com.teragrep.nlf_01.types.AppInsightType;
 import com.teragrep.nlf_01.types.ContainerType;
@@ -69,13 +76,8 @@ public class NLFPluginTest {
     void containerType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/container.json")));
-        final ParsedEvent parsedEvent = new EventImpl(
-                json,
-                new HashMap<>(),
-                new HashMap<>(),
-                new HashMap<>(),
-                "2020-01-01T00:00:00",
-                "0"
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
         ).parsedEvent();
 
         final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
@@ -111,16 +113,11 @@ public class NLFPluginTest {
     }
 
     @Test
-    void containerTypeWithNullEnqueuedTime() {
+    void containerTypeWithStubEnqueuedTime() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/container.json")));
-        final ParsedEvent parsedEvent = new EventImpl(
-                json,
-                new HashMap<>(),
-                new HashMap<>(),
-                new HashMap<>(),
-                null,
-                "0"
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeStub(), new EventOffsetImpl("0"))
         ).parsedEvent();
 
         final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
@@ -159,13 +156,8 @@ public class NLFPluginTest {
     void appInsightType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/appinsight.json")));
-        final ParsedEvent parsedEvent = new EventImpl(
-                json,
-                new HashMap<>(),
-                new HashMap<>(),
-                new HashMap<>(),
-                "2020-01-01T00:00:00",
-                "0"
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
         ).parsedEvent();
 
         final NLFPlugin plugin = new NLFPlugin();
@@ -199,13 +191,8 @@ public class NLFPluginTest {
     void appInsightType_MultipleRecords() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/appinsight_2.json")));
-        final ParsedEvent parsedEvent = new EventImpl(
-                json,
-                new HashMap<>(),
-                new HashMap<>(),
-                new HashMap<>(),
-                "2020-01-01T00:00:00",
-                "0"
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
         ).parsedEvent();
 
         final NLFPlugin plugin = new NLFPlugin();
@@ -282,13 +269,8 @@ public class NLFPluginTest {
     void clType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/cl.json")));
-        final ParsedEvent parsedEvent = new EventImpl(
-                json,
-                new HashMap<>(),
-                new HashMap<>(),
-                new HashMap<>(),
-                "2020-01-01T00:00:00",
-                "0"
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
         ).parsedEvent();
 
         final NLFPlugin plugin = new NLFPlugin();
@@ -319,13 +301,8 @@ public class NLFPluginTest {
     void multiRecordWithDifferentTypes() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/multirecord.json")));
-        final ParsedEvent parsedEvent = new EventImpl(
-                json,
-                new HashMap<>(),
-                new HashMap<>(),
-                new HashMap<>(),
-                "2020-01-01T00:00:00",
-                "0"
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
         ).parsedEvent();
 
         final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
