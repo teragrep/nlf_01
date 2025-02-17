@@ -45,6 +45,7 @@
  */
 package com.teragrep.nlf_01;
 
+import com.teragrep.akv_01.event.metadata.properties.EventPropertiesImpl;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
@@ -62,7 +63,7 @@ public final class PropertiesJsonTest {
         map.put("a", "b");
         map.put("c", "d");
 
-        final PropertiesJson propertiesJson = new PropertiesJson(map);
+        final PropertiesJson propertiesJson = new PropertiesJson(new EventPropertiesImpl(map));
         final JsonObject actual = propertiesJson.toJsonObject();
         final JsonObject expected = Json.createObjectBuilder().add("a", "b").add("c", "d").build();
 
@@ -73,7 +74,7 @@ public final class PropertiesJsonTest {
     void testEmptyMapToJson() {
         final Map<String, Object> map = new HashMap<>();
 
-        final PropertiesJson propertiesJson = new PropertiesJson(map);
+        final PropertiesJson propertiesJson = new PropertiesJson(new EventPropertiesImpl(map));
         final JsonObject actual = propertiesJson.toJsonObject();
         final JsonObject expected = JsonValue.EMPTY_JSON_OBJECT;
 
