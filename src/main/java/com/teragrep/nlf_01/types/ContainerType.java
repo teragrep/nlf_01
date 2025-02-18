@@ -124,10 +124,10 @@ public final class ContainerType implements EventType {
         final String logSourceSuffix;
 
         if ("stdout".equals(logSource)) {
-            logSourceSuffix = ":o";
+            logSourceSuffix = ".o";
         }
         else if ("stderr".equals(logSource)) {
-            logSourceSuffix = ":e";
+            logSourceSuffix = ".e";
         }
         else {
             throw new PluginException(new JsonException("Unknown log source: " + logSource));
