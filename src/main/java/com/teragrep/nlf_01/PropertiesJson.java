@@ -63,10 +63,10 @@ public final class PropertiesJson {
 
         if (!props.isStub()) {
             props.asMap().forEach((k, v) -> {
-                if (v != null) {
+                if (k != null && v != null) {
                     builder.add(k, String.valueOf(v));
                 }
-                else {
+                else if (k != null) {
                     builder.addNull(k);
                 }
             });
