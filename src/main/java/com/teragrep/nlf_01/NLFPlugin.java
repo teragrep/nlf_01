@@ -81,6 +81,8 @@ public final class NLFPlugin implements Plugin {
         final List<EventType> eventTypes = new ArrayList<>();
         final List<SyslogMessage> syslogMessages = new ArrayList<>();
         final List<ParsedEvent> parsedEvents = new ArrayList<>();
+        final String containerLogAppNameKey = source.source("containerlog.appname.annotation");
+        final String containerLogHostnameKey = source.source("containerlog.hostname.annotation");
 
         if (!parsedEvent.isJsonStructure()) {
             // non-applicable
@@ -125,7 +127,7 @@ public final class NLFPlugin implements Plugin {
                     eventTypes.add(new CLType(pe));
                 }
                 else if (jsonObject.getString("Type").equals("ContainerLogV2")) {
-                    eventTypes.add(new ContainerType(source, pe));
+                    eventTypes.add(new ContainerType(containerLogHostnameKey, containerLogAppNameKey, pe));
                 }
                 else {
                     throw new PluginException(

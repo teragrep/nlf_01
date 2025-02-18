@@ -63,11 +63,17 @@ import java.util.UUID;
 
 public final class ContainerType implements EventType {
 
-    private final Sourceable source;
     private final ParsedEvent parsedEvent;
+    private final String containerLogHostnameKey;
+    private final String containerLogAppNameKey;
 
-    public ContainerType(final Sourceable source, final ParsedEvent parsedEvent) {
-        this.source = source;
+    public ContainerType(
+            final String containerLogHostnameKey,
+            final String containerLogAppNameKey,
+            final ParsedEvent parsedEvent
+    ) {
+        this.containerLogHostnameKey = containerLogHostnameKey;
+        this.containerLogAppNameKey = containerLogAppNameKey;
         this.parsedEvent = parsedEvent;
     }
 
@@ -100,8 +106,8 @@ public final class ContainerType implements EventType {
         assertKey(kubernetesMetadata, "podAnnotations", JsonValue.ValueType.OBJECT);
         final JsonObject podAnnotations = kubernetesMetadata.getJsonObject("podAnnotations");
 
-        return new ValidRFC5424Hostname(podAnnotations.getString(source.source("containerlog.hostname.annotation")))
-                .validHostname();
+        assertKey(podAnnotations, containerLogHostnameKey, JsonValue.ValueType.STRING);
+        return new ValidRFC5424Hostname(podAnnotations.getString(containerLogHostnameKey)).validHostname();
     }
 
     @Override
@@ -127,9 +133,9 @@ public final class ContainerType implements EventType {
             throw new PluginException(new JsonException("Unknown log source: " + logSource));
         }
 
-        return new ValidRFC5424AppName(
-                podAnnotations.getString(source.source("containerlog.appname.annotation")) + logSourceSuffix
-        ).validAppName();
+        assertKey(podAnnotations, containerLogAppNameKey, JsonValue.ValueType.STRING);
+        return new ValidRFC5424AppName(podAnnotations.getString(containerLogAppNameKey) + logSourceSuffix)
+                .validAppName();
     }
 
     @Override

@@ -160,7 +160,7 @@ public class NLFPluginTest {
                 new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
         ).parsedEvent();
 
-        final NLFPlugin plugin = new NLFPlugin();
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
         final List<SyslogMessage> syslogMessages = Assertions
                 .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
         Assertions.assertEquals(1, syslogMessages.size());
@@ -195,7 +195,7 @@ public class NLFPluginTest {
                 new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
         ).parsedEvent();
 
-        final NLFPlugin plugin = new NLFPlugin();
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
         final List<SyslogMessage> syslogMessages = Assertions
                 .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
         Assertions.assertEquals(3, syslogMessages.size());
@@ -273,7 +273,7 @@ public class NLFPluginTest {
                 new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
         ).parsedEvent();
 
-        final NLFPlugin plugin = new NLFPlugin();
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
         final List<SyslogMessage> syslogMessages = Assertions
                 .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
         Assertions.assertEquals(1, syslogMessages.size());
