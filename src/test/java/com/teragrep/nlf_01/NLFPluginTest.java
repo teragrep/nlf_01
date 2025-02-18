@@ -88,7 +88,7 @@ public class NLFPluginTest {
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals(json, syslogMessage.getMsg());
         Assertions.assertEquals("HOST-NAME", syslogMessage.getHostname());
-        Assertions.assertEquals("APP-NAME:o", syslogMessage.getAppName());
+        Assertions.assertEquals("APP-NAME.o", syslogMessage.getAppName());
         Assertions.assertEquals("2020-01-01T01:23:34.567Z", syslogMessage.getTimestamp());
 
         final Map<String, Map<String, String>> sdElementMap = syslogMessage
@@ -128,7 +128,7 @@ public class NLFPluginTest {
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals(json, syslogMessage.getMsg());
         Assertions.assertEquals("HOST-NAME", syslogMessage.getHostname());
-        Assertions.assertEquals("APP-NAME:o", syslogMessage.getAppName());
+        Assertions.assertEquals("APP-NAME.o", syslogMessage.getAppName());
         Assertions.assertEquals("2020-01-01T01:23:34.567Z", syslogMessage.getTimestamp());
 
         final Map<String, Map<String, String>> sdElementMap = syslogMessage
@@ -322,7 +322,7 @@ public class NLFPluginTest {
 
         final SyslogMessage syslogMessage2 = syslogMessages.get(1);
         Assertions.assertEquals("HOST-NAME", syslogMessage2.getHostname());
-        Assertions.assertEquals("APP-NAME:o", syslogMessage2.getAppName());
+        Assertions.assertEquals("APP-NAME.o", syslogMessage2.getAppName());
         Assertions.assertEquals("2020-01-01T01:23:34.567Z", syslogMessage2.getTimestamp());
         Assertions
                 .assertEquals(
