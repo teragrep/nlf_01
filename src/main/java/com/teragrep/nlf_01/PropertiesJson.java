@@ -69,6 +69,12 @@ public final class PropertiesJson {
                 else if (k != null) {
                     builder.addNull(k);
                 }
+                else if (v != null) {
+                    builder.add("null", String.valueOf(v));
+                }
+                else {
+                    builder.addNull("null");
+                }
             });
         }
 
