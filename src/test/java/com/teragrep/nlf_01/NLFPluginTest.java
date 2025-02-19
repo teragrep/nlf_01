@@ -49,11 +49,17 @@ import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.event.ParsedEventFactory;
 import com.teragrep.akv_01.event.UnparsedEventImpl;
 import com.teragrep.akv_01.event.metadata.offset.EventOffsetImpl;
+import com.teragrep.akv_01.event.metadata.offset.EventOffsetStub;
 import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContextImpl;
+import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContextStub;
 import com.teragrep.akv_01.event.metadata.properties.EventPropertiesImpl;
+import com.teragrep.akv_01.event.metadata.properties.EventPropertiesStub;
 import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemPropertiesImpl;
+import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemPropertiesStub;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeImpl;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeStub;
+import com.teragrep.akv_01.plugin.PluginException;
+import com.teragrep.nlf_01.fakes.EmptySourceable;
 import com.teragrep.nlf_01.fakes.FakeSourceable;
 import com.teragrep.nlf_01.types.AppInsightType;
 import com.teragrep.nlf_01.types.ContainerType;
@@ -110,6 +116,24 @@ public class NLFPluginTest {
 
         Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer_02@48577").get("timestamp_source"));
         Assertions.assertEquals("2020-01-01T00:00Z", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
+    }
+
+    @Test
+    void containerTypeWithMissingEnvVariables() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/container.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new EmptySourceable());
+        final PluginException pluginException = Assertions
+                .assertThrows(PluginException.class, () -> plugin.syslogMessage(parsedEvent));
+        Assertions
+                .assertEquals(
+                        "java.lang.IllegalArgumentException: No such environment variable: containerlog.appname.annotation",
+                        pluginException.getMessage()
+                );
     }
 
     @Test
@@ -350,6 +374,54 @@ public class NLFPluginTest {
                 .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
         Assertions
                 .assertEquals(ContainerType.class.getSimpleName(), sdElementMap2.get("nlf_01@48577").get("eventType"));
+    }
+
+    @Test
+    void unexpectedType() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/unexpected.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(
+                        json,
+                        new EventPartitionContextStub(),
+                        new EventPropertiesStub(),
+                        new EventSystemPropertiesStub(),
+                        new EnqueuedTimeStub(),
+                        new EventOffsetStub()
+                )
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final PluginException pluginException = Assertions
+                .assertThrows(PluginException.class, () -> plugin.syslogMessage(parsedEvent));
+        Assertions
+                .assertEquals(
+                        "java.lang.IllegalArgumentException: Invalid event type: unexpected",
+                        pluginException.getMessage()
+                );
+    }
+
+    @Test
+    void emptyJsonObjectPayload() {
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(
+                        "{}",
+                        new EventPartitionContextStub(),
+                        new EventPropertiesStub(),
+                        new EventSystemPropertiesStub(),
+                        new EnqueuedTimeStub(),
+                        new EventOffsetStub()
+                )
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final PluginException pluginException = Assertions
+                .assertThrows(PluginException.class, () -> plugin.syslogMessage(parsedEvent));
+        Assertions
+                .assertEquals(
+                        "java.lang.IllegalArgumentException: Event was not of expected log format or type was not found",
+                        pluginException.getMessage()
+                );
     }
 
 }
