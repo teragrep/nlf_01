@@ -424,4 +424,44 @@ public class NLFPluginTest {
                 );
     }
 
+    @Test
+    void emptyJsonArrayPayload() {
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(
+                        "[]",
+                        new EventPartitionContextStub(),
+                        new EventPropertiesStub(),
+                        new EventSystemPropertiesStub(),
+                        new EnqueuedTimeStub(),
+                        new EventOffsetStub()
+                )
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final PluginException pluginException = Assertions
+                .assertThrows(PluginException.class, () -> plugin.syslogMessage(parsedEvent));
+        Assertions
+                .assertEquals("jakarta.json.JsonException: Event was not a JSON object", pluginException.getMessage());
+    }
+
+    @Test
+    void nonJsonPayload() {
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(
+                        "non-json payload",
+                        new EventPartitionContextStub(),
+                        new EventPropertiesStub(),
+                        new EventSystemPropertiesStub(),
+                        new EnqueuedTimeStub(),
+                        new EventOffsetStub()
+                )
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final PluginException pluginException = Assertions
+                .assertThrows(PluginException.class, () -> plugin.syslogMessage(parsedEvent));
+        Assertions
+                .assertEquals("jakarta.json.JsonException: Event was not a JSON structure", pluginException.getMessage());
+    }
+
 }
