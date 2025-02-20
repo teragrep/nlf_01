@@ -192,7 +192,27 @@ public class NLFPluginTest {
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions
                 .assertEquals(
-                        "{\"AppRoleInstance\":\"app-role-instance\",\"AppRoleName\":\"app-role-name\",\"ClientIP\":\"192.168.1.2\",\"ClientType\":\"client-type\",\"IKey\":\"i-key\",\"ItemCount\":1,\"Message\":\"message\",\"OperationId\":\"123\",\"ParentId\":\"456\",\"Properties\":{\"ProcessId\":\"1234\",\"HostInstanceId\":\"123456\",\"prop__{OriginalFormat}\":\"abc\",\"prop__RouteName\":\"xyz\",\"LogLevel\":\"Debug\",\"EventId\":\"1\",\"prop__RouteTemplate\":\"route/template\",\"Category\":\"192.168.3.1\",\"EventName\":\"event-name\"},\"ResourceGUID\":\"123456789\",\"SDKVersion\":\"12: 192.168.x.x\",\"SeverityLevel\":0,\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-01T01:02:34.5678999Z\",\"Type\":\"AppTraces\",\"_BilledSize\":1,\"_ItemId\":\"12-34-56-78\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        "{\n" + "    \"AppRoleInstance\": \"app-role-instance\",\n"
+                                + "    \"AppRoleName\": \"app-role-name\",\n" + "    \"ClientIP\": \"192.168.1.2\",\n"
+                                + "    \"ClientType\": \"client-type\",\n" + "    \"IKey\": \"i-key\",\n"
+                                + "    \"ItemCount\": 1,\n" + "    \"Message\": \"message\",\n"
+                                + "    \"OperationId\": \"123\",\n" + "    \"ParentId\": \"456\",\n"
+                                + "    \"Properties\": {\n" + "      \"ProcessId\":\"1234\",\n"
+                                + "      \"HostInstanceId\":\"123456\",\n"
+                                + "      \"prop__{OriginalFormat}\":\"abc\",\n" + "      \"prop__RouteName\":\"xyz\",\n"
+                                + "      \"LogLevel\":\"Debug\",\n" + "      \"EventId\":\"1\",\n"
+                                + "      \"prop__RouteTemplate\":\"route/template\",\n"
+                                + "      \"Category\":\"192.168.3.1\",\n" + "      \"EventName\":\"event-name\"},\n"
+                                + "\n" + "    \"ResourceGUID\": \"123456789\",\n"
+                                + "    \"SDKVersion\": \"12: 192.168.x.x\",\n"
+                                + "    \"SeverityLevel\": 0, \"SourceSystem\": \"Azure\",\n"
+                                + "    \"TenantId\": \"12\",\n"
+                                + "    \"TimeGenerated\": \"2020-01-01T01:02:34.5678999Z\",\n"
+                                + "    \"Type\": \"AppTraces\",\n" + "    \"_BilledSize\": 1,\n"
+                                + "    \"_ItemId\": \"12-34-56-78\",\n"
+                                + "    \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "    \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
+                                + "  }",
                         syslogMessage.getMsg()
                 );
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
@@ -209,84 +229,6 @@ public class NLFPluginTest {
                 .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
         Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
-    }
-
-    @Test
-    void appInsightType_MultipleRecords() {
-        final String json = Assertions
-                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/appinsight_2.json")));
-        final ParsedEvent parsedEvent = new ParsedEventFactory(
-                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
-        ).parsedEvent();
-
-        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
-        final List<SyslogMessage> syslogMessages = Assertions
-                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
-        Assertions.assertEquals(3, syslogMessages.size());
-
-        final SyslogMessage syslogMessage = syslogMessages.get(0);
-        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
-        Assertions.assertEquals("app-role-name", syslogMessage.getAppName());
-        Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
-        Assertions
-                .assertEquals(
-                        "{\"AppRoleInstance\":\"app-role-instance\",\"AppRoleName\":\"app-role-name\",\"ClientIP\":\"192.168.1.2\",\"ClientType\":\"client-type\",\"IKey\":\"i-key\",\"ItemCount\":1,\"Message\":\"message\",\"OperationId\":\"123\",\"ParentId\":\"456\",\"Properties\":{\"ProcessId\":\"1234\",\"HostInstanceId\":\"123456\",\"prop__{OriginalFormat}\":\"abc\",\"prop__RouteName\":\"xyz\",\"LogLevel\":\"Debug\",\"EventId\":\"1\",\"prop__RouteTemplate\":\"route/template\",\"Category\":\"192.168.3.1\",\"EventName\":\"event-name\"},\"ResourceGUID\":\"123456789\",\"SDKVersion\":\"12: 192.168.x.x\",\"SeverityLevel\":0,\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-01T01:02:34.5678999Z\",\"Type\":\"AppTraces\",\"_BilledSize\":1,\"_ItemId\":\"12-34-56-78\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
-                        syslogMessage.getMsg()
-                );
-
-        final Map<String, Map<String, String>> sdElementMap = syslogMessage
-                .getSDElements()
-                .stream()
-                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
-
-        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
-        Assertions
-                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
-
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
-
-        final SyslogMessage syslogMessage2 = syslogMessages.get(1);
-        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage2.getHostname());
-        Assertions.assertEquals("app-role-name2", syslogMessage2.getAppName());
-        Assertions.assertEquals("2020-01-02T01:02:34.567Z", syslogMessage2.getTimestamp());
-        Assertions
-                .assertEquals(
-                        "{\"AppRoleInstance\":\"app-role-instance2\",\"AppRoleName\":\"app-role-name2\",\"ClientIP\":\"192.168.1.2\",\"ClientType\":\"client-type\",\"IKey\":\"i-key\",\"ItemCount\":1,\"Message\":\"message2\",\"OperationId\":\"123\",\"ParentId\":\"456\",\"Properties\":{\"ProcessId\":\"1234\",\"HostInstanceId\":\"123456\",\"prop__{OriginalFormat}\":\"abc\",\"prop__RouteName\":\"xyz\",\"LogLevel\":\"Debug\",\"EventId\":\"1\",\"prop__RouteTemplate\":\"route/template\",\"Category\":\"192.168.3.1\",\"EventName\":\"event-name2\"},\"ResourceGUID\":\"123456789\",\"SDKVersion\":\"12: 192.168.x.x\",\"SeverityLevel\":0,\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-02T01:02:34.5678999Z\",\"Type\":\"AppTraces\",\"_BilledSize\":1,\"_ItemId\":\"12-34-56-78\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
-                        syslogMessage2.getMsg()
-                );
-
-        final Map<String, Map<String, String>> sdElementMap2 = syslogMessage2
-                .getSDElements()
-                .stream()
-                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
-
-        Assertions.assertEquals(1, sdElementMap2.get("nlf_01@48577").size());
-        Assertions
-                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap2.get("nlf_01@48577").get("eventType"));
-
-        Assertions.assertTrue(sdElementMap2.get("aer_02_event@48577").containsKey("properties"));
-
-        final SyslogMessage syslogMessage3 = syslogMessages.get(2);
-        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage3.getHostname());
-        Assertions.assertEquals("app-role-name3", syslogMessage3.getAppName());
-        Assertions.assertEquals("2020-01-03T01:02:34.567Z", syslogMessage3.getTimestamp());
-        Assertions
-                .assertEquals(
-                        "{\"AppRoleInstance\":\"app-role-instance3\",\"AppRoleName\":\"app-role-name3\",\"ClientIP\":\"192.168.1.2\",\"ClientType\":\"client-type\",\"IKey\":\"i-key\",\"ItemCount\":1,\"Message\":\"message3\",\"OperationId\":\"123\",\"ParentId\":\"456\",\"Properties\":{\"ProcessId\":\"1234\",\"HostInstanceId\":\"123456\",\"prop__{OriginalFormat}\":\"abc\",\"prop__RouteName\":\"xyz\",\"LogLevel\":\"Debug\",\"EventId\":\"1\",\"prop__RouteTemplate\":\"route/template\",\"Category\":\"192.168.3.1\",\"EventName\":\"event-name3\"},\"ResourceGUID\":\"123456789\",\"SDKVersion\":\"12: 192.168.x.x\",\"SeverityLevel\":0,\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-03T01:02:34.5678999Z\",\"Type\":\"AppTraces\",\"_BilledSize\":1,\"_ItemId\":\"12-34-56-78\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
-                        syslogMessage3.getMsg()
-                );
-
-        final Map<String, Map<String, String>> sdElementMap3 = syslogMessage3
-                .getSDElements()
-                .stream()
-                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
-
-        Assertions.assertEquals(1, sdElementMap3.get("nlf_01@48577").size());
-        Assertions
-                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap3.get("nlf_01@48577").get("eventType"));
-
-        Assertions.assertTrue(sdElementMap3.get("aer_02_event@48577").containsKey("properties"));
-
     }
 
     @Test
@@ -319,61 +261,6 @@ public class NLFPluginTest {
                 );
 
         Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
-    }
-
-    @Test
-    void multiRecordWithDifferentTypes() {
-        final String json = Assertions
-                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/multirecord.json")));
-        final ParsedEvent parsedEvent = new ParsedEventFactory(
-                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
-        ).parsedEvent();
-
-        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
-        final List<SyslogMessage> syslogMessages = Assertions
-                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
-        Assertions.assertEquals(2, syslogMessages.size());
-
-        final SyslogMessage syslogMessage = syslogMessages.get(0);
-        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
-        Assertions.assertEquals("app-role-name", syslogMessage.getAppName());
-        Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
-        Assertions
-                .assertEquals(
-                        "{\"AppRoleInstance\":\"app-role-instance\",\"AppRoleName\":\"app-role-name\",\"ClientIP\":\"192.168.1.2\",\"ClientType\":\"client-type\",\"IKey\":\"i-key\",\"ItemCount\":1,\"Message\":\"message\",\"OperationId\":\"123\",\"ParentId\":\"456\",\"Properties\":{\"ProcessId\":\"1234\",\"HostInstanceId\":\"123456\",\"prop__{OriginalFormat}\":\"abc\",\"prop__RouteName\":\"xyz\",\"LogLevel\":\"Debug\",\"EventId\":\"1\",\"prop__RouteTemplate\":\"route/template\",\"Category\":\"192.168.3.1\",\"EventName\":\"event-name\"},\"ResourceGUID\":\"123456789\",\"SDKVersion\":\"12: 192.168.x.x\",\"SeverityLevel\":0,\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-01T01:02:34.5678999Z\",\"Type\":\"AppTraces\",\"_BilledSize\":1,\"_ItemId\":\"12-34-56-78\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
-                        syslogMessage.getMsg()
-                );
-
-        final SyslogMessage syslogMessage2 = syslogMessages.get(1);
-        Assertions.assertEquals("HOST-NAME", syslogMessage2.getHostname());
-        Assertions.assertEquals("APP-NAME.o", syslogMessage2.getAppName());
-        Assertions.assertEquals("2020-01-01T01:23:34.567Z", syslogMessage2.getTimestamp());
-        Assertions
-                .assertEquals(
-                        "{\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Computer\":\"computer\",\"ContainerId\":\"container-id\",\"ContainerName\":\"container-name\",\"PodName\":\"pod-name\",\"PodNamespace\":\"pod-namespace\",\"LogMessage\":{\"level\":\"info\",\"ts\":\"2020-01-01T01:23:45.678Z\",\"logger\":\"logger\",\"msg\":\"message\",\"namespace\":\"namespace\"},\"LogSource\":\"stdout\",\"KubernetesMetadata\":{\"image\":\"image\",\"imageID\":\"123-456-789\",\"imageRepo\":\"imagerepo\",\"imageTag\":\"imagetag\",\"podAnnotations\":{\"appname-annotation\":\"APP-NAME\",\"hostname-annotation\":\"HOST-NAME\"},\"podLabels\":{\"x\":\"y\"},\"podUid\":\"123\"},\"LogLevel\":\"info\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"Type\":\"ContainerLogV2\",\"TenantId\":\"456\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
-                        syslogMessage2.getMsg()
-                );
-
-        final Map<String, Map<String, String>> sdElementMap = syslogMessage
-                .getSDElements()
-                .stream()
-                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
-
-        final Map<String, Map<String, String>> sdElementMap2 = syslogMessage2
-                .getSDElements()
-                .stream()
-                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
-
-        Assertions.assertEquals(5, sdElementMap.size());
-        Assertions.assertEquals(6, sdElementMap2.size());
-
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
-        Assertions.assertTrue(sdElementMap2.get("aer_02_event@48577").containsKey("properties"));
-
-        Assertions
-                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
-        Assertions
-                .assertEquals(ContainerType.class.getSimpleName(), sdElementMap2.get("nlf_01@48577").get("eventType"));
     }
 
     @Test
@@ -463,5 +350,4 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals("jakarta.json.JsonException: Event was not a JSON structure", pluginException.getMessage());
     }
-
 }

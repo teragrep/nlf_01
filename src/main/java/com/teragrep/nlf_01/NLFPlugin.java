@@ -45,7 +45,6 @@
  */
 package com.teragrep.nlf_01;
 
-import com.teragrep.akv_01.event.MultiRecordEvent;
 import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.Plugin;
 import com.teragrep.akv_01.plugin.PluginException;
@@ -80,7 +79,6 @@ public final class NLFPlugin implements Plugin {
     public List<SyslogMessage> syslogMessage(final ParsedEvent parsedEvent) throws PluginException {
         final List<EventType> eventTypes = new ArrayList<>();
         final List<SyslogMessage> syslogMessages = new ArrayList<>();
-        final List<ParsedEvent> parsedEvents = new ArrayList<>();
         final String containerLogAppNameKey = source.source("containerlog.appname.annotation");
         final String containerLogHostnameKey = source.source("containerlog.hostname.annotation");
 
@@ -95,52 +93,31 @@ public final class NLFPlugin implements Plugin {
             throw new PluginException(new JsonException("Event was not a JSON object"));
         }
 
-        final MultiRecordEvent mre = new MultiRecordEvent(parsedEvent);
-        if (mre.isValid()) {
-            for (final ParsedEvent recordEvent : mre.records()) {
-                if (!recordEvent.isJsonStructure()) {
-                    throw new PluginException(new JsonException("Record in MultiRecordEvent was not a JSON structure"));
-                }
-                final JsonStructure recordJson = recordEvent.asJsonStructure();
-                if (!recordJson.getValueType().equals(JsonValue.ValueType.OBJECT)) {
-                    throw new PluginException(new JsonException("Record in MultiRecordEvent was not a JSON object"));
-                }
+        final JsonObject jsonObject = parsedEvent.asJsonStructure().asJsonObject();
+        if (
+            jsonObject.containsKey("Type") && jsonObject.get("Type").getValueType().equals(JsonValue.ValueType.STRING)
+        ) {
 
-                parsedEvents.add(recordEvent);
+            if (jsonObject.getString("Type").equals("AppTraces")) {
+                eventTypes.add(new AppInsightType(parsedEvent));
             }
-        }
-        else {
-            parsedEvents.add(parsedEvent);
-        }
-
-        for (final ParsedEvent pe : parsedEvents) {
-            final JsonObject jsonObject = pe.asJsonStructure().asJsonObject();
-            if (
-                jsonObject.containsKey("Type")
-                        && jsonObject.get("Type").getValueType().equals(JsonValue.ValueType.STRING)
-            ) {
-
-                if (jsonObject.getString("Type").equals("AppTraces")) {
-                    eventTypes.add(new AppInsightType(pe));
-                }
-                else if (jsonObject.getString("Type").endsWith("_CL")) {
-                    eventTypes.add(new CLType(pe));
-                }
-                else if (jsonObject.getString("Type").equals("ContainerLogV2")) {
-                    eventTypes.add(new ContainerType(containerLogHostnameKey, containerLogAppNameKey, pe));
-                }
-                else {
-                    throw new PluginException(
-                            new IllegalArgumentException("Invalid event type: " + jsonObject.getString("Type"))
-                    );
-                }
-
+            else if (jsonObject.getString("Type").endsWith("_CL")) {
+                eventTypes.add(new CLType(parsedEvent));
+            }
+            else if (jsonObject.getString("Type").equals("ContainerLogV2")) {
+                eventTypes.add(new ContainerType(containerLogHostnameKey, containerLogAppNameKey, parsedEvent));
             }
             else {
                 throw new PluginException(
-                        new IllegalArgumentException("Event was not of expected log format or type was not found")
+                        new IllegalArgumentException("Invalid event type: " + jsonObject.getString("Type"))
                 );
             }
+
+        }
+        else {
+            throw new PluginException(
+                    new IllegalArgumentException("Event was not of expected log format or type was not found")
+            );
         }
 
         for (final EventType eventType : eventTypes) {
@@ -154,10 +131,6 @@ public final class NLFPlugin implements Plugin {
                     .withMsg(eventType.msg());
             syslogMessage.setSDElements(eventType.sdElements());
             syslogMessages.add(syslogMessage);
-        }
-
-        if (syslogMessages.isEmpty()) {
-            throw new PluginException(new IllegalArgumentException("No events processable by NLFPlugin found"));
         }
 
         return syslogMessages;
