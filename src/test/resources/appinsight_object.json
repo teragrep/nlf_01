@@ -1,0 +1,32 @@
+{
+  "AppRoleInstance": "app-role-instance",
+  "AppRoleName": "app-role-name",
+  "ClientIP": "192.168.1.2",
+  "ClientType": "client-type",
+  "IKey": "i-key",
+  "ItemCount": 1,
+  "Message": "message",
+  "OperationId": "123",
+  "ParentId": "456",
+  "Properties": {
+    "ProcessId":"1234",
+    "HostInstanceId":"123456",
+    "prop__{OriginalFormat}":"abc",
+    "prop__RouteName":"xyz",
+    "LogLevel":"Debug",
+    "EventId":"1",
+    "prop__RouteTemplate":"route/template",
+    "Category":"192.168.3.1",
+    "EventName":"event-name"},
+
+  "ResourceGUID": "123456789",
+  "SDKVersion": "12: 192.168.x.x",
+  "SeverityLevel": 0, "SourceSystem": "Azure",
+  "TenantId": "12",
+  "TimeGenerated": "2020-01-01T01:02:34.5678999Z",
+  "Type": "AppTraces",
+  "_BilledSize": 1,
+  "_ItemId": "12-34-56-78",
+  "_Internal_WorkspaceResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+  "_ResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}"
+}
