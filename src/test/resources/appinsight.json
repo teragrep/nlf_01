@@ -1,5 +1,4 @@
-{"records": [
-  {
+{
     "AppRoleInstance": "app-role-instance",
     "AppRoleName": "app-role-name",
     "ClientIP": "192.168.1.2",
@@ -30,4 +29,4 @@
     "_ItemId": "12-34-56-78",
     "_Internal_WorkspaceResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
     "_ResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}"
-  }]}
+  }
