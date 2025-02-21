@@ -48,10 +48,7 @@ package com.teragrep.nlf_01;
 import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.Plugin;
 import com.teragrep.akv_01.plugin.PluginException;
-import com.teragrep.nlf_01.types.AppInsightType;
-import com.teragrep.nlf_01.types.CLType;
-import com.teragrep.nlf_01.types.ContainerType;
-import com.teragrep.nlf_01.types.EventType;
+import com.teragrep.nlf_01.types.*;
 import com.teragrep.nlf_01.util.EnvironmentSource;
 import com.teragrep.nlf_01.util.Sourceable;
 import com.teragrep.rlo_14.SyslogMessage;
@@ -107,12 +104,14 @@ public final class NLFPlugin implements Plugin {
             else if (jsonObject.getString("Type").equals("ContainerLogV2")) {
                 eventTypes.add(new ContainerType(containerLogHostnameKey, containerLogAppNameKey, parsedEvent));
             }
+            else if (jsonObject.getString("Type").equals("Syslog")) {
+                eventTypes.add(new SyslogType(parsedEvent));
+            }
             else {
                 throw new PluginException(
                         new IllegalArgumentException("Invalid event type: " + jsonObject.getString("Type"))
                 );
             }
-
         }
         else {
             throw new PluginException(
