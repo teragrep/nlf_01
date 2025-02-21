@@ -63,9 +63,23 @@ import java.util.UUID;
 public final class SyslogType implements EventType {
 
     private final ParsedEvent parsedEvent;
+    private final String expectedProcessName;
+    private final String realHostname;
 
-    public SyslogType(final ParsedEvent parsedEvent) {
+    public SyslogType(final ParsedEvent parsedEvent, final String expectedProcessName, final String realHostname) {
         this.parsedEvent = parsedEvent;
+        this.expectedProcessName = expectedProcessName;
+        this.realHostname = realHostname;
+    }
+
+    private void validateProcessName() throws PluginException {
+        final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
+        assertKey(mainObject, "ProcessName", JsonValue.ValueType.STRING);
+        final String processName = mainObject.getString("ProcessName");
+
+        if (!processName.equals(expectedProcessName)) {
+            throw new PluginException("Expected <[" + expectedProcessName + "]> but found <[" + processName + "]>");
+        }
     }
 
     private void assertKey(final JsonObject obj, final String key, JsonValue.ValueType type) throws PluginException {
@@ -80,16 +94,19 @@ public final class SyslogType implements EventType {
 
     @Override
     public Severity severity() throws PluginException {
+        validateProcessName();
         return Severity.NOTICE;
     }
 
     @Override
     public Facility facility() throws PluginException {
+        validateProcessName();
         return Facility.AUDIT;
     }
 
     @Override
     public String hostname() throws PluginException {
+        validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
         final String internalWorkspaceResourceId = mainObject.getString("_Internal_WorkspaceResourceId");
@@ -102,6 +119,7 @@ public final class SyslogType implements EventType {
 
     @Override
     public String appName() throws PluginException {
+        validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "SyslogMessage", JsonValue.ValueType.STRING);
         final String syslogMessage = mainObject.getString("SyslogMessage");
@@ -118,6 +136,7 @@ public final class SyslogType implements EventType {
 
     @Override
     public long timestamp() throws PluginException {
+        validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING);
 
@@ -126,6 +145,7 @@ public final class SyslogType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
+        validateProcessName();
         Set<SDElement> elems = new HashSet<>();
         String time = "";
         if (!parsedEvent.enqueuedTimeUtc().isStub()) {
@@ -148,7 +168,7 @@ public final class SyslogType implements EventType {
                 .add(new SDElement("aer_02_partition@48577").addSDParam("fully_qualified_namespace", fullyQualifiedNamespace).addSDParam("eventhub_name", eventHubName).addSDParam("partition_id", partitionId).addSDParam("consumer_group", consumerGroup));
 
         elems
-                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", new RealHostname("localhost").hostname()).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
+                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", realHostname).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
 
         String partitionKey = "";
         if (!parsedEvent.systemProperties().isStub()) {
@@ -173,6 +193,7 @@ public final class SyslogType implements EventType {
 
     @Override
     public String msgId() throws PluginException {
+        validateProcessName();
         String sequenceNumber = "";
         if (!parsedEvent.systemProperties().isStub()) {
             sequenceNumber = String.valueOf(parsedEvent.systemProperties().asMap().getOrDefault("SequenceNumber", ""));
@@ -182,6 +203,7 @@ public final class SyslogType implements EventType {
 
     @Override
     public String msg() throws PluginException {
+        validateProcessName();
         return parsedEvent.asString();
     }
 }

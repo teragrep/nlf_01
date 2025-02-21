@@ -63,9 +63,11 @@ import java.util.UUID;
 public final class AppInsightType implements EventType {
 
     private final ParsedEvent parsedEvent;
+    private final String realHostname;
 
-    public AppInsightType(final ParsedEvent parsedEvent) {
+    public AppInsightType(final ParsedEvent parsedEvent, final String realHostname) {
         this.parsedEvent = parsedEvent;
+        this.realHostname = realHostname;
     }
 
     private void assertKey(final JsonObject obj, final String key, final JsonValue.ValueType type)
@@ -145,7 +147,7 @@ public final class AppInsightType implements EventType {
                 .add(new SDElement("aer_02_partition@48577").addSDParam("fully_qualified_namespace", fullyQualifiedNamespace).addSDParam("eventhub_name", eventHubName).addSDParam("partition_id", partitionId).addSDParam("consumer_group", consumerGroup));
 
         elems
-                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", new RealHostname("localhost").hostname()).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
+                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", realHostname).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
 
         String partitionKey = "";
         if (!parsedEvent.systemProperties().isStub()) {

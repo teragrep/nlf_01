@@ -50,6 +50,7 @@ import com.teragrep.akv_01.plugin.Plugin;
 import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.types.*;
 import com.teragrep.nlf_01.util.EnvironmentSource;
+import com.teragrep.nlf_01.util.RealHostname;
 import com.teragrep.nlf_01.util.Sourceable;
 import com.teragrep.rlo_14.SyslogMessage;
 import jakarta.json.JsonException;
@@ -78,6 +79,8 @@ public final class NLFPlugin implements Plugin {
         final List<SyslogMessage> syslogMessages = new ArrayList<>();
         final String containerLogAppNameKey = source.source("containerlog.appname.annotation");
         final String containerLogHostnameKey = source.source("containerlog.hostname.annotation");
+        final String syslogExpectedProcessName = source.source("syslogtype.processname");
+        final String realHostname = new RealHostname("localhost").hostname();
 
         if (!parsedEvent.isJsonStructure()) {
             // non-applicable
@@ -96,16 +99,24 @@ public final class NLFPlugin implements Plugin {
         ) {
 
             if (jsonObject.getString("Type").equals("AppTraces")) {
-                eventTypes.add(new AppInsightType(parsedEvent));
+                eventTypes.add(new AppInsightType(parsedEvent, realHostname));
             }
             else if (jsonObject.getString("Type").endsWith("_CL")) {
-                eventTypes.add(new CLType(parsedEvent));
+                eventTypes.add(new CLType(parsedEvent, realHostname));
             }
             else if (jsonObject.getString("Type").equals("ContainerLogV2")) {
-                eventTypes.add(new ContainerType(containerLogHostnameKey, containerLogAppNameKey, parsedEvent));
+                eventTypes
+                        .add(
+                                new ContainerType(
+                                        parsedEvent,
+                                        containerLogHostnameKey,
+                                        containerLogAppNameKey,
+                                        realHostname
+                                )
+                        );
             }
             else if (jsonObject.getString("Type").equals("Syslog")) {
-                eventTypes.add(new SyslogType(parsedEvent));
+                eventTypes.add(new SyslogType(parsedEvent, syslogExpectedProcessName, realHostname));
             }
             else {
                 throw new PluginException(

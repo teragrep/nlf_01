@@ -130,7 +130,7 @@ public final class AppInsightTypeTest {
                 "src/test/resources/appinsight_object.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
-        final AppInsightType type = new AppInsightType(parsedEvent);
+        final AppInsightType type = new AppInsightType(parsedEvent, "localhost");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -185,7 +185,7 @@ public final class AppInsightTypeTest {
                 new EventSystemPropertiesStub(), new EnqueuedTimeStub(), new EventOffsetStub()
         );
 
-        final AppInsightType type = new AppInsightType(parsedEvent);
+        final AppInsightType type = new AppInsightType(parsedEvent, "localhost");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -236,7 +236,7 @@ public final class AppInsightTypeTest {
                 new EventOffsetStub()
         );
 
-        final AppInsightType type = new AppInsightType(parsedEvent);
+        final AppInsightType type = new AppInsightType(parsedEvent, "localhost");
 
         Assertions.assertThrows(PluginException.class, type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);

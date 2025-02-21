@@ -130,7 +130,7 @@ public final class CLTypeTest {
                 "src/test/resources/cl.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
-        final CLType type = new CLType(parsedEvent);
+        final CLType type = new CLType(parsedEvent, "localhost");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -190,7 +190,7 @@ public final class CLTypeTest {
                 new EventSystemPropertiesStub(), new EnqueuedTimeStub(), new EventOffsetStub()
         );
 
-        final CLType type = new CLType(parsedEvent);
+        final CLType type = new CLType(parsedEvent, "localhost");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -245,7 +245,7 @@ public final class CLTypeTest {
                 new EventSystemPropertiesStub(), new EnqueuedTimeStub(), new EventOffsetStub()
         );
 
-        final CLType type = new CLType(parsedEvent);
+        final CLType type = new CLType(parsedEvent, "localhost");
 
         Assertions.assertThrows(PluginException.class, type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);

@@ -130,7 +130,12 @@ public final class ContainerTypeTest {
                 "src/test/resources/container.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
-        final ContainerType type = new ContainerType("hostname-annotation", "appname-annotation", parsedEvent);
+        final ContainerType type = new ContainerType(
+                parsedEvent,
+                "hostname-annotation",
+                "appname-annotation",
+                "localhost"
+        );
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -190,7 +195,12 @@ public final class ContainerTypeTest {
                 new EventSystemPropertiesStub(), new EnqueuedTimeStub(), new EventOffsetStub()
         );
 
-        final ContainerType type = new ContainerType("hostname-annotation", "appname-annotation", parsedEvent);
+        final ContainerType type = new ContainerType(
+                parsedEvent,
+                "hostname-annotation",
+                "appname-annotation",
+                "localhost"
+        );
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -246,7 +256,12 @@ public final class ContainerTypeTest {
                 new EventOffsetStub()
         );
 
-        final ContainerType type = new ContainerType("hostname-annotation", "appname-annotation", parsedEvent);
+        final ContainerType type = new ContainerType(
+                parsedEvent,
+                "hostname-annotation",
+                "appname-annotation",
+                "localhost"
+        );
 
         Assertions.assertThrows(PluginException.class, type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
