@@ -123,11 +123,16 @@ public final class SyslogType implements EventType {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "SyslogMessage", JsonValue.ValueType.STRING);
         final String syslogMessage = mainObject.getString("SyslogMessage");
+        final int indexOfLBrace = syslogMessage.indexOf('[');
 
-        for (int i = syslogMessage.indexOf('[') - 2; i >= 0; i--) {
+        if (indexOfLBrace == -1) {
+            throw new PluginException("Could not find '[' from message");
+        }
+
+        for (int i = indexOfLBrace - 2; i >= 0; i--) {
             final char c = syslogMessage.charAt(i);
             if (Character.isSpaceChar(c)) {
-                return syslogMessage.substring(i + 1, syslogMessage.indexOf('[') - 1);
+                return syslogMessage.substring(i + 1, indexOfLBrace - 1);
             }
         }
 
