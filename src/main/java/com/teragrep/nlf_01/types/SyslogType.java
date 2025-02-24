@@ -148,6 +148,9 @@ public final class SyslogType implements EventType {
         final Matcher matcher = appNamePattern.matcher(syslogMessage);
         if (matcher.matches()) {
             final String uuid = matcher.group("uuid");
+            if (uuid == null) {
+                throw new PluginException("Capture group 'uuid' was not found");
+            }
             return new ValidRFC5424AppName(uuid).validAppName();
         }
 
