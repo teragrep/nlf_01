@@ -59,17 +59,38 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class SyslogType implements EventType {
 
     private final ParsedEvent parsedEvent;
     private final String expectedProcessName;
     private final String realHostname;
+    private final Pattern appNamePattern;
 
     public SyslogType(final ParsedEvent parsedEvent, final String expectedProcessName, final String realHostname) {
+        this(
+                parsedEvent,
+                expectedProcessName,
+                realHostname,
+                Pattern
+                        .compile(
+                                "^.*?(?<uuid>([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}([a-z0-9\\-]){0,12})).*$"
+                        )
+        );
+    }
+
+    public SyslogType(
+            final ParsedEvent parsedEvent,
+            final String expectedProcessName,
+            final String realHostname,
+            final Pattern appNamePattern
+    ) {
         this.parsedEvent = parsedEvent;
         this.expectedProcessName = expectedProcessName;
         this.realHostname = realHostname;
+        this.appNamePattern = appNamePattern;
     }
 
     private void validateProcessName() throws PluginException {
@@ -123,17 +144,11 @@ public final class SyslogType implements EventType {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "SyslogMessage", JsonValue.ValueType.STRING);
         final String syslogMessage = mainObject.getString("SyslogMessage");
-        final int indexOfLBrace = syslogMessage.indexOf('[');
 
-        if (indexOfLBrace == -1) {
-            throw new PluginException("Could not find '[' from message");
-        }
-
-        for (int i = indexOfLBrace - 2; i >= 0; i--) {
-            final char c = syslogMessage.charAt(i);
-            if (Character.isSpaceChar(c)) {
-                return syslogMessage.substring(i + 1, indexOfLBrace - 1);
-            }
+        final Matcher matcher = appNamePattern.matcher(syslogMessage);
+        if (matcher.matches()) {
+            final String uuid = matcher.group("uuid");
+            return new ValidRFC5424AppName(uuid).validAppName();
         }
 
         throw new PluginException("Could not parse appName from SyslogMessage key");

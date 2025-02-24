@@ -141,7 +141,7 @@ public final class SyslogTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("10660186-5aec-4f2b-a021-6be9edfb9555-a-b-c-d-e-f-g-h", actualAppName);
+        Assertions.assertEquals("10660186-5aec-4f2b-a021-6be9edfb9555-a-b-c-d-e-f", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-35166b001e9028e0085c05498ffd1235-n-n-law", actualHostname);
         Assertions
@@ -195,7 +195,7 @@ public final class SyslogTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("10660186-5aec-4f2b-a021-6be9edfb9555-a-b-c-d-e-f-g-h", actualAppName);
+        Assertions.assertEquals("10660186-5aec-4f2b-a021-6be9edfb9555-a-b-c-d-e-f", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-35166b001e9028e0085c05498ffd1235-n-n-law", actualHostname);
         Assertions
