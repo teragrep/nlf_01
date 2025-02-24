@@ -299,7 +299,7 @@ public class NLFPluginTest {
                         syslogMessage.getMsg()
                 );
         Assertions.assertEquals("md5-35166b001e9028e0085c05498ffd1235-n-n-law", syslogMessage.getHostname());
-        Assertions.assertEquals("10660186-5aec-4f2b-a021-6be9edfb9555-a-b-c-d-e-f", syslogMessage.getAppName());
+        Assertions.assertEquals("10660186-5aec-4f2b-a021-6be9edfb9555", syslogMessage.getAppName());
         Assertions.assertEquals("2025-02-18T13:47:27.064Z", syslogMessage.getTimestamp());
 
         final Map<String, Map<String, String>> sdElementMap = syslogMessage

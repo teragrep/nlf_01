@@ -74,10 +74,7 @@ public final class SyslogType implements EventType {
                 parsedEvent,
                 expectedProcessName,
                 realHostname,
-                Pattern
-                        .compile(
-                                "^.*?(?<uuid>([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}([a-z0-9\\-]){0,12})).*$"
-                        )
+                Pattern.compile("^.*?(?<uuid>[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})")
         );
     }
 
@@ -146,7 +143,7 @@ public final class SyslogType implements EventType {
         final String syslogMessage = mainObject.getString("SyslogMessage");
 
         final Matcher matcher = appNamePattern.matcher(syslogMessage);
-        if (matcher.matches()) {
+        if (matcher.find()) {
             final String uuid = matcher.group("uuid");
             if (uuid == null) {
                 throw new PluginException("Capture group 'uuid' was not found");
