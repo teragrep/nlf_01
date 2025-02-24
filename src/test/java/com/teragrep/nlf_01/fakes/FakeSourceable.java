@@ -58,6 +58,9 @@ public final class FakeSourceable implements Sourceable {
         else if (name.equals("containerlog.appname.annotation")) {
             return "appname-annotation";
         }
+        else if (name.equals("syslogtype.processname")) {
+            return "Soft-Ware";
+        }
         return defaultValue;
     }
 
@@ -68,6 +71,9 @@ public final class FakeSourceable implements Sourceable {
         }
         else if (name.equals("containerlog.appname.annotation")) {
             return "appname-annotation";
+        }
+        else if (name.equals("syslogtype.processname")) {
+            return "Soft-Ware";
         }
         throw new PluginException(new IllegalArgumentException("No such fake variable: " + name));
     }

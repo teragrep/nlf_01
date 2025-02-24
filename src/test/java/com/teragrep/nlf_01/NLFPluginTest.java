@@ -63,6 +63,7 @@ import com.teragrep.nlf_01.fakes.EmptySourceable;
 import com.teragrep.nlf_01.fakes.FakeSourceable;
 import com.teragrep.nlf_01.types.AppInsightType;
 import com.teragrep.nlf_01.types.ContainerType;
+import com.teragrep.nlf_01.types.SyslogType;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.SDParam;
 import com.teragrep.rlo_14.SyslogMessage;
@@ -259,6 +260,55 @@ public class NLFPluginTest {
                         "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
                         sdElementMap.get("origin@48577").get("_ResourceId")
                 );
+
+        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+    }
+
+    @Test
+    void syslogType() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/syslog.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"Collectorhostname\": \"xyz\",\n"
+                                + "  \"Computer\": \"10660186-5aec-4f2b-a021-6be9edfb9555\",\n"
+                                + "  \"EventTime\": \"2025-02-18T13:47:27.0000000Z\",\n" + "  \"Facility\": \"user\",\n"
+                                + "  \"HostIP\": \"Unknown IP\",\n"
+                                + "  \"HostName\": \"10660186-5aec-4f2b-a021-6be9edfb9555\",\n"
+                                + "  \"MG\": \"00000000-0000-0000-0000-000000000002\",\n"
+                                + "  \"ProcessName\": \"Soft-Ware\",\n" + "  \"SeverityLevel\": \"info\",\n"
+                                + "  \"SourceSystem\": \"Linux\",\n"
+                                + "  \"SyslogMessage\": \"Tue, 18 Feb 2025 15:47:27 EET 27:63 10660186-5aec-4f2b-a021-6be9edfb9555-a-b-c-d-e-f-g-h [INFO] says yes\",\n"
+                                + "  \"TenantId\": \"01bfa0b2-7986-4de8-8cd6-9da6db0400f5\",\n"
+                                + "  \"TimeGenerated\": \"2025-02-18T13:47:27.0644670Z\",\n"
+                                + "  \"Type\": \"Syslog\",\n"
+                                + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/ce5ef585-60c3-4e37-a326-7bb6df0e5750/resourcegroups/res-g1/providers/pro-v1/workspaces/n-n-law\",\n"
+                                + "  \"_ItemId\": \"5a6ae031-689a-479e-92d7-dfd8eea5158b\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/ce5ef585-60c3-4e37-a326-7bb6df0e5750/resourceGroups/res-g2/providers/.../workspaces/...\"\n"
+                                + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-35166b001e9028e0085c05498ffd1235-n-n-law", syslogMessage.getHostname());
+        Assertions.assertEquals("10660186-5aec-4f2b-a021-6be9edfb9555", syslogMessage.getAppName());
+        Assertions.assertEquals("2025-02-18T13:47:27.064Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions.assertEquals(SyslogType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
         Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
     }

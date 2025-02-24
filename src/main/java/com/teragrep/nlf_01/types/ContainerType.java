@@ -66,15 +66,18 @@ public final class ContainerType implements EventType {
     private final ParsedEvent parsedEvent;
     private final String containerLogHostnameKey;
     private final String containerLogAppNameKey;
+    private final String realHostname;
 
     public ContainerType(
+            final ParsedEvent parsedEvent,
             final String containerLogHostnameKey,
             final String containerLogAppNameKey,
-            final ParsedEvent parsedEvent
+            final String realHostname
     ) {
+        this.parsedEvent = parsedEvent;
         this.containerLogHostnameKey = containerLogHostnameKey;
         this.containerLogAppNameKey = containerLogAppNameKey;
-        this.parsedEvent = parsedEvent;
+        this.realHostname = realHostname;
     }
 
     private void assertKey(final JsonObject obj, final String key, JsonValue.ValueType type) throws PluginException {
@@ -170,7 +173,7 @@ public final class ContainerType implements EventType {
                 .add(new SDElement("aer_02_partition@48577").addSDParam("fully_qualified_namespace", fullyQualifiedNamespace).addSDParam("eventhub_name", eventHubName).addSDParam("partition_id", partitionId).addSDParam("consumer_group", consumerGroup));
 
         elems
-                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", new RealHostname("localhost").hostname()).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
+                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", realHostname).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
 
         String partitionKey = "";
         if (!parsedEvent.systemProperties().isStub()) {

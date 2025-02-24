@@ -1,0 +1,19 @@
+{
+  "Collectorhostname": "xyz",
+  "Computer": "10660186-5aec-4f2b-a021-6be9edfb9555",
+  "EventTime": "2025-02-18T13:47:27.0000000Z",
+  "Facility": "user",
+  "HostIP": "Unknown IP",
+  "HostName": "10660186-5aec-4f2b-a021-6be9edfb9555",
+  "MG": "00000000-0000-0000-0000-000000000002",
+  "ProcessName": "Soft-Ware",
+  "SeverityLevel": "info",
+  "SourceSystem": "Linux",
+  "SyslogMessage": "something unexpected here",
+  "TenantId": "01bfa0b2-7986-4de8-8cd6-9da6db0400f5",
+  "TimeGenerated": "2025-02-18T13:47:27.0644670Z",
+  "Type": "Syslog",
+  "_Internal_WorkspaceResourceId": "/subscriptions/ce5ef585-60c3-4e37-a326-7bb6df0e5750/resourcegroups/res-g1/providers/pro-v1/workspaces/n-n-law",
+  "_ItemId": "5a6ae031-689a-479e-92d7-dfd8eea5158b",
+  "_ResourceId": "/subscriptions/ce5ef585-60c3-4e37-a326-7bb6df0e5750/resourceGroups/res-g2/providers/.../workspaces/..."
+}

@@ -1,0 +1,15 @@
+{
+  "Collectorhostname": "xyz",
+  "Computer": "10660186-5aec-4f2b-a021-6be9edfb9555",
+  "EventTime": "2025-02-18T13:47:27.0000000Z",
+  "Facility": "user",
+  "HostIP": "Unknown IP",
+  "HostName": "10660186-5aec-4f2b-a021-6be9edfb9555",
+  "MG": "00000000-0000-0000-0000-000000000002",
+  "ProcessName": "Soft-Ware",
+  "SeverityLevel": "info",
+  "SourceSystem": "Linux",
+  "TenantId": "01bfa0b2-7986-4de8-8cd6-9da6db0400f5",
+  "Type": "Syslog",
+  "_ItemId": "5a6ae031-689a-479e-92d7-dfd8eea5158b"
+}

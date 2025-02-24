@@ -84,7 +84,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class AppInsightTypeTest {
+public final class SyslogTypeTest {
 
     private ParsedEvent testEvent(
             String path,
@@ -127,10 +127,10 @@ public final class AppInsightTypeTest {
         propertiesMap.put("important-key", null);
 
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/appinsight_object.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
+                "src/test/resources/syslog.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
-        final AppInsightType type = new AppInsightType(parsedEvent, "localhost");
+        final SyslogType type = new SyslogType(parsedEvent, "Soft-Ware", "localhost");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -141,17 +141,17 @@ public final class AppInsightTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("app-role-name", actualAppName);
+        Assertions.assertEquals("10660186-5aec-4f2b-a021-6be9edfb9555", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
-        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
+        Assertions.assertEquals("md5-35166b001e9028e0085c05498ffd1235-n-n-law", actualHostname);
         Assertions
                 .assertEquals(
-                        "{\"AppRoleInstance\":\"app-role-instance\",\"AppRoleName\":\"app-role-name\",\"ClientIP\":\"192.168.1.2\",\"ClientType\":\"client-type\",\"IKey\":\"i-key\",\"ItemCount\":1,\"Message\":\"message\",\"OperationId\":\"123\",\"ParentId\":\"456\",\"Properties\":{\"ProcessId\":\"1234\",\"HostInstanceId\":\"123456\",\"prop__{OriginalFormat}\":\"abc\",\"prop__RouteName\":\"xyz\",\"LogLevel\":\"Debug\",\"EventId\":\"1\",\"prop__RouteTemplate\":\"route/template\",\"Category\":\"192.168.3.1\",\"EventName\":\"event-name\"},\"ResourceGUID\":\"123456789\",\"SDKVersion\":\"12: 192.168.x.x\",\"SeverityLevel\":0,\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-01T01:02:34.5678999Z\",\"Type\":\"AppTraces\",\"_BilledSize\":1,\"_ItemId\":\"12-34-56-78\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        "{\"Collectorhostname\":\"xyz\",\"Computer\":\"10660186-5aec-4f2b-a021-6be9edfb9555\",\"EventTime\":\"2025-02-18T13:47:27.0000000Z\",\"Facility\":\"user\",\"HostIP\":\"Unknown IP\",\"HostName\":\"10660186-5aec-4f2b-a021-6be9edfb9555\",\"MG\":\"00000000-0000-0000-0000-000000000002\",\"ProcessName\":\"Soft-Ware\",\"SeverityLevel\":\"info\",\"SourceSystem\":\"Linux\",\"SyslogMessage\":\"Tue, 18 Feb 2025 15:47:27 EET 27:63 10660186-5aec-4f2b-a021-6be9edfb9555-a-b-c-d-e-f-g-h [INFO] says yes\",\"TenantId\":\"01bfa0b2-7986-4de8-8cd6-9da6db0400f5\",\"TimeGenerated\":\"2025-02-18T13:47:27.0644670Z\",\"Type\":\"Syslog\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/ce5ef585-60c3-4e37-a326-7bb6df0e5750/resourcegroups/res-g1/providers/pro-v1/workspaces/n-n-law\",\"_ItemId\":\"5a6ae031-689a-479e-92d7-dfd8eea5158b\",\"_ResourceId\":\"/subscriptions/ce5ef585-60c3-4e37-a326-7bb6df0e5750/resourceGroups/res-g2/providers/.../workspaces/...\"}",
                         actualMsg
                 );
         Assertions.assertEquals("12345678900", actualMsgId);
         Assertions.assertEquals(Severity.NOTICE, actualSeverity);
-        Assertions.assertEquals(1577840554567L, actualTimestamp);
+        Assertions.assertEquals(1739886447064L, actualTimestamp);
 
         final Map<String, Map<String, String>> sdElementMap = actualSDElements
                 .stream()
@@ -174,18 +174,17 @@ public final class AppInsightTypeTest {
 
         Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer_02@48577").get("timestamp_source"));
 
-        Assertions
-                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+        Assertions.assertEquals(SyslogType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
 
     @Test
     void testWithAllMetadataStubs() {
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/appinsight_object.json", new EventPartitionContextStub(), new EventPropertiesStub(),
+                "src/test/resources/syslog.json", new EventPartitionContextStub(), new EventPropertiesStub(),
                 new EventSystemPropertiesStub(), new EnqueuedTimeStub(), new EventOffsetStub()
         );
 
-        final AppInsightType type = new AppInsightType(parsedEvent, "localhost");
+        final SyslogType type = new SyslogType(parsedEvent, "Soft-Ware", "localhost");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -196,17 +195,17 @@ public final class AppInsightTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("app-role-name", actualAppName);
+        Assertions.assertEquals("10660186-5aec-4f2b-a021-6be9edfb9555", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
-        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
+        Assertions.assertEquals("md5-35166b001e9028e0085c05498ffd1235-n-n-law", actualHostname);
         Assertions
                 .assertEquals(
-                        "{\"AppRoleInstance\":\"app-role-instance\",\"AppRoleName\":\"app-role-name\",\"ClientIP\":\"192.168.1.2\",\"ClientType\":\"client-type\",\"IKey\":\"i-key\",\"ItemCount\":1,\"Message\":\"message\",\"OperationId\":\"123\",\"ParentId\":\"456\",\"Properties\":{\"ProcessId\":\"1234\",\"HostInstanceId\":\"123456\",\"prop__{OriginalFormat}\":\"abc\",\"prop__RouteName\":\"xyz\",\"LogLevel\":\"Debug\",\"EventId\":\"1\",\"prop__RouteTemplate\":\"route/template\",\"Category\":\"192.168.3.1\",\"EventName\":\"event-name\"},\"ResourceGUID\":\"123456789\",\"SDKVersion\":\"12: 192.168.x.x\",\"SeverityLevel\":0,\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-01T01:02:34.5678999Z\",\"Type\":\"AppTraces\",\"_BilledSize\":1,\"_ItemId\":\"12-34-56-78\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        "{\"Collectorhostname\":\"xyz\",\"Computer\":\"10660186-5aec-4f2b-a021-6be9edfb9555\",\"EventTime\":\"2025-02-18T13:47:27.0000000Z\",\"Facility\":\"user\",\"HostIP\":\"Unknown IP\",\"HostName\":\"10660186-5aec-4f2b-a021-6be9edfb9555\",\"MG\":\"00000000-0000-0000-0000-000000000002\",\"ProcessName\":\"Soft-Ware\",\"SeverityLevel\":\"info\",\"SourceSystem\":\"Linux\",\"SyslogMessage\":\"Tue, 18 Feb 2025 15:47:27 EET 27:63 10660186-5aec-4f2b-a021-6be9edfb9555-a-b-c-d-e-f-g-h [INFO] says yes\",\"TenantId\":\"01bfa0b2-7986-4de8-8cd6-9da6db0400f5\",\"TimeGenerated\":\"2025-02-18T13:47:27.0644670Z\",\"Type\":\"Syslog\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/ce5ef585-60c3-4e37-a326-7bb6df0e5750/resourcegroups/res-g1/providers/pro-v1/workspaces/n-n-law\",\"_ItemId\":\"5a6ae031-689a-479e-92d7-dfd8eea5158b\",\"_ResourceId\":\"/subscriptions/ce5ef585-60c3-4e37-a326-7bb6df0e5750/resourceGroups/res-g2/providers/.../workspaces/...\"}",
                         actualMsg
                 );
         Assertions.assertEquals("", actualMsgId);
         Assertions.assertEquals(Severity.NOTICE, actualSeverity);
-        Assertions.assertEquals(1577840554567L, actualTimestamp);
+        Assertions.assertEquals(1739886447064L, actualTimestamp);
 
         final Map<String, Map<String, String>> sdElementMap = actualSDElements
                 .stream()
@@ -224,19 +223,88 @@ public final class AppInsightTypeTest {
 
         Assertions.assertEquals("generated", sdElementMap.get("aer_02@48577").get("timestamp_source"));
 
+        Assertions.assertEquals(SyslogType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+    }
+
+    @Test
+    void testWithUnexpectedSyslogMessage() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/syslog_unexpected_message.json", new EventPartitionContextStub(),
+                new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
+                new EventOffsetStub()
+        );
+
+        final SyslogType type = new SyslogType(parsedEvent, "Soft-Ware", "localhost");
+
+        Assertions.assertThrows(PluginException.class, type::appName);
+        final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
+        final String actualHostname = Assertions.assertDoesNotThrow(type::hostname);
+        final String actualMsg = Assertions.assertDoesNotThrow(type::msg);
+        final String actualMsgId = Assertions.assertDoesNotThrow(type::msgId);
+        final Severity actualSeverity = Assertions.assertDoesNotThrow(type::severity);
+        final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
+        final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
+
+        Assertions.assertEquals(Facility.AUDIT, actualFacility);
+        Assertions.assertEquals("md5-35166b001e9028e0085c05498ffd1235-n-n-law", actualHostname);
         Assertions
-                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+                .assertEquals(
+                        "{\"Collectorhostname\":\"xyz\",\"Computer\":\"10660186-5aec-4f2b-a021-6be9edfb9555\",\"EventTime\":\"2025-02-18T13:47:27.0000000Z\",\"Facility\":\"user\",\"HostIP\":\"Unknown IP\",\"HostName\":\"10660186-5aec-4f2b-a021-6be9edfb9555\",\"MG\":\"00000000-0000-0000-0000-000000000002\",\"ProcessName\":\"Soft-Ware\",\"SeverityLevel\":\"info\",\"SourceSystem\":\"Linux\",\"SyslogMessage\":\"something unexpected here\",\"TenantId\":\"01bfa0b2-7986-4de8-8cd6-9da6db0400f5\",\"TimeGenerated\":\"2025-02-18T13:47:27.0644670Z\",\"Type\":\"Syslog\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/ce5ef585-60c3-4e37-a326-7bb6df0e5750/resourcegroups/res-g1/providers/pro-v1/workspaces/n-n-law\",\"_ItemId\":\"5a6ae031-689a-479e-92d7-dfd8eea5158b\",\"_ResourceId\":\"/subscriptions/ce5ef585-60c3-4e37-a326-7bb6df0e5750/resourceGroups/res-g2/providers/.../workspaces/...\"}",
+                        actualMsg
+                );
+        Assertions.assertEquals("", actualMsgId);
+        Assertions.assertEquals(Severity.NOTICE, actualSeverity);
+        Assertions.assertEquals(1739886447064L, actualTimestamp);
+
+        final Map<String, Map<String, String>> sdElementMap = actualSDElements
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("partition_id"));
+        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("consumer_group"));
+
+        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("offset"));
+        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("partition_key"));
+        Assertions.assertEquals("{}", sdElementMap.get("aer_02_event@48577").get("properties"));
+
+        Assertions.assertEquals("generated", sdElementMap.get("aer_02@48577").get("timestamp_source"));
+
+        Assertions.assertEquals(SyslogType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
 
     @Test
     void testWithMissingJsonKeys() {
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/appinsight_missing_keys.json", new EventPartitionContextStub(),
+                "src/test/resources/syslog_missing_keys.json", new EventPartitionContextStub(),
                 new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
                 new EventOffsetStub()
         );
 
-        final AppInsightType type = new AppInsightType(parsedEvent, "localhost");
+        final SyslogType type = new SyslogType(parsedEvent, "Soft-Ware", "localhost");
+
+        // All should throw an error because ProcessName is missing from JSON
+        Assertions.assertThrows(PluginException.class, type::appName);
+        Assertions.assertThrows(PluginException.class, type::facility);
+        Assertions.assertThrows(PluginException.class, type::hostname);
+        Assertions.assertThrows(PluginException.class, type::msg);
+        Assertions.assertThrows(PluginException.class, type::msgId);
+        Assertions.assertThrows(PluginException.class, type::severity);
+        Assertions.assertThrows(PluginException.class, type::timestamp);
+        Assertions.assertThrows(PluginException.class, type::sdElements);
+    }
+
+    @Test
+    void testWithMissingJsonKeysExceptProcessName() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/syslog_missing_keys_except_processName.json", new EventPartitionContextStub(),
+                new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
+                new EventOffsetStub()
+        );
+
+        final SyslogType type = new SyslogType(parsedEvent, "Soft-Ware", "localhost");
 
         Assertions.assertThrows(PluginException.class, type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -250,7 +318,7 @@ public final class AppInsightTypeTest {
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions
                 .assertEquals(
-                        "{\"AppRoleInstance\":\"app-role-instance\",\"ClientIP\":\"192.168.1.2\",\"ClientType\":\"client-type\",\"IKey\":\"i-key\",\"ItemCount\":1,\"Message\":\"message\",\"OperationId\":\"123\",\"ParentId\":\"456\",\"Properties\":{\"ProcessId\":\"1234\",\"HostInstanceId\":\"123456\",\"prop__{OriginalFormat}\":\"abc\",\"prop__RouteName\":\"xyz\",\"LogLevel\":\"Debug\",\"EventId\":\"1\",\"prop__RouteTemplate\":\"route/template\",\"Category\":\"192.168.3.1\",\"EventName\":\"event-name\"},\"ResourceGUID\":\"123456789\",\"SDKVersion\":\"12: 192.168.x.x\",\"SeverityLevel\":0,\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"Type\":\"AppTraces\",\"_BilledSize\":1,\"_ItemId\":\"12-34-56-78\"}",
+                        "{\"Collectorhostname\":\"xyz\",\"Computer\":\"10660186-5aec-4f2b-a021-6be9edfb9555\",\"EventTime\":\"2025-02-18T13:47:27.0000000Z\",\"Facility\":\"user\",\"HostIP\":\"Unknown IP\",\"HostName\":\"10660186-5aec-4f2b-a021-6be9edfb9555\",\"MG\":\"00000000-0000-0000-0000-000000000002\",\"ProcessName\":\"Soft-Ware\",\"SeverityLevel\":\"info\",\"SourceSystem\":\"Linux\",\"TenantId\":\"01bfa0b2-7986-4de8-8cd6-9da6db0400f5\",\"Type\":\"Syslog\",\"_ItemId\":\"5a6ae031-689a-479e-92d7-dfd8eea5158b\"}",
                         actualMsg
                 );
         Assertions.assertEquals("", actualMsgId);
@@ -272,7 +340,6 @@ public final class AppInsightTypeTest {
 
         Assertions.assertEquals("generated", sdElementMap.get("aer_02@48577").get("timestamp_source"));
 
-        Assertions
-                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+        Assertions.assertEquals(SyslogType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
 }

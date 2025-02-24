@@ -42,7 +42,7 @@
     <dependency>
       <groupId>com.teragrep</groupId>
       <artifactId>akv_01</artifactId>
-      <version>6.3.0</version>
+      <version>6.3.1</version>
     </dependency>
     <!-- tests -->
     <dependency>

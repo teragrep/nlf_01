@@ -55,20 +55,49 @@ import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public final class CLType implements EventType {
+public final class SyslogType implements EventType {
 
     private final ParsedEvent parsedEvent;
+    private final String expectedProcessName;
     private final String realHostname;
+    private final Pattern appNamePattern;
 
-    public CLType(final ParsedEvent parsedEvent, final String realHostname) {
+    public SyslogType(final ParsedEvent parsedEvent, final String expectedProcessName, final String realHostname) {
+        this(
+                parsedEvent,
+                expectedProcessName,
+                realHostname,
+                Pattern.compile("^.*?(?<uuid>[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})")
+        );
+    }
+
+    public SyslogType(
+            final ParsedEvent parsedEvent,
+            final String expectedProcessName,
+            final String realHostname,
+            final Pattern appNamePattern
+    ) {
         this.parsedEvent = parsedEvent;
+        this.expectedProcessName = expectedProcessName;
         this.realHostname = realHostname;
+        this.appNamePattern = appNamePattern;
+    }
+
+    private void validateProcessName() throws PluginException {
+        final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
+        assertKey(mainObject, "ProcessName", JsonValue.ValueType.STRING);
+        final String processName = mainObject.getString("ProcessName");
+
+        if (!processName.equals(expectedProcessName)) {
+            throw new PluginException("Expected <[" + expectedProcessName + "]> but found <[" + processName + "]>");
+        }
     }
 
     private void assertKey(final JsonObject obj, final String key, JsonValue.ValueType type) throws PluginException {
@@ -82,17 +111,20 @@ public final class CLType implements EventType {
     }
 
     @Override
-    public Severity severity() {
+    public Severity severity() throws PluginException {
+        validateProcessName();
         return Severity.NOTICE;
     }
 
     @Override
-    public Facility facility() {
+    public Facility facility() throws PluginException {
+        validateProcessName();
         return Facility.AUDIT;
     }
 
     @Override
     public String hostname() throws PluginException {
+        validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
         final String internalWorkspaceResourceId = mainObject.getString("_Internal_WorkspaceResourceId");
@@ -105,21 +137,26 @@ public final class CLType implements EventType {
 
     @Override
     public String appName() throws PluginException {
+        validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(mainObject, "FilePath", JsonValue.ValueType.STRING);
-        final String filePath = mainObject.getString("FilePath");
+        assertKey(mainObject, "SyslogMessage", JsonValue.ValueType.STRING);
+        final String syslogMessage = mainObject.getString("SyslogMessage");
 
-        final String truncatedMd5 = new MD5Hash(filePath).md5().substring(0, 8);
+        final Matcher matcher = appNamePattern.matcher(syslogMessage);
+        if (matcher.find()) {
+            final String uuid = matcher.group("uuid");
+            if (uuid == null) {
+                throw new PluginException("Capture group 'uuid' was not found");
+            }
+            return new ValidRFC5424AppName(uuid).validAppName();
+        }
 
-        final String filename = Paths.get(filePath).getFileName().toString();
-        final String truncatedFilePath = filename.length() < 39 ? filename : filename.substring(0, 39);
-
-        // appname = first 8 chars of filePath MD5 + dash (-) + filename truncated to max 39 chars
-        return new ValidRFC5424AppName(truncatedMd5.concat("-").concat(truncatedFilePath)).validAppName();
+        throw new PluginException("Could not parse appName from SyslogMessage key");
     }
 
     @Override
     public long timestamp() throws PluginException {
+        validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING);
 
@@ -128,6 +165,7 @@ public final class CLType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
+        validateProcessName();
         Set<SDElement> elems = new HashSet<>();
         String time = "";
         if (!parsedEvent.enqueuedTimeUtc().isStub()) {
@@ -168,19 +206,14 @@ public final class CLType implements EventType {
         elems
                 .add(new SDElement("aer_02@48577").addSDParam("timestamp_source", time.isEmpty() ? "generated" : "timeEnqueued"));
 
-        final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-
-        assertKey(mainObject, "_ResourceId", JsonValue.ValueType.STRING);
-        final String resourceId = mainObject.getString("_ResourceId");
-
-        elems.add(new SDElement("origin@48577").addSDParam("_ResourceId", resourceId));
         elems.add(new SDElement("nlf_01@48577").addSDParam("eventType", this.getClass().getSimpleName()));
 
         return elems;
     }
 
     @Override
-    public String msgId() {
+    public String msgId() throws PluginException {
+        validateProcessName();
         String sequenceNumber = "";
         if (!parsedEvent.systemProperties().isStub()) {
             sequenceNumber = String.valueOf(parsedEvent.systemProperties().asMap().getOrDefault("SequenceNumber", ""));
@@ -189,7 +222,8 @@ public final class CLType implements EventType {
     }
 
     @Override
-    public String msg() {
+    public String msg() throws PluginException {
+        validateProcessName();
         return parsedEvent.asString();
     }
 }
