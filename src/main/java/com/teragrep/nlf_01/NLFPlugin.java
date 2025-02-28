@@ -48,15 +48,11 @@ package com.teragrep.nlf_01;
 import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.Plugin;
 import com.teragrep.akv_01.plugin.PluginException;
+import com.teragrep.nlf_01.rule.*;
 import com.teragrep.nlf_01.types.*;
 import com.teragrep.nlf_01.util.EnvironmentSource;
-import com.teragrep.nlf_01.util.RealHostname;
 import com.teragrep.nlf_01.util.Sourceable;
 import com.teragrep.rlo_14.SyslogMessage;
-import jakarta.json.JsonException;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,84 +60,54 @@ import java.util.List;
 public final class NLFPlugin implements Plugin {
 
     private final Sourceable source;
+    private final List<Rule> rules;
 
     public NLFPlugin() {
         this(new EnvironmentSource());
     }
 
     public NLFPlugin(final Sourceable source) {
+        this(source, List.of(new AppInsightRule(), new SyslogRule(source), new ContainerRule(source), new CLRule()));
+    }
+
+    public NLFPlugin(final Sourceable source, final List<Rule> rules) {
         this.source = source;
+        this.rules = rules;
     }
 
     @Override
     public List<SyslogMessage> syslogMessage(final ParsedEvent parsedEvent) throws PluginException {
-        final List<EventType> eventTypes = new ArrayList<>();
         final List<SyslogMessage> syslogMessages = new ArrayList<>();
-        final String containerLogAppNameKey = source.source("containerlog.appname.annotation");
-        final String containerLogHostnameKey = source.source("containerlog.hostname.annotation");
-        final String syslogExpectedProcessName = source.source("syslogtype.processname");
-        final String realHostname = new RealHostname("localhost").hostname();
 
-        if (!parsedEvent.isJsonStructure()) {
-            // non-applicable
-            throw new PluginException(new JsonException("Event was not a JSON structure"));
+        if (rules.isEmpty()) {
+            throw new PluginException("No rules found");
         }
 
-        final JsonStructure json = parsedEvent.asJsonStructure();
-        // Check if main structure is JsonObject
-        if (!json.getValueType().equals(JsonValue.ValueType.OBJECT)) {
-            throw new PluginException(new JsonException("Event was not a JSON object"));
+        Rule currentRule = new RuleStub();
+        for (final Rule rule : rules) {
+            if (rule.matches(parsedEvent)) {
+                System.out.println("Rule match: " + rule);
+                currentRule = rule;
+                break;
+            }
         }
 
-        final JsonObject jsonObject = parsedEvent.asJsonStructure().asJsonObject();
-        if (
-            jsonObject.containsKey("Type") && jsonObject.get("Type").getValueType().equals(JsonValue.ValueType.STRING)
-        ) {
-
-            if (jsonObject.getString("Type").equals("AppTraces")) {
-                eventTypes.add(new AppInsightType(parsedEvent, realHostname));
-            }
-            else if (jsonObject.getString("Type").endsWith("_CL")) {
-                eventTypes.add(new CLType(parsedEvent, realHostname));
-            }
-            else if (jsonObject.getString("Type").equals("ContainerLogV2")) {
-                eventTypes
-                        .add(
-                                new ContainerType(
-                                        parsedEvent,
-                                        containerLogHostnameKey,
-                                        containerLogAppNameKey,
-                                        realHostname
-                                )
-                        );
-            }
-            else if (jsonObject.getString("Type").equals("Syslog")) {
-                eventTypes.add(new SyslogType(parsedEvent, syslogExpectedProcessName, realHostname));
-            }
-            else {
-                throw new PluginException(
-                        new IllegalArgumentException("Invalid event type: " + jsonObject.getString("Type"))
-                );
-            }
-        }
-        else {
-            throw new PluginException(
-                    new IllegalArgumentException("Event was not of expected log format or type was not found")
-            );
+        if (currentRule.isStub()) {
+            throw new PluginException("No applicable rule found for event");
         }
 
-        for (final EventType eventType : eventTypes) {
-            final SyslogMessage syslogMessage = new SyslogMessage()
-                    .withFacility(eventType.facility())
-                    .withSeverity(eventType.severity())
-                    .withTimestamp(eventType.timestamp())
-                    .withAppName(eventType.appName())
-                    .withHostname(eventType.hostname())
-                    .withMsgId(eventType.msgId())
-                    .withMsg(eventType.msg());
-            syslogMessage.setSDElements(eventType.sdElements());
-            syslogMessages.add(syslogMessage);
-        }
+        EventType eventType = currentRule.eventType(parsedEvent);
+
+        final SyslogMessage syslogMessage = new SyslogMessage()
+                .withFacility(eventType.facility())
+                .withSeverity(eventType.severity())
+                .withTimestamp(eventType.timestamp())
+                .withAppName(eventType.appName())
+                .withHostname(eventType.hostname())
+                .withMsgId(eventType.msgId())
+                .withMsg(eventType.msg());
+        syslogMessage.setSDElements(eventType.sdElements());
+        syslogMessages.add(syslogMessage);
 
         return syslogMessages;
     }

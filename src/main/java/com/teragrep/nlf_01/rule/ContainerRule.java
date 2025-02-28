@@ -43,44 +43,58 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.nlf_01.util;
+package com.teragrep.nlf_01.rule;
 
+import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.PluginException;
+import com.teragrep.nlf_01.condition.Condition;
+import com.teragrep.nlf_01.condition.DefaultCondition;
+import com.teragrep.nlf_01.condition.TypeCondition;
+import com.teragrep.nlf_01.types.ContainerType;
+import com.teragrep.nlf_01.types.EventType;
+import com.teragrep.nlf_01.util.RealHostname;
+import com.teragrep.nlf_01.util.Sourceable;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.function.Predicate;
 
-public class EnvironmentSource implements Sourceable {
+public final class ContainerRule implements Rule {
 
-    private final Map<String, String> envValues;
+    private final List<Condition> conditions;
+    private final Sourceable source;
 
-    public EnvironmentSource() {
-        this.envValues = Collections
-                .unmodifiableMap(
-                        System
-                                .getenv()
-                                .entrySet()
-                                .stream()
-                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                );
+    public ContainerRule(final Sourceable source) {
+        this(List.of(new TypeCondition("ContainerLogV2")), source);
     }
 
-    public String source(String name, String defaultValue) {
-        String variable = name.toUpperCase().replace(".", "_");
-        return envValues.getOrDefault(variable, defaultValue);
-    }
-
-    public String source(String name) throws PluginException {
-        final String variable = name.toUpperCase().replace(".", "_");
-        if (!envValues.containsKey(variable)) {
-            throw new PluginException(new IllegalArgumentException("No such environment variable: " + variable));
-        }
-        return envValues.get(variable);
+    public ContainerRule(final List<Condition> conditions, final Sourceable source) {
+        this.conditions = conditions;
+        this.source = source;
     }
 
     @Override
-    public String toString() {
-        return "EnvironmentSource{" + "envValues=" + envValues + '}';
+    public boolean matches(final ParsedEvent parsedEvent) {
+        Predicate<ParsedEvent> condition = new DefaultCondition();
+
+        for (final Condition c : conditions) {
+            condition = c.and(condition);
+        }
+
+        return condition.test(parsedEvent);
+    }
+
+    @Override
+    public EventType eventType(final ParsedEvent parsedEvent) throws PluginException {
+        return new ContainerType(
+                parsedEvent,
+                source.source("containerlog.hostname.annotation"),
+                source.source("containerlog.appname.annotation"),
+                new RealHostname("localhost").hostname()
+        );
+    }
+
+    @Override
+    public boolean isStub() {
+        return false;
     }
 }

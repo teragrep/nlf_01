@@ -65,39 +65,21 @@ import java.util.regex.Pattern;
 public final class SyslogType implements EventType {
 
     private final ParsedEvent parsedEvent;
-    private final String expectedProcessName;
     private final String realHostname;
     private final Pattern appNamePattern;
 
-    public SyslogType(final ParsedEvent parsedEvent, final String expectedProcessName, final String realHostname) {
+    public SyslogType(final ParsedEvent parsedEvent, final String realHostname) {
         this(
                 parsedEvent,
-                expectedProcessName,
                 realHostname,
                 Pattern.compile("^.*?(?<uuid>[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})")
         );
     }
 
-    public SyslogType(
-            final ParsedEvent parsedEvent,
-            final String expectedProcessName,
-            final String realHostname,
-            final Pattern appNamePattern
-    ) {
+    public SyslogType(final ParsedEvent parsedEvent, final String realHostname, final Pattern appNamePattern) {
         this.parsedEvent = parsedEvent;
-        this.expectedProcessName = expectedProcessName;
         this.realHostname = realHostname;
         this.appNamePattern = appNamePattern;
-    }
-
-    private void validateProcessName() throws PluginException {
-        final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(mainObject, "ProcessName", JsonValue.ValueType.STRING);
-        final String processName = mainObject.getString("ProcessName");
-
-        if (!processName.equals(expectedProcessName)) {
-            throw new PluginException("Expected <[" + expectedProcessName + "]> but found <[" + processName + "]>");
-        }
     }
 
     private void assertKey(final JsonObject obj, final String key, JsonValue.ValueType type) throws PluginException {
@@ -112,19 +94,16 @@ public final class SyslogType implements EventType {
 
     @Override
     public Severity severity() throws PluginException {
-        validateProcessName();
         return Severity.NOTICE;
     }
 
     @Override
     public Facility facility() throws PluginException {
-        validateProcessName();
         return Facility.AUDIT;
     }
 
     @Override
     public String hostname() throws PluginException {
-        validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
         final String internalWorkspaceResourceId = mainObject.getString("_Internal_WorkspaceResourceId");
@@ -137,7 +116,6 @@ public final class SyslogType implements EventType {
 
     @Override
     public String appName() throws PluginException {
-        validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "SyslogMessage", JsonValue.ValueType.STRING);
         final String syslogMessage = mainObject.getString("SyslogMessage");
@@ -156,7 +134,6 @@ public final class SyslogType implements EventType {
 
     @Override
     public long timestamp() throws PluginException {
-        validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
         assertKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING);
 
@@ -165,7 +142,6 @@ public final class SyslogType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
-        validateProcessName();
         Set<SDElement> elems = new HashSet<>();
         String time = "";
         if (!parsedEvent.enqueuedTimeUtc().isStub()) {
@@ -213,7 +189,6 @@ public final class SyslogType implements EventType {
 
     @Override
     public String msgId() throws PluginException {
-        validateProcessName();
         String sequenceNumber = "";
         if (!parsedEvent.systemProperties().isStub()) {
             sequenceNumber = String.valueOf(parsedEvent.systemProperties().asMap().getOrDefault("SequenceNumber", ""));
@@ -223,7 +198,6 @@ public final class SyslogType implements EventType {
 
     @Override
     public String msg() throws PluginException {
-        validateProcessName();
         return parsedEvent.asString();
     }
 }

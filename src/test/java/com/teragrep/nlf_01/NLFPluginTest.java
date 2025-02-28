@@ -132,7 +132,7 @@ public class NLFPluginTest {
                 .assertThrows(PluginException.class, () -> plugin.syslogMessage(parsedEvent));
         Assertions
                 .assertEquals(
-                        "java.lang.IllegalArgumentException: No such environment variable: containerlog.appname.annotation",
+                        "java.lang.IllegalArgumentException: No such environment variable: containerlog.hostname.annotation",
                         pluginException.getMessage()
                 );
     }
@@ -331,11 +331,7 @@ public class NLFPluginTest {
         final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
         final PluginException pluginException = Assertions
                 .assertThrows(PluginException.class, () -> plugin.syslogMessage(parsedEvent));
-        Assertions
-                .assertEquals(
-                        "java.lang.IllegalArgumentException: Invalid event type: unexpected",
-                        pluginException.getMessage()
-                );
+        Assertions.assertEquals("No applicable rule found for event", pluginException.getMessage());
     }
 
     @Test
@@ -354,11 +350,7 @@ public class NLFPluginTest {
         final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
         final PluginException pluginException = Assertions
                 .assertThrows(PluginException.class, () -> plugin.syslogMessage(parsedEvent));
-        Assertions
-                .assertEquals(
-                        "java.lang.IllegalArgumentException: Event was not of expected log format or type was not found",
-                        pluginException.getMessage()
-                );
+        Assertions.assertEquals("No applicable rule found for event", pluginException.getMessage());
     }
 
     @Test
@@ -377,8 +369,7 @@ public class NLFPluginTest {
         final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
         final PluginException pluginException = Assertions
                 .assertThrows(PluginException.class, () -> plugin.syslogMessage(parsedEvent));
-        Assertions
-                .assertEquals("jakarta.json.JsonException: Event was not a JSON object", pluginException.getMessage());
+        Assertions.assertEquals("No applicable rule found for event", pluginException.getMessage());
     }
 
     @Test
@@ -397,7 +388,6 @@ public class NLFPluginTest {
         final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
         final PluginException pluginException = Assertions
                 .assertThrows(PluginException.class, () -> plugin.syslogMessage(parsedEvent));
-        Assertions
-                .assertEquals("jakarta.json.JsonException: Event was not a JSON structure", pluginException.getMessage());
+        Assertions.assertEquals("No applicable rule found for event", pluginException.getMessage());
     }
 }

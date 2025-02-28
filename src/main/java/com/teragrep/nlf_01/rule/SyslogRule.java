@@ -43,44 +43,52 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.nlf_01.util;
+package com.teragrep.nlf_01.rule;
 
+import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.PluginException;
+import com.teragrep.nlf_01.condition.Condition;
+import com.teragrep.nlf_01.condition.DefaultCondition;
+import com.teragrep.nlf_01.condition.SyslogProcessNameCondition;
+import com.teragrep.nlf_01.condition.TypeCondition;
+import com.teragrep.nlf_01.types.EventType;
+import com.teragrep.nlf_01.types.SyslogType;
+import com.teragrep.nlf_01.util.RealHostname;
+import com.teragrep.nlf_01.util.Sourceable;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.function.Predicate;
 
-public class EnvironmentSource implements Sourceable {
+public final class SyslogRule implements Rule {
 
-    private final Map<String, String> envValues;
+    private final List<Condition> conditions;
 
-    public EnvironmentSource() {
-        this.envValues = Collections
-                .unmodifiableMap(
-                        System
-                                .getenv()
-                                .entrySet()
-                                .stream()
-                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                );
+    public SyslogRule(final Sourceable source) {
+        this(List.of(new TypeCondition("Syslog"), new SyslogProcessNameCondition(source)));
     }
 
-    public String source(String name, String defaultValue) {
-        String variable = name.toUpperCase().replace(".", "_");
-        return envValues.getOrDefault(variable, defaultValue);
-    }
-
-    public String source(String name) throws PluginException {
-        final String variable = name.toUpperCase().replace(".", "_");
-        if (!envValues.containsKey(variable)) {
-            throw new PluginException(new IllegalArgumentException("No such environment variable: " + variable));
-        }
-        return envValues.get(variable);
+    private SyslogRule(final List<Condition> conditions) {
+        this.conditions = conditions;
     }
 
     @Override
-    public String toString() {
-        return "EnvironmentSource{" + "envValues=" + envValues + '}';
+    public boolean matches(final ParsedEvent parsedEvent) {
+        Predicate<ParsedEvent> condition = new DefaultCondition();
+
+        for (final Condition c : conditions) {
+            condition = c.and(condition);
+        }
+
+        return condition.test(parsedEvent);
+    }
+
+    @Override
+    public EventType eventType(final ParsedEvent parsedEvent) throws PluginException {
+        return new SyslogType(parsedEvent, new RealHostname("localhost").hostname());
+    }
+
+    @Override
+    public boolean isStub() {
+        return false;
     }
 }
