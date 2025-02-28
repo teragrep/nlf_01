@@ -86,7 +86,6 @@ public final class NLFPlugin implements Plugin {
         Rule currentRule = new RuleStub();
         for (final Rule rule : rules) {
             if (rule.matches(parsedEvent)) {
-                System.out.println("Rule match: " + rule);
                 currentRule = rule;
                 break;
             }
