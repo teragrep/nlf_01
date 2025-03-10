@@ -130,7 +130,7 @@ public final class SyslogTypeTest {
                 "src/test/resources/syslog.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
-        final SyslogType type = new SyslogType(parsedEvent, "Soft-Ware", "localhost");
+        final SyslogType type = new SyslogType(parsedEvent, "localhost");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -184,7 +184,7 @@ public final class SyslogTypeTest {
                 new EventSystemPropertiesStub(), new EnqueuedTimeStub(), new EventOffsetStub()
         );
 
-        final SyslogType type = new SyslogType(parsedEvent, "Soft-Ware", "localhost");
+        final SyslogType type = new SyslogType(parsedEvent, "localhost");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -234,7 +234,7 @@ public final class SyslogTypeTest {
                 new EventOffsetStub()
         );
 
-        final SyslogType type = new SyslogType(parsedEvent, "Soft-Ware", "localhost");
+        final SyslogType type = new SyslogType(parsedEvent, "localhost");
 
         Assertions.assertThrows(PluginException.class, type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -283,17 +283,18 @@ public final class SyslogTypeTest {
                 new EventOffsetStub()
         );
 
-        final SyslogType type = new SyslogType(parsedEvent, "Soft-Ware", "localhost");
+        final SyslogType type = new SyslogType(parsedEvent, "localhost");
 
-        // All should throw an error because ProcessName is missing from JSON
+        // Responsibility of checking ProcessName is moved to SyslogRule,
+        // only methods that require any of the missing keys will throw an Exception
         Assertions.assertThrows(PluginException.class, type::appName);
-        Assertions.assertThrows(PluginException.class, type::facility);
+        Assertions.assertDoesNotThrow(type::facility);
         Assertions.assertThrows(PluginException.class, type::hostname);
-        Assertions.assertThrows(PluginException.class, type::msg);
-        Assertions.assertThrows(PluginException.class, type::msgId);
-        Assertions.assertThrows(PluginException.class, type::severity);
+        Assertions.assertDoesNotThrow(type::msg);
+        Assertions.assertDoesNotThrow(type::msgId);
+        Assertions.assertDoesNotThrow(type::severity);
         Assertions.assertThrows(PluginException.class, type::timestamp);
-        Assertions.assertThrows(PluginException.class, type::sdElements);
+        Assertions.assertDoesNotThrow(type::sdElements);
     }
 
     @Test
@@ -304,7 +305,7 @@ public final class SyslogTypeTest {
                 new EventOffsetStub()
         );
 
-        final SyslogType type = new SyslogType(parsedEvent, "Soft-Ware", "localhost");
+        final SyslogType type = new SyslogType(parsedEvent, "localhost");
 
         Assertions.assertThrows(PluginException.class, type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
