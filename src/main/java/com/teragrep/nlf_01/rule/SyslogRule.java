@@ -43,71 +43,52 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.nlf_01;
+package com.teragrep.nlf_01.rule;
 
 import com.teragrep.akv_01.event.ParsedEvent;
-import com.teragrep.akv_01.plugin.Plugin;
 import com.teragrep.akv_01.plugin.PluginException;
-import com.teragrep.nlf_01.rule.*;
-import com.teragrep.nlf_01.types.*;
-import com.teragrep.nlf_01.util.EnvironmentSource;
+import com.teragrep.nlf_01.condition.Condition;
+import com.teragrep.nlf_01.condition.DefaultCondition;
+import com.teragrep.nlf_01.condition.SyslogProcessNameCondition;
+import com.teragrep.nlf_01.condition.TypeCondition;
+import com.teragrep.nlf_01.types.EventType;
+import com.teragrep.nlf_01.types.SyslogType;
+import com.teragrep.nlf_01.util.RealHostname;
 import com.teragrep.nlf_01.util.Sourceable;
-import com.teragrep.rlo_14.SyslogMessage;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
-public final class NLFPlugin implements Plugin {
+public final class SyslogRule implements Rule {
 
-    private final Sourceable source;
-    private final List<Rule> rules;
+    private final List<Condition> conditions;
 
-    public NLFPlugin() {
-        this(new EnvironmentSource());
+    public SyslogRule(final Sourceable source) {
+        this(List.of(new TypeCondition("Syslog"), new SyslogProcessNameCondition(source)));
     }
 
-    public NLFPlugin(final Sourceable source) {
-        this(source, List.of(new AppInsightRule(), new SyslogRule(source), new ContainerRule(source), new CLRule()));
-    }
-
-    public NLFPlugin(final Sourceable source, final List<Rule> rules) {
-        this.source = source;
-        this.rules = rules;
+    private SyslogRule(final List<Condition> conditions) {
+        this.conditions = conditions;
     }
 
     @Override
-    public List<SyslogMessage> syslogMessage(final ParsedEvent parsedEvent) throws PluginException {
-        final List<SyslogMessage> syslogMessages = new ArrayList<>();
+    public boolean matches(final ParsedEvent parsedEvent) {
+        Predicate<ParsedEvent> condition = new DefaultCondition();
 
-        if (rules.isEmpty()) {
-            throw new PluginException("No rules found");
+        for (final Condition c : conditions) {
+            condition = c.and(condition);
         }
 
-        Rule currentRule = new RuleStub();
-        for (final Rule rule : rules) {
-            if (rule.matches(parsedEvent)) {
-                currentRule = rule;
-                break;
-            }
-        }
+        return condition.test(parsedEvent);
+    }
 
-        if (currentRule.isStub()) {
-            throw new PluginException("No applicable rule found for event");
-        }
+    @Override
+    public EventType eventType(final ParsedEvent parsedEvent) throws PluginException {
+        return new SyslogType(parsedEvent, new RealHostname("localhost").hostname());
+    }
 
-        EventType eventType = currentRule.eventType(parsedEvent);
-
-        final SyslogMessage syslogMessage = new SyslogMessage()
-                .withFacility(eventType.facility())
-                .withSeverity(eventType.severity())
-                .withTimestamp(eventType.timestamp())
-                .withAppName(eventType.appName())
-                .withHostname(eventType.hostname())
-                .withMsgId(eventType.msgId())
-                .withMsg(eventType.msg());
-        syslogMessage.setSDElements(eventType.sdElements());
-        syslogMessages.add(syslogMessage);
-
-        return syslogMessages;
+    @Override
+    public boolean isStub() {
+        return false;
     }
 }

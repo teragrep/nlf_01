@@ -43,71 +43,55 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.nlf_01;
+package com.teragrep.nlf_01.condition;
 
 import com.teragrep.akv_01.event.ParsedEvent;
-import com.teragrep.akv_01.plugin.Plugin;
 import com.teragrep.akv_01.plugin.PluginException;
-import com.teragrep.nlf_01.rule.*;
-import com.teragrep.nlf_01.types.*;
-import com.teragrep.nlf_01.util.EnvironmentSource;
 import com.teragrep.nlf_01.util.Sourceable;
-import com.teragrep.rlo_14.SyslogMessage;
+import jakarta.json.JsonValue;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public final class NLFPlugin implements Plugin {
+public final class SyslogProcessNameCondition implements Condition {
 
     private final Sourceable source;
-    private final List<Rule> rules;
 
-    public NLFPlugin() {
-        this(new EnvironmentSource());
-    }
-
-    public NLFPlugin(final Sourceable source) {
-        this(source, List.of(new AppInsightRule(), new SyslogRule(source), new ContainerRule(source), new CLRule()));
-    }
-
-    public NLFPlugin(final Sourceable source, final List<Rule> rules) {
+    public SyslogProcessNameCondition(final Sourceable source) {
         this.source = source;
-        this.rules = rules;
     }
 
     @Override
-    public List<SyslogMessage> syslogMessage(final ParsedEvent parsedEvent) throws PluginException {
-        final List<SyslogMessage> syslogMessages = new ArrayList<>();
-
-        if (rules.isEmpty()) {
-            throw new PluginException("No rules found");
+    public boolean test(final ParsedEvent parsedEvent) {
+        boolean valid = parsedEvent.isJsonStructure();
+        String processName = "";
+        try {
+            processName = source.source("syslogtype.processname");
+        }
+        catch (PluginException e) {
+            valid = false;
         }
 
-        Rule currentRule = new RuleStub();
-        for (final Rule rule : rules) {
-            if (rule.matches(parsedEvent)) {
-                currentRule = rule;
-                break;
-            }
+        if (valid && !parsedEvent.asJsonStructure().getValueType().equals(JsonValue.ValueType.OBJECT)) {
+            valid = false;
         }
 
-        if (currentRule.isStub()) {
-            throw new PluginException("No applicable rule found for event");
+        if (valid && !parsedEvent.asJsonStructure().asJsonObject().containsKey("ProcessName")) {
+            valid = false;
         }
 
-        EventType eventType = currentRule.eventType(parsedEvent);
+        if (
+            valid && !parsedEvent
+                    .asJsonStructure()
+                    .asJsonObject()
+                    .get("ProcessName")
+                    .getValueType()
+                    .equals(JsonValue.ValueType.STRING)
+        ) {
+            valid = false;
+        }
 
-        final SyslogMessage syslogMessage = new SyslogMessage()
-                .withFacility(eventType.facility())
-                .withSeverity(eventType.severity())
-                .withTimestamp(eventType.timestamp())
-                .withAppName(eventType.appName())
-                .withHostname(eventType.hostname())
-                .withMsgId(eventType.msgId())
-                .withMsg(eventType.msg());
-        syslogMessage.setSDElements(eventType.sdElements());
-        syslogMessages.add(syslogMessage);
+        if (valid && !parsedEvent.asJsonStructure().asJsonObject().getString("ProcessName").equals(processName)) {
+            valid = false;
+        }
 
-        return syslogMessages;
+        return valid;
     }
 }

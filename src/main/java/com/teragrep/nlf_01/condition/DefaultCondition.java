@@ -43,44 +43,14 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.nlf_01.util;
+package com.teragrep.nlf_01.condition;
 
-import com.teragrep.akv_01.plugin.PluginException;
+import com.teragrep.akv_01.event.ParsedEvent;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-public class EnvironmentSource implements Sourceable {
-
-    private final Map<String, String> envValues;
-
-    public EnvironmentSource() {
-        this.envValues = Collections
-                .unmodifiableMap(
-                        System
-                                .getenv()
-                                .entrySet()
-                                .stream()
-                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                );
-    }
-
-    public String source(String name, String defaultValue) {
-        String variable = name.toUpperCase().replace(".", "_");
-        return envValues.getOrDefault(variable, defaultValue);
-    }
-
-    public String source(String name) throws PluginException {
-        final String variable = name.toUpperCase().replace(".", "_");
-        if (!envValues.containsKey(variable)) {
-            throw new PluginException(new IllegalArgumentException("No such environment variable: " + variable));
-        }
-        return envValues.get(variable);
-    }
+public final class DefaultCondition implements Condition {
 
     @Override
-    public String toString() {
-        return "EnvironmentSource{" + "envValues=" + envValues + '}';
+    public boolean test(final ParsedEvent ignored) {
+        return true;
     }
 }
