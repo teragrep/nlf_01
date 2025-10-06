@@ -127,7 +127,7 @@ public final class FunctionAppLogsType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() {
-        Set<SDElement> elems = new HashSet<>();
+        final Set<SDElement> elems = new HashSet<>();
         String time = "";
         if (!parsedEvent.enqueuedTimeUtc().isStub()) {
             time = parsedEvent.enqueuedTimeUtc().zonedDateTime().toString();
