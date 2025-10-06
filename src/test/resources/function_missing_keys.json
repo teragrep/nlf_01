@@ -1,0 +1,23 @@
+{
+  "Category": "function-logs",
+  "EventId": 123,
+  "EventName": "event-name",
+  "ExceptionDetails": "123abc",
+  "ExceptionMessage": "Found a null value",
+  "ExceptionType": "NPE",
+  "FunctionInvocationId": "12345678",
+  "FunctionName": "function-1",
+  "HostInstanceId": "host-instance-1",
+  "HostVersion": "1.2.3.4.a",
+  "Level": "Debug",
+  "LevelId": 1,
+  "Location": "function-1",
+  "Message": "message",
+  "ProcessId": 123456,
+  "RoleInstance": "message",
+  "SourceSystem": "Azure",
+  "TenantId": "12",
+  "Type": "FunctionAppLogs",
+  "_BilledSize": 1,
+  "_ItemId": "12-34-56-78"
+}
