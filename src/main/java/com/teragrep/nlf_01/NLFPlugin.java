@@ -118,13 +118,17 @@ public final class NLFPlugin implements Plugin {
             else if (jsonObject.getString("Type").equals("Syslog")) {
                 eventTypes.add(new SyslogType(parsedEvent, syslogExpectedProcessName, realHostname));
             }
-            else {
-                throw new PluginException(
-                        new IllegalArgumentException("Invalid event type: " + jsonObject.getString("Type"))
-                );
+        }
+        else if (
+            jsonObject.containsKey("AppType")
+                    && jsonObject.get("AppType").getValueType().equals(JsonValue.ValueType.STRING)
+        ) {
+            if (jsonObject.getString("AppType").equals("PostgreSQL")) {
+                eventTypes.add(new PostgreSQLType(parsedEvent, realHostname));
             }
         }
-        else {
+
+        if (eventTypes.isEmpty()) {
             throw new PluginException(
                     new IllegalArgumentException("Event was not of expected log format or type was not found")
             );

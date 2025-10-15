@@ -1,0 +1,26 @@
+{
+  "AppImage":"cinnamon/postgres_standalone_12_a1:12.3.456789",
+  "AppType":"PostgreSQL",
+  "AppVersion":"abcdefghj12_2020-01-01-12-34-56",
+  "Region":"countrycentral",
+  "category":"PostgreSQLLogs",
+  "location":"countrycentral",
+  "operationName":"LogEvent",
+  "properties":
+    {
+      "timestamp":"2020-10-01 11:59:26.256 UTC",
+      "processId":1234567,
+      "errorLevel":"LOG",
+      "sqlerrcode":"00000",
+      "backend_type":"client backend",
+      "message":"2020-10-01 11:59:26 UTC-12abcd3e.4f5678-user=user012,db=dbase_maintenance,app=[unknown],client=127.0.0.1LOG:  AUDIT: SESSION,4,1,WRITE,INSERT,,,\"insert into test.abcmover (id, update_time) select 1, now() on conflict on constraint abcmover_pk do update set id = test.abcmover.id+1, update_time=now()\",<not logged>"
+    },
+  "resourceId":"/SUBSCRIPTIONS/uuid/RESOURCEGROUPS/ab-cd-efgh-ijklmn-xx-DEV-01/PROVIDERS/postgres-db/FLEXIBLESERVERS/efgh-ijklmn-xx-DEV-01",
+  "time":"2020-10-01T11:59:26.256Z",
+  "ServerType":"PostgreSQL",
+  "LogicalServerName":"efgh-ijklmn-xx-DEV-01",
+  "ServerVersion":"abcdefghj12_2020-01-01-12-34-56",
+  "ServerLocation":"prod:countrycentral",
+  "ReplicaRole":"Primary",
+  "OriginalPrimaryServerName":"efgh-ijklmn-xx-DEV-01"
+}
