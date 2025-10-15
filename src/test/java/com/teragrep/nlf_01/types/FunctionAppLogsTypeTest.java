@@ -71,8 +71,6 @@ import com.teragrep.rlo_14.Severity;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
-import jakarta.json.JsonValue;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -93,15 +91,10 @@ class FunctionAppLogsTypeTest {
             final EnqueuedTime enqueuedTime,
             final EventOffset offset
     ) {
-        JsonObject json = JsonValue.EMPTY_JSON_OBJECT;
-        try (
-                final InputStream is = Files.newInputStream(Paths.get(path)); final JsonReader reader = Json.createReader(is)
-        ) {
-            json = reader.readObject();
-        }
-        catch (final IOException e) {
-            Assertions.fail("Failed to read test data from file", e);
-        }
+        final InputStream is = Assertions.assertDoesNotThrow(() -> Files.newInputStream(Paths.get(path)));
+        final JsonReader reader = Json.createReader(is);
+
+        final JsonObject json = reader.readObject();
 
         return new ParsedEventFactory(
                 new UnparsedEventImpl(json.toString(), partitionCtx, props, sysProps, enqueuedTime, offset)
