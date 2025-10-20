@@ -124,7 +124,7 @@ public final class PostgreSQLType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
-        Set<SDElement> elems = new HashSet<>();
+        final Set<SDElement> elems = new HashSet<>();
         String time = "";
         if (!parsedEvent.enqueuedTimeUtc().isStub()) {
             time = parsedEvent.enqueuedTimeUtc().zonedDateTime().toString();
