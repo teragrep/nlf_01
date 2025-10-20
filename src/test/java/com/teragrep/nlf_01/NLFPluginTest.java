@@ -61,7 +61,6 @@ import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeStub;
 import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.fakes.EmptySourceable;
 import com.teragrep.nlf_01.fakes.FakeSourceable;
-import com.teragrep.nlf_01.types.ADFPipelineRunType;
 import com.teragrep.nlf_01.types.*;
 import com.teragrep.rlo_14.*;
 import org.junit.jupiter.api.Assertions;
@@ -343,6 +342,38 @@ public class NLFPluginTest {
         Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
         Assertions.assertEquals(SyslogType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
+        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+    }
+
+    @Test
+    void adfActivityRunType() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/adfactivityrun.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals("md5-9a158bcb7f606be82864f3396c9c9496-EXAMPLE-DEV-ABC-001", syslogMessage.getHostname());
+        Assertions.assertEquals("Pipeline-1", syslogMessage.getAppName());
+        Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
+        Assertions.assertEquals(json, syslogMessage.getMsg());
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(ADFActivityRunType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertEquals(4, sdElementMap.get("aer_02_event@48577").size());
         Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
     }
 
