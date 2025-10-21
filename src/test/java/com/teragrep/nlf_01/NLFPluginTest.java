@@ -347,7 +347,7 @@ public class NLFPluginTest {
                 );
         Assertions
                 .assertEquals("md5-bfd1db26c3c4f8a2936317cf4ec729ea-efgh-ijklmn-xx-DEV-01", syslogMessage.getHostname());
-        Assertions.assertEquals("PostgreSQL", syslogMessage.getAppName());
+        Assertions.assertEquals("dbase_maintenance", syslogMessage.getAppName());
         Assertions.assertEquals("2020-10-01T11:59:26.256Z", syslogMessage.getTimestamp());
 
         final Map<String, Map<String, String>> sdElementMap = syslogMessage

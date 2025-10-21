@@ -136,7 +136,7 @@ public final class PostgreSQLTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("PostgreSQL", actualAppName);
+        Assertions.assertEquals("dbase_maintenance", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-bfd1db26c3c4f8a2936317cf4ec729ea-efgh-ijklmn-xx-DEV-01", actualHostname);
         Assertions
@@ -191,7 +191,7 @@ public final class PostgreSQLTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("PostgreSQL", actualAppName);
+        Assertions.assertEquals("dbase_maintenance", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-bfd1db26c3c4f8a2936317cf4ec729ea-efgh-ijklmn-xx-DEV-01", actualHostname);
         Assertions

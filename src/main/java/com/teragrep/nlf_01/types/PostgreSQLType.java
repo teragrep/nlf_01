@@ -59,15 +59,23 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class PostgreSQLType implements EventType {
 
     private final ParsedEvent parsedEvent;
     private final String realHostname;
+    private final Pattern appNamePattern;
 
     public PostgreSQLType(final ParsedEvent parsedEvent, final String realHostname) {
+        this(parsedEvent, realHostname, Pattern.compile("^.*?db=(?<dbName>.*?),"));
+    }
+
+    public PostgreSQLType(final ParsedEvent parsedEvent, final String realHostname, final Pattern appNamePattern) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
+        this.appNamePattern = appNamePattern;
     }
 
     private void assertKey(final JsonObject obj, final String key, final JsonValue.ValueType type)
@@ -107,10 +115,21 @@ public final class PostgreSQLType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "AppType", JsonValue.ValueType.STRING);
-        final String appType = record.getString("AppType");
+        assertKey(record, "properties", JsonValue.ValueType.OBJECT);
+        final JsonObject properties = record.getJsonObject("properties");
+        assertKey(properties, "message", JsonValue.ValueType.STRING);
+        final String message = properties.getString("message");
 
-        return new ValidRFC5424AppName(new ASCIIString(appType).withNonAsciiCharsRemoved()).validAppName();
+        final Matcher matcher = appNamePattern.matcher(message);
+        if (matcher.find()) {
+            final String dbName = matcher.group("dbName");
+            if (dbName == null) {
+                throw new PluginException("Capture group 'dbName' was not found");
+            }
+            return new ValidRFC5424AppName(new ASCIIString(dbName).withNonAsciiCharsRemoved()).validAppName();
+        }
+
+        throw new PluginException("Could not parse dbName from properties.message");
     }
 
     @Override
