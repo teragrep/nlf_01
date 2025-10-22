@@ -96,6 +96,9 @@ class ADFPipelineRunTypeTest {
 
         final JsonObject json = Assertions.assertDoesNotThrow(reader::readObject);
 
+        Assertions.assertDoesNotThrow(is::close);
+        Assertions.assertDoesNotThrow(reader::close);
+
         return new ParsedEventFactory(
                 new UnparsedEventImpl(json.toString(), partitionCtx, props, sysProps, enqueuedTime, offset)
         ).parsedEvent();
