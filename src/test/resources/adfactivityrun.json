@@ -18,7 +18,7 @@
   "Output": "{\"pipelineName\":\"abc_reference_one\",\"pipelineRunId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"pipelineReturnValue\":{}}",
   "PipelineName": "Pipeline-1",
   "PipelineRunId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
-  "ResourceId": "/SUBSCRIPTIONS/BB41A487-309B-4D21-9AB8-2A8B948B2D18/RESOURCEGROUPS/RG-EXAMPLE-DEV-01/PROVIDERS/MICROSOFT.DATAFACTORY/FACTORIES/EXAMPLE-DEV-ABC-001",
+  "ResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
   "SourceSystem": "Azure",
   "Start": "2025-10-06T00:00:00.0000000Z",
   "Status": "Failed",
@@ -28,8 +28,8 @@
   "TimeGenerated": "2025-10-06T00:00:00.0000000Z",
   "_ItemId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
   "TenantId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
-  "_ResourceId": "/SUBSCRIPTIONS/BB41A487-309B-4D21-9AB8-2A8B948B2D18/RESOURCEGROUPS/RG-EXAMPLE-DEV-01/PROVIDERS/MICROSOFT.DATAFACTORY/FACTORIES/EXAMPLE-DEV-ABC-001",
+  "_ResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
   "_SubscriptionId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
   "_TimeReceived": "2025-10-06T00:00:00.0000000Z",
-  "_Internal_WorkspaceResourceId": "/subscriptions/bb41a487-309b-4d21-9ab8-2a8b948b2d18/resourcegroups/rg-example-law-01/providers/microsoft.operationalinsights/workspaces/law-example-abc-01"
+  "_Internal_WorkspaceResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}"
 }

@@ -360,7 +360,7 @@ public class NLFPluginTest {
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions
-                .assertEquals("md5-9a158bcb7f606be82864f3396c9c9496-EXAMPLE-DEV-ABC-001", syslogMessage.getHostname());
+                .assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
         Assertions.assertEquals("Pipeline-1", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
         Assertions.assertEquals(json, syslogMessage.getMsg());
