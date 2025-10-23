@@ -61,6 +61,7 @@ import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeStub;
 import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.fakes.EmptySourceable;
 import com.teragrep.nlf_01.fakes.FakeSourceable;
+import com.teragrep.nlf_01.types.ADFPipelineRunType;
 import com.teragrep.nlf_01.types.*;
 import com.teragrep.rlo_14.*;
 import org.junit.jupiter.api.Assertions;
@@ -258,6 +259,42 @@ public class NLFPluginTest {
                 );
 
         Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+    }
+
+    @Test
+    void adfPipelineRunType() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/adfpipelinerun.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions.assertEquals(json, syslogMessage.getMsg());
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("MainPipeline", syslogMessage.getAppName());
+        Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertNotNull(sdElementMap);
+        Assertions.assertEquals(5, sdElementMap.size());
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(ADFPipelineRunType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer_02@48577").get("timestamp_source"));
+        Assertions.assertEquals("2020-01-01T00:00Z", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
     }
 
     @Test

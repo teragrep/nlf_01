@@ -97,8 +97,10 @@ public final class NLFPlugin implements Plugin {
         if (
             jsonObject.containsKey("Type") && jsonObject.get("Type").getValueType().equals(JsonValue.ValueType.STRING)
         ) {
-
-            if (jsonObject.getString("Type").equals("AppTraces")) {
+            if (jsonObject.getString("Type").equals("ADFPipelineRun")) {
+                eventTypes.add(new ADFPipelineRunType(parsedEvent, realHostname));
+            }
+            else if (jsonObject.getString("Type").equals("AppTraces")) {
                 eventTypes.add(new AppInsightType(parsedEvent, realHostname));
             }
             else if (jsonObject.getString("Type").endsWith("_CL")) {
