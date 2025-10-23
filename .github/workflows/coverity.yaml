@@ -12,7 +12,7 @@ jobs:
       COVERITY: coverity_tool
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           
@@ -23,7 +23,7 @@ jobs:
         run: printf "RELEASE_VERSION=%q\n" "$(git describe --tags)" >> $GITHUB_ENV
 
       - name: Setup Maven Central
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v5
         with:
           java-version: 11
           distribution: 'adopt'
