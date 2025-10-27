@@ -106,6 +106,9 @@ public final class NLFPlugin implements Plugin {
             else if (jsonObject.getString("Type").equals("AppTraces")) {
                 eventTypes.add(new AppInsightType(parsedEvent, realHostname));
             }
+            else if (jsonObject.getString("Type").equals("FunctionAppLogs")) {
+                eventTypes.add(new FunctionAppLogsType(parsedEvent, realHostname));
+            }
             else if (jsonObject.getString("Type").endsWith("_CL")) {
                 eventTypes.add(new CLType(parsedEvent, realHostname));
             }
