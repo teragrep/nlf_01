@@ -96,6 +96,9 @@ class FunctionAppLogsTypeTest {
 
         final JsonObject json = reader.readObject();
 
+        Assertions.assertDoesNotThrow(is::close);
+        Assertions.assertDoesNotThrow(reader::close);
+
         return new ParsedEventFactory(
                 new UnparsedEventImpl(json.toString(), partitionCtx, props, sysProps, enqueuedTime, offset)
         ).parsedEvent();
