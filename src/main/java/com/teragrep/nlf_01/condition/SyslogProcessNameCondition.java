@@ -60,38 +60,60 @@ public final class SyslogProcessNameCondition implements Condition {
 
     @Override
     public boolean test(final ParsedEvent parsedEvent) {
-        boolean valid = parsedEvent.isJsonStructure();
-        String processName = "";
-        try {
-            processName = source.source("syslogtype.processname");
-        }
-        catch (PluginException e) {
-            valid = false;
+        boolean isJsonStructure = parsedEvent.isJsonStructure();
+
+        final String processName;
+        final boolean hasProcessName;
+        if (isJsonStructure) {
+            try {
+                processName = source.source("syslogtype.processname");
+                hasProcessName = true;
+            }
+            catch (PluginException e) {
+                processName = "";
+                hasProcessName = false;
+            }
         }
 
-        if (valid && !parsedEvent.asJsonStructure().getValueType().equals(JsonValue.ValueType.OBJECT)) {
-            valid = false;
+        final boolean isJsonObjectType;
+        if (hasProcessName && !parsedEvent.asJsonStructure().getValueType().equals(JsonValue.ValueType.OBJECT)) {
+            isJsonObjectType = false;
+        }
+        else {
+            isJsonObjectType = true;
         }
 
-        if (valid && !parsedEvent.asJsonStructure().asJsonObject().containsKey("ProcessName")) {
-            valid = false;
+        final boolean containsProcessNameKey;
+        if (isJsonObjectType && !parsedEvent.asJsonStructure().asJsonObject().containsKey("ProcessName")) {
+            containsProcessNameKey = false;
+        }
+        else {
+            containsProcessNameKey = true;
         }
 
+        final boolean processNameIsString;
         if (
-            valid && !parsedEvent
+            containsProcessNameKey && !parsedEvent
                     .asJsonStructure()
                     .asJsonObject()
                     .get("ProcessName")
                     .getValueType()
                     .equals(JsonValue.ValueType.STRING)
         ) {
-            valid = false;
+            processNameIsString = false;
+        }
+        else {
+            processNameIsString = true;
         }
 
-        if (valid && !parsedEvent.asJsonStructure().asJsonObject().getString("ProcessName").equals(processName)) {
-            valid = false;
+        final boolean processNameIsEqual;
+        if (processNameIsString && !parsedEvent.asJsonStructure().asJsonObject().getString("ProcessName").equals(processName)) {
+            processNameIsEqual = false;
+        }
+        else {
+            processNameIsEqual = true;
         }
 
-        return valid;
+        return processNameIsEqual;
     }
 }
