@@ -107,7 +107,10 @@ public final class SyslogProcessNameCondition implements Condition {
         }
 
         final boolean processNameIsEqual;
-        if (processNameIsString && !parsedEvent.asJsonStructure().asJsonObject().getString("ProcessName").equals(processName)) {
+        if (
+            processNameIsString
+                    && !parsedEvent.asJsonStructure().asJsonObject().getString("ProcessName").equals(processName)
+        ) {
             processNameIsEqual = false;
         }
         else {
