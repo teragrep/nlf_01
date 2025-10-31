@@ -58,31 +58,47 @@ public final class TypeCondition implements Condition {
 
     @Override
     public boolean test(final ParsedEvent parsedEvent) {
-        boolean valid = parsedEvent.isJsonStructure();
+        final boolean isJsonStructure = parsedEvent.isJsonStructure();
 
-        if (valid && !parsedEvent.asJsonStructure().getValueType().equals(JsonValue.ValueType.OBJECT)) {
-            valid = false;
+        final boolean jsonValueIsObject;
+        if (isJsonStructure && parsedEvent.asJsonStructure().getValueType().equals(JsonValue.ValueType.OBJECT)) {
+            jsonValueIsObject = true;
+        }
+        else {
+            jsonValueIsObject = false;
         }
 
-        if (valid && !parsedEvent.asJsonStructure().asJsonObject().containsKey("Type")) {
-            valid = false;
+        final boolean jsonObjectContainsType;
+        if (jsonValueIsObject && parsedEvent.asJsonStructure().asJsonObject().containsKey("Type")) {
+            jsonObjectContainsType = true;
+        }
+        else {
+            jsonObjectContainsType = false;
         }
 
+        final boolean jsonObjectTypeIsString;
         if (
-            valid && !parsedEvent
+            jsonObjectContainsType && parsedEvent
                     .asJsonStructure()
                     .asJsonObject()
                     .get("Type")
                     .getValueType()
                     .equals(JsonValue.ValueType.STRING)
         ) {
-            valid = false;
+            jsonObjectTypeIsString = true;
+        }
+        else {
+            jsonObjectTypeIsString = false;
         }
 
-        if (valid && !parsedEvent.asJsonStructure().asJsonObject().getString("Type").equals(type)) {
-            valid = false;
+        final boolean jsonObjectTypeIsEqual;
+        if (jsonObjectTypeIsString && parsedEvent.asJsonStructure().asJsonObject().getString("Type").equals(type)) {
+            jsonObjectTypeIsEqual = true;
+        }
+        else {
+            jsonObjectTypeIsEqual = false;
         }
 
-        return valid;
+        return jsonObjectTypeIsEqual;
     }
 }
