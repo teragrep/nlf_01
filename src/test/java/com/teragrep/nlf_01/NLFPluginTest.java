@@ -481,6 +481,66 @@ public class NLFPluginTest {
     }
 
     @Test
+    void logicAppWorkflowRuntimeTest() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/logicapp_workflow_runtime.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"ActionName\": \"ActionName-1\",\n"
+                                + "  \"ActionTrackingId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"ClientKeywords\": \"{}\",\n"
+                                + "  \"ClientTrackingId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"Code\": \"400\",\n" + "  \"EndTime\": \"2025-10-06T00:00:00.0000000Z\",\n"
+                                + "  \"Error\": \"Error 2\",\n" + "  \"Location\": \"locationcentral\",\n"
+                                + "  \"OperationName\": \"Operation-1\",\n"
+                                + "  \"OriginRunId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"RetryHistory\": \"None\",\n"
+                                + "  \"RunId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"StartTime\": \"2025-10-06T00:00:00.0000000Z\",\n"
+                                + "  \"TrackedProperties\": \"{}\",\n"
+                                + "  \"PipelineRunId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"SourceSystem\": \"Azure\",\n" + "  \"Status\": \"Failed\",\n"
+                                + "  \"Tags\": \"{}\",\n" + "  \"Type\": \"LogicAppWorkflowRuntime\",\n"
+                                + "  \"WorkflowId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"WorkflowName\": \"Workflow-2\",\n" + "  \"TriggerName\": \"Trigger-1\",\n"
+                                + "  \"TimeGenerated\": \"2025-10-06T00:00:00.0000000Z\",\n"
+                                + "  \"_ItemId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"TenantId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_SubscriptionId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"_TimeReceived\": \"2025-10-06T00:00:00.0000000Z\",\n"
+                                + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
+                                + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("Workflow-2", syslogMessage.getAppName());
+        Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(LogicAppWorkflowRuntimeType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+    }
+
+    @Test
     void unexpectedType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/unexpected.json")));
