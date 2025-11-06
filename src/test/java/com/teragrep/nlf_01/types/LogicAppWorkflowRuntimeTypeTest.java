@@ -81,7 +81,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class LogicAppWorkflowRuntimeTypeTest {
+final class LogicAppWorkflowRuntimeTypeTest {
 
     private ParsedEvent testEvent(
             final String path,
