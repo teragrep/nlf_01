@@ -114,7 +114,8 @@ public final class LogicAppWorkflowRuntimeType implements EventType {
 
         assertKey(record, "WorkflowName", JsonValue.ValueType.STRING);
 
-        return new ValidRFC5424AppName(record.getString("WorkflowName")).validAppName();
+        return new ValidRFC5424AppName(new ASCIIString(record.getString("WorkflowName")).withNonAsciiCharsRemoved())
+                .validAppName();
 
     }
 
