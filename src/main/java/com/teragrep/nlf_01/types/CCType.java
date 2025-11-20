@@ -141,21 +141,30 @@ public final class CCType implements EventType {
     @Override
     public Set<SDElement> sdElements() throws PluginException {
         final Set<SDElement> elems = new HashSet<>();
-        String time = "";
+        final String time;
         if (!parsedEvent.enqueuedTimeUtc().isStub()) {
             time = parsedEvent.enqueuedTimeUtc().zonedDateTime().toString();
         }
+        else {
+            time = "";
+        }
 
-        String fullyQualifiedNamespace = "";
-        String eventHubName = "";
-        String partitionId = "";
-        String consumerGroup = "";
+        final String fullyQualifiedNamespace;
+        final String eventHubName;
+        final String partitionId;
+        final String consumerGroup;
         if (!parsedEvent.partitionCtx().isStub()) {
             fullyQualifiedNamespace = String
                     .valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("FullyQualifiedNamespace", ""));
             eventHubName = String.valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("EventHubName", ""));
             partitionId = String.valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("PartitionId", ""));
             consumerGroup = String.valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("ConsumerGroup", ""));
+        }
+        else {
+            fullyQualifiedNamespace = "";
+            eventHubName = "";
+            partitionId = "";
+            consumerGroup = "";
         }
 
         elems
@@ -164,14 +173,20 @@ public final class CCType implements EventType {
         elems
                 .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", realHostname).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
 
-        String partitionKey = "";
+        final String partitionKey;
         if (!parsedEvent.systemProperties().isStub()) {
             partitionKey = String.valueOf(parsedEvent.systemProperties().asMap().getOrDefault("PartitionKey", ""));
         }
+        else {
+            partitionKey = "";
+        }
 
-        String offset = "";
+        final String offset;
         if (!parsedEvent.offset().isStub()) {
             offset = parsedEvent.offset().value();
+        }
+        else {
+            offset = "";
         }
 
         elems
@@ -187,9 +202,12 @@ public final class CCType implements EventType {
 
     @Override
     public String msgId() throws PluginException {
-        String sequenceNumber = "";
+        final String sequenceNumber;
         if (!parsedEvent.systemProperties().isStub()) {
             sequenceNumber = String.valueOf(parsedEvent.systemProperties().asMap().getOrDefault("SequenceNumber", ""));
+        }
+        else {
+            sequenceNumber = "";
         }
         return sequenceNumber;
     }
