@@ -111,9 +111,9 @@ public final class ContainerAppConsoleLogsType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "ContainerName", JsonValue.ValueType.STRING);
+        assertKey(record, "ContainerAppName", JsonValue.ValueType.STRING);
 
-        return new ValidRFC5424AppName(record.getString("ContainerName")).validAppName();
+        return new ValidRFC5424AppName(record.getString("ContainerAppName")).validAppName();
     }
 
     @Override

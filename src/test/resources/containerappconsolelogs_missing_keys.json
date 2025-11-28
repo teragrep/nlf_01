@@ -1,10 +1,10 @@
 {
   "Computer": "computer",
-  "ContainerAppName": "container-app-name",
   "ContainerGroupId": "container-group-id",
   "ContainerGroupName": "container-group-name",
   "ContainerId": "container-id",
   "ContainerImage": "container-image",
+  "ContainerName": "container-name",
   "EnvironmentName": "container-app-environment",
   "JobName": "job-name",
   "Location": "location-1",

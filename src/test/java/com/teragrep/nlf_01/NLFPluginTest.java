@@ -426,7 +426,7 @@ public class NLFPluginTest {
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
-        Assertions.assertEquals("container-name", syslogMessage.getAppName());
+        Assertions.assertEquals("container-app-name", syslogMessage.getAppName());
         Assertions.assertEquals("2020-01-01T01:23:34.567Z", syslogMessage.getTimestamp());
         Assertions.assertEquals(json, syslogMessage.getMsg());
         final Map<String, Map<String, String>> sdElementMap = syslogMessage
