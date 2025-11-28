@@ -137,8 +137,7 @@ public final class ContainerType implements EventType {
         }
 
         assertKey(podAnnotations, containerLogAppNameKey, JsonValue.ValueType.STRING);
-        return new ValidRFC5424AppName(podAnnotations.getString(containerLogAppNameKey) + logSourceSuffix)
-                .validAppName();
+        return new ValidRFC5424AppName(podAnnotations.getString(containerLogAppNameKey) + logSourceSuffix).appName();
     }
 
     @Override

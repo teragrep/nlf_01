@@ -113,7 +113,7 @@ public final class ContainerAppConsoleLogsType implements EventType {
 
         assertKey(record, "ContainerAppName", JsonValue.ValueType.STRING);
 
-        return new ValidRFC5424AppName(record.getString("ContainerAppName")).validAppName();
+        return new ValidRFC5424AppName(record.getString("ContainerAppName")).appName();
     }
 
     @Override

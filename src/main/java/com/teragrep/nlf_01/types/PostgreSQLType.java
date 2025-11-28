@@ -126,7 +126,7 @@ public final class PostgreSQLType implements EventType {
             if (dbName == null) {
                 throw new PluginException("Capture group 'dbName' was not found");
             }
-            return new ValidRFC5424AppName(new ASCIIString(dbName).withNonAsciiCharsRemoved()).validAppName();
+            return new ValidRFC5424AppName(new ASCIIString(dbName).withNonAsciiCharsRemoved()).appName();
         }
 
         throw new PluginException("Could not parse dbName from properties.message");
