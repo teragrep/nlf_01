@@ -136,7 +136,7 @@ final class ContainerAppConsoleLogsTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("container-name", actualAppName);
+        Assertions.assertEquals("container-app-name", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
         Assertions
@@ -192,7 +192,7 @@ final class ContainerAppConsoleLogsTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("container-name", actualAppName);
+        Assertions.assertEquals("container-app-name", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
         Assertions
@@ -246,7 +246,7 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions
                 .assertEquals(
-                        "{\"Computer\":\"computer\",\"ContainerAppName\":\"container-app-name\",\"ContainerGroupId\":\"container-group-id\",\"ContainerGroupName\":\"container-group-name\",\"ContainerId\":\"container-id\",\"ContainerImage\":\"container-image\",\"EnvironmentName\":\"container-app-environment\",\"JobName\":\"job-name\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"Stream\":\"stream-1\",\"TenantId\":\"456\",\"Type\":\"ContainerAppConsoleLogs\",\"_ItemId\":\"123\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
+                        "{\"Computer\":\"computer\",\"ContainerGroupId\":\"container-group-id\",\"ContainerGroupName\":\"container-group-name\",\"ContainerId\":\"container-id\",\"ContainerImage\":\"container-image\",\"ContainerName\":\"container-name\",\"EnvironmentName\":\"container-app-environment\",\"JobName\":\"job-name\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"Stream\":\"stream-1\",\"TenantId\":\"456\",\"Type\":\"ContainerAppConsoleLogs\",\"_ItemId\":\"123\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
                         actualMsg
                 );
         Assertions.assertEquals("", actualMsgId);
