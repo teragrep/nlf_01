@@ -48,6 +48,7 @@ package com.teragrep.nlf_01.util;
 import com.teragrep.akv_01.plugin.PluginException;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -91,5 +92,59 @@ final class ValidKeyTest {
 
         final String expectedString = "keyValue";
         Assertions.assertEquals(expectedString, returnedString);
+    }
+
+    @Test
+    @DisplayName("asJsonObject() throws PluginException if JsonObject does not contain the key")
+    void asJsonObjectThrowsPluginExceptionIfJsonObjectDoesNotContainTheKey() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key2", "value").build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.STRING);
+
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
+
+        final String expectedMessage = "Key key1 does not exist";
+        final Throwable innerException = exception.getCause(); // Exception is wrapped
+        Assertions.assertEquals(expectedMessage, innerException.getMessage());
+    }
+
+    @Test
+    @DisplayName("asJsonObject() throws PluginException if the keyValueType parameter is not OBJECT")
+    void asJsonObjectThrowsPluginExceptionIfTheKeyValueTypeParameterIsNotObject() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", "value").build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.STRING);
+
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
+
+        final String expectedMessage = "Key was requested as a JsonObject, but keyValueType was STRING";
+        final Throwable innerException = exception.getCause(); // Exception is wrapped
+        Assertions.assertEquals(expectedMessage, innerException.getMessage());
+    }
+
+    @Test
+    @DisplayName("asJsonObject() throws PluginException if the requested key's ValueType is not the one requested")
+    void asJsonObjectThrowsPluginExceptionIfTheRequestedKeySValueTypeIsNotTheOneRequested() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", 1).build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.OBJECT);
+
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
+
+        final String expectedMessage = "Key key1 is not of type OBJECT";
+        final Throwable innerException = exception.getCause(); // Exception is wrapped
+        Assertions.assertEquals(expectedMessage, innerException.getMessage());
+    }
+
+    @Test
+    @DisplayName("asJsonObject returns String of the key if conditions are met")
+    void asJsonObjectReturnsStringOfTheKeyIfConditionsAreMet() {
+        final JsonObject jsonObject = Json
+                .createObjectBuilder()
+                .add("key1", Json.createObjectBuilder().build())
+                .build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.OBJECT);
+
+        final JsonObject returnedJsonObject = Assertions.assertDoesNotThrow(validKey::asJsonObject);
+
+        final JsonObject expectedJsonObject = JsonValue.EMPTY_JSON_OBJECT;
+        Assertions.assertEquals(expectedJsonObject, returnedJsonObject);
     }
 }

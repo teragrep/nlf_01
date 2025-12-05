@@ -48,6 +48,7 @@ package com.teragrep.nlf_01.util;
 import com.teragrep.akv_01.plugin.PluginException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import jakarta.json.JsonValue.ValueType;
 
 public final class ValidKey {
 
@@ -73,5 +74,27 @@ public final class ValidKey {
         }
 
         return jsonObject.getString(keyName);
+    }
+
+    public JsonObject asJsonObject() throws PluginException {
+        if (!jsonObject.containsKey(keyName)) {
+            throw new PluginException(new IllegalArgumentException("Key " + keyName + " does not exist"));
+        }
+
+        if (!this.keyValueType.equals(ValueType.OBJECT)) {
+            throw new PluginException(
+                    new IllegalArgumentException(
+                            "Key was requested as a JsonObject, but keyValueType was " + keyValueType
+                    )
+            );
+        }
+
+        if (!jsonObject.get(keyName).getValueType().equals(keyValueType)) {
+            throw new PluginException(
+                    new IllegalArgumentException("Key " + keyName + " is not of type " + keyValueType)
+            );
+        }
+
+        return jsonObject.getJsonObject(keyName);
     }
 }
