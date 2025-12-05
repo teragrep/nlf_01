@@ -48,12 +48,7 @@ package com.teragrep.nlf_01.types;
 import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.PropertiesJson;
-import com.teragrep.nlf_01.util.ASCIIString;
-import com.teragrep.nlf_01.util.MD5Hash;
-import com.teragrep.nlf_01.util.ResourceId;
-import com.teragrep.nlf_01.util.ValidRFC5424AppName;
-import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
-import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
+import com.teragrep.nlf_01.util.*;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
@@ -74,17 +69,6 @@ public final class LogicAppWorkflowRuntimeType implements EventType {
         this.realHostname = realHostname;
     }
 
-    private void assertKey(final JsonObject obj, final String key, final JsonValue.ValueType type)
-            throws PluginException {
-        if (!obj.containsKey(key)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " does not exist"));
-        }
-
-        if (!obj.get(key).getValueType().equals(type)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " is not of type " + type));
-        }
-    }
-
     @Override
     public Severity severity() {
         return Severity.NOTICE;
@@ -99,33 +83,28 @@ public final class LogicAppWorkflowRuntimeType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "_ResourceId", JsonValue.ValueType.STRING);
-        final String resourceId = record.getString("_ResourceId");
+        final ValidKey validKey = new ValidKey(record, "_ResourceId", JsonValue.ValueType.STRING);
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(resourceId).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(validKey.asString()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.asString()).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
-
     }
 
     @Override
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "WorkflowName", JsonValue.ValueType.STRING);
-
-        return new ValidRFC5424AppName(new ASCIIString(record.getString("WorkflowName")).withNonAsciiCharsRemoved())
-                .appName();
-
+        return new ValidRFC5424AppName(
+                new ASCIIString(new ValidKey(record, "WorkflowName", JsonValue.ValueType.STRING).asString()).withNonAsciiCharsRemoved()
+        ).appName();
     }
 
     @Override
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "TimeGenerated", JsonValue.ValueType.STRING);
-
-        return new ValidRFC5424Timestamp(record.getString("TimeGenerated")).validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString())
+                .validTimestamp();
     }
 
     @Override

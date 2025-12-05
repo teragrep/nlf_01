@@ -55,6 +55,7 @@ import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
+import jakarta.json.JsonValue.ValueType;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -78,17 +79,6 @@ public final class PostgreSQLType implements EventType {
         this.appNamePattern = appNamePattern;
     }
 
-    private void assertKey(final JsonObject obj, final String key, final JsonValue.ValueType type)
-            throws PluginException {
-        if (!obj.containsKey(key)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " does not exist"));
-        }
-
-        if (!obj.get(key).getValueType().equals(type)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " is not of type " + type));
-        }
-    }
-
     @Override
     public Severity severity() throws PluginException {
         return Severity.NOTICE;
@@ -103,11 +93,10 @@ public final class PostgreSQLType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "resourceId", JsonValue.ValueType.STRING);
-        final String resourceId = record.getString("resourceId");
+        final ValidKey validKey = new ValidKey(record, "resourceId", JsonValue.ValueType.STRING);
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(resourceId).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(validKey.asString()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.asString()).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 
@@ -115,10 +104,11 @@ public final class PostgreSQLType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "properties", JsonValue.ValueType.OBJECT);
-        final JsonObject properties = record.getJsonObject("properties");
-        assertKey(properties, "message", JsonValue.ValueType.STRING);
-        final String message = properties.getString("message");
+        final ValidKey propertiesValidKey = new ValidKey(record, "properties", ValueType.OBJECT);
+        final JsonObject properties = propertiesValidKey.asJsonObject();
+
+        final ValidKey messageValidKey = new ValidKey(properties, "message", ValueType.STRING);
+        final String message = messageValidKey.asString();
 
         final Matcher matcher = appNamePattern.matcher(message);
         if (matcher.find()) {
@@ -135,10 +125,9 @@ public final class PostgreSQLType implements EventType {
     @Override
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(record, "time", JsonValue.ValueType.STRING);
-        final String time = record.getString("time");
 
-        return new ValidRFC5424Timestamp(time).validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidKey(record, "time", JsonValue.ValueType.STRING).asString())
+                .validTimestamp();
     }
 
     @Override
