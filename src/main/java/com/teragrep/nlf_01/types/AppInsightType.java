@@ -110,7 +110,7 @@ public final class AppInsightType implements EventType {
 
         assertKey(record, "AppRoleName", JsonValue.ValueType.STRING);
 
-        return new ValidRFC5424AppName(record.getString("AppRoleName")).validAppName();
+        return new ValidRFC5424AppName(record.getString("AppRoleName")).appName();
 
     }
 

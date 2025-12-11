@@ -148,7 +148,7 @@ public final class SyslogType implements EventType {
             if (uuid == null) {
                 throw new PluginException("Capture group 'uuid' was not found");
             }
-            return new ValidRFC5424AppName(uuid).validAppName();
+            return new ValidRFC5424AppName(uuid).appName();
         }
 
         throw new PluginException("Could not parse appName from SyslogMessage key");

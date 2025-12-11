@@ -47,37 +47,7 @@ package com.teragrep.nlf_01.util;
 
 import com.teragrep.akv_01.plugin.PluginException;
 
-public final class ValidRFC5424AppName implements RFC5424AppName {
+public interface RFC5424AppName {
 
-    private final String uncheckedAppName;
-
-    public ValidRFC5424AppName(final String uncheckedAppName) {
-        this.uncheckedAppName = uncheckedAppName;
-    }
-
-    @Override
-    public String appName() throws PluginException {
-        String rv = uncheckedAppName;
-        if (rv.length() > 48) {
-            throw new PluginException(
-                    new IllegalArgumentException(
-                            "Appname is too long: " + rv.length() + "; exceeds maximum of 48 characters"
-                    )
-            );
-        }
-
-        for (final char c : rv.toCharArray()) {
-            if (c < 33 || c > 126) {
-                throw new PluginException(
-                        new IllegalArgumentException(String.format("Appname cannot contain character '%s'", c))
-                );
-            }
-        }
-
-        if (rv.isEmpty()) {
-            rv = "-";
-        }
-
-        return rv;
-    }
+    public abstract String appName() throws PluginException;
 }
