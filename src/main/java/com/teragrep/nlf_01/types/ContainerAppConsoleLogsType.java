@@ -52,6 +52,7 @@ import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.HashableRFC5424AppName;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
+import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
 import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
 import com.teragrep.rlo_14.Facility;
@@ -113,7 +114,8 @@ public final class ContainerAppConsoleLogsType implements EventType {
 
         assertKey(record, "ContainerAppName", JsonValue.ValueType.STRING);
 
-        return new HashableRFC5424AppName(record.getString("ContainerAppName")).appName();
+        return new ValidRFC5424AppName(new HashableRFC5424AppName(record.getString("ContainerAppName")).appName())
+                .appName();
     }
 
     @Override
