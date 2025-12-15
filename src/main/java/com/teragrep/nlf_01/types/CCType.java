@@ -125,8 +125,7 @@ public final class CCType implements EventType {
             throw new PluginException("Could not parse appName from data.resourceName");
         }
 
-        return new ValidRFC5424AppName(new ASCIIString(lastValueInResourceName).withNonAsciiCharsRemoved())
-                .appName();
+        return new ValidRFC5424AppName(new ASCIIString(lastValueInResourceName).withNonAsciiCharsRemoved()).appName();
     }
 
     @Override
