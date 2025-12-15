@@ -126,7 +126,7 @@ public final class CCType implements EventType {
         }
 
         return new ValidRFC5424AppName(new ASCIIString(lastValueInResourceName).withNonAsciiCharsRemoved())
-                .validAppName();
+                .appName();
     }
 
     @Override
