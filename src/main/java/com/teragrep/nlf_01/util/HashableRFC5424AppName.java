@@ -57,19 +57,23 @@ public final class HashableRFC5424AppName implements RFC5424AppName {
     }
 
     /**
-     * Returns a {@link ValidRFC5424AppName} without further modification if {@link #rfc5424AppName} if shorter than 48
-     * characters long. Otherwise, creates an MD5 hash of that field and shortens that to less than 48 characters.
+     * Returns a {@link #rfc5424AppName} without further modification if {@link #rfc5424AppName} if shorter than 48
+     * characters long. Otherwise, creates an MD5 hash of that field and shortens that to less than 48 characters. <br>
+     * Does not provide a fully safe RFC 5424 appName, so most likely should be wrapped with {@link ValidRFC5424AppName}
+     *
+     * @return
+     *         <li>Hashed appName if length is longer than {@link #MAX_LENGTH}</li>
+     *         <li>{@link #rfc5424AppName} if length is shorter than {@link #MAX_LENGTH}</li>
      */
     @Override
     public String appName() throws PluginException {
         final String returnedRFC5424AppName;
 
         if (this.rfc5424AppName.length() > MAX_LENGTH) {
-            final String md5HashedAppName = "md5-".concat(new MD5Hash(rfc5424AppName).md5()); // Will be 36 characters long
-            returnedRFC5424AppName = new ValidRFC5424AppName(md5HashedAppName).appName();
+            returnedRFC5424AppName = "md5-".concat(new MD5Hash(rfc5424AppName).md5()); // Will be 36 characters long
         }
         else {
-            returnedRFC5424AppName = new ValidRFC5424AppName(this.rfc5424AppName).appName();
+            returnedRFC5424AppName = this.rfc5424AppName;
         }
         return returnedRFC5424AppName;
     }

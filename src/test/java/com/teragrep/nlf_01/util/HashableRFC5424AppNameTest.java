@@ -45,7 +45,6 @@
  */
 package com.teragrep.nlf_01.util;
 
-import com.teragrep.akv_01.plugin.PluginException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +53,10 @@ class HashableRFC5424AppNameTest {
     @Test
     void testNonAsciiCharacters() {
         final HashableRFC5424AppName appname = new HashableRFC5424AppName("äppnämë");
-        Assertions.assertThrows(PluginException.class, appname::appName);
+        final String expectedAppName = "äppnämë";
+
+        final String returnedAppName = Assertions.assertDoesNotThrow(appname::appName);
+        Assertions.assertEquals(expectedAppName, returnedAppName);
     }
 
     @Test
@@ -77,6 +79,6 @@ class HashableRFC5424AppNameTest {
     @Test
     void testEmptyString() {
         final HashableRFC5424AppName appname = new HashableRFC5424AppName("");
-        Assertions.assertEquals("-", Assertions.assertDoesNotThrow(appname::appName));
+        Assertions.assertEquals("", Assertions.assertDoesNotThrow(appname::appName));
     }
 }
