@@ -100,22 +100,34 @@ public final class ContainerAppConsoleLogsType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
-        final String resourceId = record.getString("_Internal_WorkspaceResourceId");
+        assertKey(record, "_ResourceId", JsonValue.ValueType.STRING);
+        final String resourceId = record.getString("_ResourceId");
+
+        assertKey(record, "EnvironmentName", JsonValue.ValueType.STRING);
+        final String environmentName = record.getString("EnvironmentName");
+
+        final String concatenatedHostName = resourceId.concat("/").concat(environmentName);
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(resourceId).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(concatenatedHostName).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 
     @Override
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
+        final String keyValue;
+        if (record.containsKey("ContainerAppName")) {
+            assertKey(record, "ContainerAppName", JsonValue.ValueType.STRING);
+            keyValue = record.getString("ContainerAppName");
+        } else if (record.containsKey("JobName")) {
+            assertKey(record, "JobName", JsonValue.ValueType.STRING);
+            keyValue = record.getString("JobName");
+        } else {
+            throw new PluginException(new IllegalArgumentException("A valid key does not exist"));
+        }
 
-        assertKey(record, "ContainerAppName", JsonValue.ValueType.STRING);
-
-        return new ValidRFC5424AppName(new HashableRFC5424AppName(record.getString("ContainerAppName")).appName())
-                .appName();
+        return new ValidRFC5424AppName(new HashableRFC5424AppName(keyValue).appName()).appName();
     }
 
     @Override

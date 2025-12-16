@@ -7,7 +7,6 @@
   "ContainerImage": "container-image",
   "ContainerName": "container-name",
   "EnvironmentName": "container-app-environment",
-  "JobName": "job-name",
   "Location": "location-1",
   "Log": "log-message",
   "OperationName": "job-operation",
