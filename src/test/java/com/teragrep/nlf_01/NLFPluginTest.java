@@ -474,6 +474,55 @@ public class NLFPluginTest {
     }
 
     @Test
+    void appServiceConsoleLogsType() {
+        final String json = Assertions
+            .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/appserviceconsolelogs.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+            new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+            .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+            .assertEquals(
+                "{\n"
+                    + "  \"Category\": \"app-service-console-logs\",\n"
+                    + "  \"ContainerId\": \"container-id\",\n"
+                    + "  \"Host\": \"host-1\",\n"
+                    + "  \"Level\": \"Debug\",\n"
+                    + "  \"OperationName\": \"operation-1\",\n"
+                    + "  \"ResultDescription\": \"description\",\n"
+                    + "  \"SourceSystem\": \"Azure\",\n"
+                    + "  \"TenantId\": \"12\",\n"
+                    + "  \"TimeGenerated\": \"2020-01-01T01:02:34.5678999Z\",\n"
+                    + "  \"Type\": \"AppServiceConsoleLogs\",\n"
+                    + "  \"_BilledSize\": 1,\n"
+                    + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                    + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
+                    + "}",
+                syslogMessage.getMsg()
+            );
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("AppServiceConsoleLogs", syslogMessage.getAppName());
+        Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+            .getSDElements()
+            .stream()
+            .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+            .assertEquals(AppServiceConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+    }
+
+    @Test
     void functionAppLogsType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/function.json")));
