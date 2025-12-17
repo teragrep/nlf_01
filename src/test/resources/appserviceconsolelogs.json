@@ -1,0 +1,15 @@
+{
+  "Category": "app-service-console-logs",
+  "ContainerId": "container-id",
+  "Host": "host-1",
+  "Level": "Debug",
+  "OperationName": "operation-1",
+  "ResultDescription": "description",
+  "SourceSystem": "Azure",
+  "TenantId": "12",
+  "TimeGenerated": "2020-01-01T01:02:34.5678999Z",
+  "Type": "AppServiceConsoleLogs",
+  "_BilledSize": 1,
+  "_Internal_WorkspaceResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+  "_ResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}"
+}

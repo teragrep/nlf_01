@@ -1,0 +1,11 @@
+{
+  "Category": "app-service-console-logs",
+  "ContainerId": "container-id",
+  "Host": "host-1",
+  "Level": "Debug",
+  "OperationName": "operation-1",
+  "ResultDescription": "description",
+  "SourceSystem": "Azure",
+  "TenantId": "12",
+  "_BilledSize": 1
+}
