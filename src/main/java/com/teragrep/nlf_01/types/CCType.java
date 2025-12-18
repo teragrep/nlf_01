@@ -51,6 +51,7 @@ import com.teragrep.nlf_01.PropertiesJson;
 import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
+import com.teragrep.nlf_01.util.ValidKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
 import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
@@ -85,17 +86,6 @@ public final class CCType implements EventType {
         this.appNamePattern = appNamePattern;
     }
 
-    private void assertKey(final JsonObject obj, final String key, final JsonValue.ValueType type)
-            throws PluginException {
-        if (!obj.containsKey(key)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " does not exist"));
-        }
-
-        if (!obj.get(key).getValueType().equals(type)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " is not of type " + type));
-        }
-    }
-
     @Override
     public Severity severity() throws PluginException {
         return Severity.NOTICE;
@@ -110,11 +100,10 @@ public final class CCType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
-        final String resourceId = record.getString("_Internal_WorkspaceResourceId");
+        final ValidKey validKey = new ValidKey(record, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(resourceId).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(validKey.asString()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.asString()).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 
@@ -122,10 +111,12 @@ public final class CCType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "data", JsonValue.ValueType.OBJECT);
-        final JsonObject data = record.getJsonObject("data");
-        assertKey(data, "resourceName", JsonValue.ValueType.STRING);
-        final String resourceName = data.getString("resourceName");
+        final ValidKey validData = new ValidKey(record, "data", JsonValue.ValueType.OBJECT);
+
+        final JsonObject data = validData.asJsonObject();
+        final ValidKey validResourceName = new ValidKey(data, "resourceName", JsonValue.ValueType.STRING);
+
+        final String resourceName = validResourceName.asString();
 
         final Matcher matcher = appNamePattern.matcher(resourceName);
         if (!matcher.find()) {
@@ -142,10 +133,9 @@ public final class CCType implements EventType {
     @Override
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(record, "TimeGenerated", JsonValue.ValueType.STRING);
-        final String time = record.getString("TimeGenerated");
 
-        return new ValidRFC5424Timestamp(time).validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString())
+                .validTimestamp();
     }
 
     @Override
