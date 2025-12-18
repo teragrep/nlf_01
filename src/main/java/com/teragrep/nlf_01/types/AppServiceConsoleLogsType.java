@@ -113,7 +113,7 @@ public final class AppServiceConsoleLogsType implements EventType {
 
         assertKey(record, "Type", JsonValue.ValueType.STRING);
 
-        return new ValidRFC5424AppName(record.getString("Type")).validAppName();
+        return new ValidRFC5424AppName(record.getString("Type")).appName();
     }
 
     @Override
