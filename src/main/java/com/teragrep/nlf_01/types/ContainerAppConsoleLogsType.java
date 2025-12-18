@@ -120,10 +120,12 @@ public final class ContainerAppConsoleLogsType implements EventType {
         if (record.containsKey("ContainerAppName")) {
             assertKey(record, "ContainerAppName", JsonValue.ValueType.STRING);
             keyValue = record.getString("ContainerAppName");
-        } else if (record.containsKey("JobName")) {
+        }
+        else if (record.containsKey("JobName")) {
             assertKey(record, "JobName", JsonValue.ValueType.STRING);
             keyValue = record.getString("JobName");
-        } else {
+        }
+        else {
             throw new PluginException(new IllegalArgumentException("A valid key does not exist"));
         }
 

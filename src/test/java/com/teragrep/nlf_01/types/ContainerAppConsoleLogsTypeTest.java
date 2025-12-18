@@ -122,7 +122,10 @@ final class ContainerAppConsoleLogsTypeTest {
         propertiesMap.put("important-key", null);
 
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/containerappconsolelogswithcontainerappname.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
+                "src/test/resources/containerappconsolelogswithcontainerappname.json", new EventPartitionContextImpl(
+                        partitionContextMap
+                ), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap),
+                new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
         final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost");
@@ -191,7 +194,10 @@ final class ContainerAppConsoleLogsTypeTest {
         propertiesMap.put("important-key", null);
 
         final ParsedEvent parsedEvent = testEvent(
-            "src/test/resources/containerappconsolelogswithjobname.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
+                "src/test/resources/containerappconsolelogswithjobname.json", new EventPartitionContextImpl(
+                        partitionContextMap
+                ), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap),
+                new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
         final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost");
@@ -209,20 +215,20 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-c17ef061422271d0c5a9528446dd144e-resourceName", actualHostname);
         Assertions
-            .assertEquals(
-"{\"Computer\":\"computer\",\"ContainerGroupId\":\"container-group-id\",\"ContainerGroupName\":\"container-group-name\",\"ContainerId\":\"container-id\",\"ContainerImage\":\"container-image\",\"ContainerName\":\"container-name\",\"EnvironmentName\":\"container-app-environment\",\"JobName\":\"job-name\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"Stream\":\"stream-1\",\"TenantId\":\"456\",\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Type\":\"ContainerAppConsoleLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
-                actualMsg
-            );
+                .assertEquals(
+                        "{\"Computer\":\"computer\",\"ContainerGroupId\":\"container-group-id\",\"ContainerGroupName\":\"container-group-name\",\"ContainerId\":\"container-id\",\"ContainerImage\":\"container-image\",\"ContainerName\":\"container-name\",\"EnvironmentName\":\"container-app-environment\",\"JobName\":\"job-name\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"Stream\":\"stream-1\",\"TenantId\":\"456\",\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Type\":\"ContainerAppConsoleLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
+                        actualMsg
+                );
         Assertions.assertEquals("12345678900", actualMsgId);
         Assertions.assertEquals(Severity.NOTICE, actualSeverity);
         Assertions.assertEquals(1577841814567L, actualTimestamp); // 2020-01-01T01:23:34.5678999Z
 
         final Map<String, Map<String, String>> sdElementMap = actualSDElements
-            .stream()
-            .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
 
         Assertions
-            .assertEquals("fully-qualified-namespace", sdElementMap.get("aer_02_partition@48577").get("fully_qualified_namespace"));
+                .assertEquals("fully-qualified-namespace", sdElementMap.get("aer_02_partition@48577").get("fully_qualified_namespace"));
         Assertions.assertEquals("event-hub-name", sdElementMap.get("aer_02_partition@48577").get("eventhub_name"));
         Assertions.assertEquals("123", sdElementMap.get("aer_02_partition@48577").get("partition_id"));
         Assertions.assertEquals("consumer-group", sdElementMap.get("aer_02_partition@48577").get("consumer_group"));
@@ -231,15 +237,15 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals("2010-01-01T00:00Z", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
         Assertions.assertEquals("456", sdElementMap.get("aer_02_event@48577").get("partition_key"));
         Assertions
-            .assertEquals(
-                "{\"null\":\"important-null-value\",\"prop-key\":\"prop-value\",\"important-key\":null}",
-                sdElementMap.get("aer_02_event@48577").get("properties")
-            );
+                .assertEquals(
+                        "{\"null\":\"important-null-value\",\"prop-key\":\"prop-value\",\"important-key\":null}",
+                        sdElementMap.get("aer_02_event@48577").get("properties")
+                );
 
         Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer_02@48577").get("timestamp_source"));
 
         Assertions
-            .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+                .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
 
     @Test
@@ -266,7 +272,7 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals("md5-c17ef061422271d0c5a9528446dd144e-resourceName", actualHostname);
         Assertions
                 .assertEquals(
-                    "{\"Computer\":\"computer\",\"ContainerAppName\":\"container-app-name\",\"ContainerGroupId\":\"container-group-id\",\"ContainerGroupName\":\"container-group-name\",\"ContainerId\":\"container-id\",\"ContainerImage\":\"container-image\",\"ContainerName\":\"container-name\",\"EnvironmentName\":\"container-app-environment\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"Stream\":\"stream-1\",\"TenantId\":\"456\",\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Type\":\"ContainerAppConsoleLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
+                        "{\"Computer\":\"computer\",\"ContainerAppName\":\"container-app-name\",\"ContainerGroupId\":\"container-group-id\",\"ContainerGroupName\":\"container-group-name\",\"ContainerId\":\"container-id\",\"ContainerImage\":\"container-image\",\"ContainerName\":\"container-name\",\"EnvironmentName\":\"container-app-environment\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"Stream\":\"stream-1\",\"TenantId\":\"456\",\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Type\":\"ContainerAppConsoleLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
                         actualMsg
                 );
         Assertions.assertEquals("", actualMsgId);
@@ -296,9 +302,9 @@ final class ContainerAppConsoleLogsTypeTest {
     @Test
     void testWithAllMetadataStubsWithJobName() {
         final ParsedEvent parsedEvent = testEvent(
-            "src/test/resources/containerappconsolelogswithjobname.json", new EventPartitionContextStub(),
-            new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
-            new EventOffsetStub()
+                "src/test/resources/containerappconsolelogswithjobname.json", new EventPartitionContextStub(),
+                new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
+                new EventOffsetStub()
         );
 
         final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost");
@@ -316,17 +322,17 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-c17ef061422271d0c5a9528446dd144e-resourceName", actualHostname);
         Assertions
-            .assertEquals(
-                "{\"Computer\":\"computer\",\"ContainerGroupId\":\"container-group-id\",\"ContainerGroupName\":\"container-group-name\",\"ContainerId\":\"container-id\",\"ContainerImage\":\"container-image\",\"ContainerName\":\"container-name\",\"EnvironmentName\":\"container-app-environment\",\"JobName\":\"job-name\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"Stream\":\"stream-1\",\"TenantId\":\"456\",\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Type\":\"ContainerAppConsoleLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
-                actualMsg
-            );
+                .assertEquals(
+                        "{\"Computer\":\"computer\",\"ContainerGroupId\":\"container-group-id\",\"ContainerGroupName\":\"container-group-name\",\"ContainerId\":\"container-id\",\"ContainerImage\":\"container-image\",\"ContainerName\":\"container-name\",\"EnvironmentName\":\"container-app-environment\",\"JobName\":\"job-name\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"Stream\":\"stream-1\",\"TenantId\":\"456\",\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Type\":\"ContainerAppConsoleLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
+                        actualMsg
+                );
         Assertions.assertEquals("", actualMsgId);
         Assertions.assertEquals(Severity.NOTICE, actualSeverity);
         Assertions.assertEquals(1577841814567L, actualTimestamp); // 2020-01-01T01:23:34.5678999Z
 
         final Map<String, Map<String, String>> sdElementMap = actualSDElements
-            .stream()
-            .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
 
         Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("fully_qualified_namespace"));
         Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("eventhub_name"));
@@ -341,7 +347,7 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals("generated", sdElementMap.get("aer_02@48577").get("timestamp_source"));
 
         Assertions
-            .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+                .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
 
     @Test

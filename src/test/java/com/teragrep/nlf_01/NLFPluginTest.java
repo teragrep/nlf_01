@@ -414,7 +414,12 @@ public class NLFPluginTest {
     @Test
     void containerAppConsoleLogsTypeWithContainerAppName() {
         final String json = Assertions
-                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/containerappconsolelogswithcontainerappname.json")));
+                .assertDoesNotThrow(
+                        () -> Files
+                                .readString(
+                                        Paths.get("src/test/resources/containerappconsolelogswithcontainerappname.json")
+                                )
+                );
         final ParsedEvent parsedEvent = new ParsedEventFactory(
                 new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
         ).parsedEvent();
@@ -445,14 +450,16 @@ public class NLFPluginTest {
     @Test
     void containerAppConsoleLogsTypeWithJobName() {
         final String json = Assertions
-            .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/containerappconsolelogswithjobname.json")));
+                .assertDoesNotThrow(
+                        () -> Files.readString(Paths.get("src/test/resources/containerappconsolelogswithjobname.json"))
+                );
         final ParsedEvent parsedEvent = new ParsedEventFactory(
-            new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
         ).parsedEvent();
 
         final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
         final List<SyslogMessage> syslogMessages = Assertions
-            .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
         Assertions.assertEquals(1, syslogMessages.size());
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
@@ -461,13 +468,13 @@ public class NLFPluginTest {
         Assertions.assertEquals("2020-01-01T01:23:34.567Z", syslogMessage.getTimestamp());
         Assertions.assertEquals(json, syslogMessage.getMsg());
         final Map<String, Map<String, String>> sdElementMap = syslogMessage
-            .getSDElements()
-            .stream()
-            .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
 
         Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
         Assertions
-            .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+                .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
         Assertions.assertEquals(4, sdElementMap.get("aer_02_event@48577").size());
         Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
