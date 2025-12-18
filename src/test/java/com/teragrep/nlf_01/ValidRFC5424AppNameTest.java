@@ -55,24 +55,24 @@ public final class ValidRFC5424AppNameTest {
     @Test
     void testNonAsciiCharacters() {
         final ValidRFC5424AppName appname = new ValidRFC5424AppName("äppnämë");
-        Assertions.assertThrows(PluginException.class, appname::validAppName);
+        Assertions.assertThrows(PluginException.class, appname::appName);
     }
 
     @Test
     void testTooManyCharacters() {
         final ValidRFC5424AppName appname = new ValidRFC5424AppName("a".repeat(49));
-        Assertions.assertThrows(PluginException.class, appname::validAppName);
+        Assertions.assertThrows(PluginException.class, appname::appName);
     }
 
     @Test
     void testMaxCharacters() {
         final ValidRFC5424AppName appname = new ValidRFC5424AppName("a".repeat(48));
-        Assertions.assertDoesNotThrow(appname::validAppName);
+        Assertions.assertDoesNotThrow(appname::appName);
     }
 
     @Test
     void testEmptyString() {
         final ValidRFC5424AppName appname = new ValidRFC5424AppName("");
-        Assertions.assertEquals("-", Assertions.assertDoesNotThrow(appname::validAppName));
+        Assertions.assertEquals("-", Assertions.assertDoesNotThrow(appname::appName));
     }
 }

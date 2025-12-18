@@ -1,0 +1,19 @@
+{
+  "Computer": "computer",
+  "ContainerGroupId": "container-group-id",
+  "ContainerGroupName": "container-group-name",
+  "ContainerId": "container-id",
+  "ContainerImage": "container-image",
+  "ContainerName": "container-name",
+  "EnvironmentName": "container-app-environment",
+  "Location": "location-1",
+  "Log": "log-message",
+  "OperationName": "job-operation",
+  "RevisionName": "revision-1",
+  "SourceSystem": "Linux",
+  "Stream": "stream-1",
+  "TenantId": "456",
+  "Type": "ContainerAppConsoleLogs",
+  "_ItemId": "123",
+  "_SubscriptionId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18"
+}

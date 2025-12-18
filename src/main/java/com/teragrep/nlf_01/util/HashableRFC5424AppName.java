@@ -47,37 +47,34 @@ package com.teragrep.nlf_01.util;
 
 import com.teragrep.akv_01.plugin.PluginException;
 
-public final class ValidRFC5424AppName implements RFC5424AppName {
+public final class HashableRFC5424AppName implements RFC5424AppName {
 
-    private final String uncheckedAppName;
+    private final static int MAX_LENGTH = 48;
+    private final String rfc5424AppName;
 
-    public ValidRFC5424AppName(final String uncheckedAppName) {
-        this.uncheckedAppName = uncheckedAppName;
+    public HashableRFC5424AppName(final String rfc5424AppName) {
+        this.rfc5424AppName = rfc5424AppName;
     }
 
+    /**
+     * Returns a {@link #rfc5424AppName} without further modification if {@link #rfc5424AppName} if shorter than 48
+     * characters long. Otherwise, creates an MD5 hash of that field and shortens that to less than 48 characters. <br>
+     * Does not provide a fully safe RFC 5424 appName, so most likely should be wrapped with {@link ValidRFC5424AppName}
+     *
+     * @return
+     *         <li>Hashed appName if length is longer than {@link #MAX_LENGTH}</li>
+     *         <li>{@link #rfc5424AppName} if length is shorter than {@link #MAX_LENGTH}</li>
+     */
     @Override
     public String appName() throws PluginException {
-        String rv = uncheckedAppName;
-        if (rv.length() > 48) {
-            throw new PluginException(
-                    new IllegalArgumentException(
-                            "Appname is too long: " + rv.length() + "; exceeds maximum of 48 characters"
-                    )
-            );
-        }
+        final String returnedRFC5424AppName;
 
-        for (final char c : rv.toCharArray()) {
-            if (c < 33 || c > 126) {
-                throw new PluginException(
-                        new IllegalArgumentException(String.format("Appname cannot contain character '%s'", c))
-                );
-            }
+        if (this.rfc5424AppName.length() > MAX_LENGTH) {
+            returnedRFC5424AppName = "md5-".concat(new MD5Hash(rfc5424AppName).md5()); // Will be 36 characters long
         }
-
-        if (rv.isEmpty()) {
-            rv = "-";
+        else {
+            returnedRFC5424AppName = this.rfc5424AppName;
         }
-
-        return rv;
+        return returnedRFC5424AppName;
     }
 }

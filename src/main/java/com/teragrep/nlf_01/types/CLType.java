@@ -115,7 +115,7 @@ public final class CLType implements EventType {
         final String truncatedFilePath = filename.length() < 39 ? filename : filename.substring(0, 39);
 
         // appname = first 8 chars of filePath MD5 + dash (-) + filename truncated to max 39 chars
-        return new ValidRFC5424AppName(truncatedMd5.concat("-").concat(truncatedFilePath)).validAppName();
+        return new ValidRFC5424AppName(truncatedMd5.concat("-").concat(truncatedFilePath)).appName();
     }
 
     @Override

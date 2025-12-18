@@ -45,39 +45,40 @@
  */
 package com.teragrep.nlf_01.util;
 
-import com.teragrep.akv_01.plugin.PluginException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public final class ValidRFC5424AppName implements RFC5424AppName {
+class HashableRFC5424AppNameTest {
 
-    private final String uncheckedAppName;
+    @Test
+    void testNonAsciiCharacters() {
+        final HashableRFC5424AppName appname = new HashableRFC5424AppName("äppnämë");
+        final String expectedAppName = "äppnämë";
 
-    public ValidRFC5424AppName(final String uncheckedAppName) {
-        this.uncheckedAppName = uncheckedAppName;
+        final String returnedAppName = Assertions.assertDoesNotThrow(appname::appName);
+        Assertions.assertEquals(expectedAppName, returnedAppName);
     }
 
-    @Override
-    public String appName() throws PluginException {
-        String rv = uncheckedAppName;
-        if (rv.length() > 48) {
-            throw new PluginException(
-                    new IllegalArgumentException(
-                            "Appname is too long: " + rv.length() + "; exceeds maximum of 48 characters"
-                    )
-            );
-        }
+    @Test
+    void testTooManyCharacters() {
+        final HashableRFC5424AppName appname = new HashableRFC5424AppName("a".repeat(49));
+        final String returnedValue = Assertions.assertDoesNotThrow(appname::appName);
 
-        for (final char c : rv.toCharArray()) {
-            if (c < 33 || c > 126) {
-                throw new PluginException(
-                        new IllegalArgumentException(String.format("Appname cannot contain character '%s'", c))
-                );
-            }
-        }
+        Assertions.assertEquals("md5-08ff5f7301d30200ab89169f6afdb7af", returnedValue);
+    }
 
-        if (rv.isEmpty()) {
-            rv = "-";
-        }
+    @Test
+    void testMaxCharacters() {
+        final String appNameWith48Characters = "a".repeat(48);
+        final HashableRFC5424AppName appname = new HashableRFC5424AppName(appNameWith48Characters);
+        final String returnedValue = Assertions.assertDoesNotThrow(appname::appName);
 
-        return rv;
+        Assertions.assertEquals(appNameWith48Characters, returnedValue, "AppName should not change");
+    }
+
+    @Test
+    void testEmptyString() {
+        final HashableRFC5424AppName appname = new HashableRFC5424AppName("");
+        Assertions.assertEquals("", Assertions.assertDoesNotThrow(appname::appName));
     }
 }

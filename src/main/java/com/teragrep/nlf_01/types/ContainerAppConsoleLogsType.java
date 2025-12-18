@@ -48,39 +48,35 @@ package com.teragrep.nlf_01.types;
 import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.PropertiesJson;
-import com.teragrep.nlf_01.util.*;
+import com.teragrep.nlf_01.util.ASCIIString;
+import com.teragrep.nlf_01.util.HashableRFC5424AppName;
+import com.teragrep.nlf_01.util.MD5Hash;
+import com.teragrep.nlf_01.util.ResourceId;
+import com.teragrep.nlf_01.util.ValidRFC5424AppName;
+import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
+import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
-import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public final class ContainerType implements EventType {
+public final class ContainerAppConsoleLogsType implements EventType {
 
     private final ParsedEvent parsedEvent;
-    private final String containerLogHostnameKey;
-    private final String containerLogAppNameKey;
     private final String realHostname;
 
-    public ContainerType(
-            final ParsedEvent parsedEvent,
-            final String containerLogHostnameKey,
-            final String containerLogAppNameKey,
-            final String realHostname
-    ) {
+    public ContainerAppConsoleLogsType(final ParsedEvent parsedEvent, final String realHostname) {
         this.parsedEvent = parsedEvent;
-        this.containerLogHostnameKey = containerLogHostnameKey;
-        this.containerLogAppNameKey = containerLogAppNameKey;
         this.realHostname = realHostname;
     }
 
-    private void assertKey(final JsonObject obj, final String key, JsonValue.ValueType type) throws PluginException {
+    private void assertKey(final JsonObject obj, final String key, final JsonValue.ValueType type)
+            throws PluginException {
         if (!obj.containsKey(key)) {
             throw new PluginException(new IllegalArgumentException("Key " + key + " does not exist"));
         }
@@ -91,81 +87,85 @@ public final class ContainerType implements EventType {
     }
 
     @Override
-    public Severity severity() {
+    public Severity severity() throws PluginException {
         return Severity.NOTICE;
     }
 
     @Override
-    public Facility facility() {
+    public Facility facility() throws PluginException {
         return Facility.AUDIT;
     }
 
     @Override
     public String hostname() throws PluginException {
-        final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
+        final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(mainObject, "KubernetesMetadata", JsonValue.ValueType.OBJECT);
-        final JsonObject kubernetesMetadata = mainObject.getJsonObject("KubernetesMetadata");
-        assertKey(kubernetesMetadata, "podAnnotations", JsonValue.ValueType.OBJECT);
-        final JsonObject podAnnotations = kubernetesMetadata.getJsonObject("podAnnotations");
+        assertKey(record, "_ResourceId", JsonValue.ValueType.STRING);
+        final String resourceId = record.getString("_ResourceId");
 
-        assertKey(podAnnotations, containerLogHostnameKey, JsonValue.ValueType.STRING);
-        return new ValidRFC5424Hostname(podAnnotations.getString(containerLogHostnameKey)).validHostname();
+        assertKey(record, "EnvironmentName", JsonValue.ValueType.STRING);
+        final String environmentName = record.getString("EnvironmentName");
+
+        final String concatenatedHostName = resourceId.concat("/").concat(environmentName);
+
+        return new ValidRFC5424Hostname(
+                "md5-".concat(new MD5Hash(concatenatedHostName).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+        ).hostnameWithInvalidCharsRemoved();
     }
 
     @Override
     public String appName() throws PluginException {
-        final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-
-        assertKey(mainObject, "KubernetesMetadata", JsonValue.ValueType.OBJECT);
-        final JsonObject kubernetesMetadata = mainObject.getJsonObject("KubernetesMetadata");
-        assertKey(kubernetesMetadata, "podAnnotations", JsonValue.ValueType.OBJECT);
-        final JsonObject podAnnotations = kubernetesMetadata.getJsonObject("podAnnotations");
-
-        assertKey(mainObject, "LogSource", JsonValue.ValueType.STRING);
-        final String logSource = mainObject.getString("LogSource");
-        final String logSourceSuffix;
-
-        if ("stdout".equals(logSource)) {
-            logSourceSuffix = ".o";
-        }
-        else if ("stderr".equals(logSource)) {
-            logSourceSuffix = ".e";
-        }
-        else {
-            throw new PluginException(new JsonException("Unknown log source: " + logSource));
+        final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
+        final String keyValue;
+        if (record.containsKey("ContainerAppName")) {
+            assertKey(record, "ContainerAppName", JsonValue.ValueType.STRING);
+            keyValue = record.getString("ContainerAppName");
+        } else if (record.containsKey("JobName")) {
+            assertKey(record, "JobName", JsonValue.ValueType.STRING);
+            keyValue = record.getString("JobName");
+        } else {
+            throw new PluginException(new IllegalArgumentException("A valid key does not exist"));
         }
 
-        assertKey(podAnnotations, containerLogAppNameKey, JsonValue.ValueType.STRING);
-        return new ValidRFC5424AppName(podAnnotations.getString(containerLogAppNameKey) + logSourceSuffix).appName();
+        return new ValidRFC5424AppName(new HashableRFC5424AppName(keyValue).appName()).appName();
     }
 
     @Override
     public long timestamp() throws PluginException {
-        final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING);
+        final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
+        assertKey(record, "TimeGenerated", JsonValue.ValueType.STRING);
+        final String time = record.getString("TimeGenerated");
 
-        return new ValidRFC5424Timestamp(mainObject.getString("TimeGenerated")).validTimestamp();
+        return new ValidRFC5424Timestamp(time).validTimestamp();
     }
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
-        Set<SDElement> elems = new HashSet<>();
-        String time = "";
+        final Set<SDElement> elems = new HashSet<>();
+        final String time;
         if (!parsedEvent.enqueuedTimeUtc().isStub()) {
             time = parsedEvent.enqueuedTimeUtc().zonedDateTime().toString();
         }
+        else {
+            time = "";
+        }
 
-        String fullyQualifiedNamespace = "";
-        String eventHubName = "";
-        String partitionId = "";
-        String consumerGroup = "";
+        final String fullyQualifiedNamespace;
+        final String eventHubName;
+        final String partitionId;
+        final String consumerGroup;
         if (!parsedEvent.partitionCtx().isStub()) {
             fullyQualifiedNamespace = String
                     .valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("FullyQualifiedNamespace", ""));
             eventHubName = String.valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("EventHubName", ""));
             partitionId = String.valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("PartitionId", ""));
             consumerGroup = String.valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("ConsumerGroup", ""));
+        }
+        else {
+            fullyQualifiedNamespace = "";
+            eventHubName = "";
+            partitionId = "";
+            consumerGroup = "";
         }
 
         elems
@@ -174,14 +174,20 @@ public final class ContainerType implements EventType {
         elems
                 .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", realHostname).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
 
-        String partitionKey = "";
+        final String partitionKey;
         if (!parsedEvent.systemProperties().isStub()) {
             partitionKey = String.valueOf(parsedEvent.systemProperties().asMap().getOrDefault("PartitionKey", ""));
         }
+        else {
+            partitionKey = "";
+        }
 
-        String offset = "";
+        final String offset;
         if (!parsedEvent.offset().isStub()) {
             offset = parsedEvent.offset().value();
+        }
+        else {
+            offset = "";
         }
 
         elems
@@ -190,41 +196,26 @@ public final class ContainerType implements EventType {
         elems
                 .add(new SDElement("aer_02@48577").addSDParam("timestamp_source", time.isEmpty() ? "generated" : "timeEnqueued"));
 
-        final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-
-        assertKey(mainObject, "_ResourceId", JsonValue.ValueType.STRING);
-        final ResourceId resourceId = new ResourceId(mainObject.getString("_ResourceId"));
-        final String subscriptionId = resourceId.subscriptionId();
-        final String clusterName = resourceId.resourceName();
-
-        assertKey(mainObject, "PodName", JsonValue.ValueType.STRING);
-        final String podName = mainObject.getString("PodName");
-
-        assertKey(mainObject, "PodNamespace", JsonValue.ValueType.STRING);
-        final String podNamespace = mainObject.getString("PodNamespace");
-
-        assertKey(mainObject, "ContainerId", JsonValue.ValueType.STRING);
-        final String containerId = mainObject.getString("ContainerId");
-
-        elems
-                .add(new SDElement("origin@48577").addSDParam("subscription", subscriptionId).addSDParam("clusterName", clusterName).addSDParam("namespace", podNamespace).addSDParam("pod", podName).addSDParam("containerId", containerId));
-
         elems.add(new SDElement("nlf_01@48577").addSDParam("eventType", this.getClass().getSimpleName()));
 
         return elems;
     }
 
     @Override
-    public String msgId() {
-        String sequenceNumber = "";
+    public String msgId() throws PluginException {
+        final String sequenceNumber;
         if (!parsedEvent.systemProperties().isStub()) {
             sequenceNumber = String.valueOf(parsedEvent.systemProperties().asMap().getOrDefault("SequenceNumber", ""));
         }
+        else {
+            sequenceNumber = "";
+        }
+
         return sequenceNumber;
     }
 
     @Override
-    public String msg() {
+    public String msg() throws PluginException {
         return parsedEvent.asString();
     }
 }

@@ -114,7 +114,7 @@ public final class ADFActivityRunType implements EventType {
 
         assertKey(record, "PipelineName", JsonValue.ValueType.STRING);
 
-        return new ValidRFC5424AppName(record.getString("PipelineName")).validAppName();
+        return new ValidRFC5424AppName(record.getString("PipelineName")).appName();
 
     }
 
