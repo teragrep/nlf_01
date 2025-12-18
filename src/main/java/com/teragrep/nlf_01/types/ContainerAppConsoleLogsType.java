@@ -52,6 +52,7 @@ import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.HashableRFC5424AppName;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
+import com.teragrep.nlf_01.util.ValidKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
 import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
@@ -75,17 +76,6 @@ public final class ContainerAppConsoleLogsType implements EventType {
         this.realHostname = realHostname;
     }
 
-    private void assertKey(final JsonObject obj, final String key, final JsonValue.ValueType type)
-            throws PluginException {
-        if (!obj.containsKey(key)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " does not exist"));
-        }
-
-        if (!obj.get(key).getValueType().equals(type)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " is not of type " + type));
-        }
-    }
-
     @Override
     public Severity severity() throws PluginException {
         return Severity.NOTICE;
@@ -100,45 +90,43 @@ public final class ContainerAppConsoleLogsType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "_ResourceId", JsonValue.ValueType.STRING);
-        final String resourceId = record.getString("_ResourceId");
+        final ValidKey validResourceID = new ValidKey(record, "_ResourceId", JsonValue.ValueType.STRING);
+        final ValidKey validEnvironmentName = new ValidKey(record, "EnvironmentName", JsonValue.ValueType.STRING);
 
-        assertKey(record, "EnvironmentName", JsonValue.ValueType.STRING);
-        final String environmentName = record.getString("EnvironmentName");
-
-        final String concatenatedHostName = resourceId.concat("/").concat(environmentName);
+        final String concatenatedHostName = validResourceID
+                .asString()
+                .concat("/")
+                .concat(validEnvironmentName.asString());
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(concatenatedHostName).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(concatenatedHostName).md5().concat("-").concat(new ASCIIString(new ResourceId(validResourceID.asString()).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 
     @Override
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
-        final String keyValue;
+        final ValidKey validKey;
+
         if (record.containsKey("ContainerAppName")) {
-            assertKey(record, "ContainerAppName", JsonValue.ValueType.STRING);
-            keyValue = record.getString("ContainerAppName");
+            validKey = new ValidKey(record, "ContainerAppName", JsonValue.ValueType.STRING);
         }
         else if (record.containsKey("JobName")) {
-            assertKey(record, "JobName", JsonValue.ValueType.STRING);
-            keyValue = record.getString("JobName");
+            validKey = new ValidKey(record, "JobName", JsonValue.ValueType.STRING);
         }
         else {
             throw new PluginException(new IllegalArgumentException("A valid key does not exist"));
         }
 
-        return new ValidRFC5424AppName(new HashableRFC5424AppName(keyValue).appName()).appName();
+        return new ValidRFC5424AppName(new HashableRFC5424AppName(validKey.asString()).appName()).appName();
     }
 
     @Override
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(record, "TimeGenerated", JsonValue.ValueType.STRING);
-        final String time = record.getString("TimeGenerated");
 
-        return new ValidRFC5424Timestamp(time).validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString())
+                .validTimestamp();
     }
 
     @Override
