@@ -49,7 +49,7 @@ import com.teragrep.akv_01.plugin.PluginException;
 
 public final class HashableRFC5424AppName implements RFC5424AppName {
 
-    private final static int MAX_LENGTH = 48;
+    private static final int MAX_LENGTH = 48;
     private final String rfc5424AppName;
 
     public HashableRFC5424AppName(final String rfc5424AppName) {
@@ -62,8 +62,10 @@ public final class HashableRFC5424AppName implements RFC5424AppName {
      * Does not provide a fully safe RFC 5424 appName, so most likely should be wrapped with {@link ValidRFC5424AppName}
      *
      * @return
+     *         <ul>
      *         <li>Hashed appName if length is longer than {@link #MAX_LENGTH}</li>
      *         <li>{@link #rfc5424AppName} if length is shorter than {@link #MAX_LENGTH}</li>
+     *         </ul>
      */
     @Override
     public String appName() throws PluginException {
