@@ -49,7 +49,6 @@ import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.PropertiesJson;
 import com.teragrep.nlf_01.util.ASCIIString;
-import com.teragrep.nlf_01.util.HashableRFC5424AppName;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
@@ -65,12 +64,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public final class ContainerAppConsoleLogsType implements EventType {
+public final class AppServiceConsoleLogsType implements EventType {
 
     private final ParsedEvent parsedEvent;
     private final String realHostname;
 
-    public ContainerAppConsoleLogsType(final ParsedEvent parsedEvent, final String realHostname) {
+    public AppServiceConsoleLogsType(final ParsedEvent parsedEvent, final String realHostname) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
     }
@@ -87,12 +86,12 @@ public final class ContainerAppConsoleLogsType implements EventType {
     }
 
     @Override
-    public Severity severity() throws PluginException {
+    public Severity severity() {
         return Severity.NOTICE;
     }
 
     @Override
-    public Facility facility() throws PluginException {
+    public Facility facility() {
         return Facility.AUDIT;
     }
 
@@ -103,42 +102,27 @@ public final class ContainerAppConsoleLogsType implements EventType {
         assertKey(record, "_ResourceId", JsonValue.ValueType.STRING);
         final String resourceId = record.getString("_ResourceId");
 
-        assertKey(record, "EnvironmentName", JsonValue.ValueType.STRING);
-        final String environmentName = record.getString("EnvironmentName");
-
-        final String concatenatedHostName = resourceId.concat("/").concat(environmentName);
-
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(concatenatedHostName).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(resourceId).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 
     @Override
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
-        final String keyValue;
-        if (record.containsKey("ContainerAppName")) {
-            assertKey(record, "ContainerAppName", JsonValue.ValueType.STRING);
-            keyValue = record.getString("ContainerAppName");
-        }
-        else if (record.containsKey("JobName")) {
-            assertKey(record, "JobName", JsonValue.ValueType.STRING);
-            keyValue = record.getString("JobName");
-        }
-        else {
-            throw new PluginException(new IllegalArgumentException("A valid key does not exist"));
-        }
 
-        return new ValidRFC5424AppName(new HashableRFC5424AppName(keyValue).appName()).appName();
+        assertKey(record, "Type", JsonValue.ValueType.STRING);
+
+        return new ValidRFC5424AppName(record.getString("Type")).appName();
     }
 
     @Override
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(record, "TimeGenerated", JsonValue.ValueType.STRING);
-        final String time = record.getString("TimeGenerated");
 
-        return new ValidRFC5424Timestamp(time).validTimestamp();
+        assertKey(record, "TimeGenerated", JsonValue.ValueType.STRING);
+
+        return new ValidRFC5424Timestamp(record.getString("TimeGenerated")).validTimestamp();
     }
 
     @Override
@@ -212,7 +196,6 @@ public final class ContainerAppConsoleLogsType implements EventType {
         else {
             sequenceNumber = "";
         }
-
         return sequenceNumber;
     }
 
