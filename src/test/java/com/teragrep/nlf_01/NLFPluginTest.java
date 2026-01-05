@@ -576,6 +576,64 @@ public class NLFPluginTest {
     }
 
     @Test
+    void powerAutomateActivityType() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/powerautomateactivity.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"ActorName\": \"localhost@localhost.example.test\",\n"
+                                + "  \"ActorUserId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"ActorUserType\": \"Admin\",\n" + "  \"AdditionalInfo\": \"{}\",\n"
+                                + "  \"EventOriginalType\": \"OriginalType\",\n"
+                                + "  \"EventOriginalUid\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"EventResult\": \"Succeeded\",\n" + "  \"FlowConnectorNames\": \"Connector\",\n"
+                                + "  \"FlowDetailsUrl\": \"https://{uri1}/{uri2}/environments/EXAMPLE_FLOW_1/flows/{uri3}\",\n"
+                                + "  \"LicenseDisplayName\": \"License1\",\n"
+                                + "  \"ObjectId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"OrganizationId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"RecipientUpn\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"RecordType\": \"exchangeAdmin\",\n" + "  \"SharingPermission\": \"2\",\n"
+                                + "  \"SourceSystem\": \"Azure\",\n" + "  \"SrcIpAddr\": \"127.0.0.1\",\n"
+                                + "  \"Type\": \"PowerAutomateActivity\",\n"
+                                + "  \"TimeGenerated\": \"2025-10-06T00:00:00.0000000Z\",\n"
+                                + "  \"_ItemId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"TenantId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"UserUpn\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"Workload\": \"Service1\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_SubscriptionId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"_TimeReceived\": \"2025-10-06T00:00:00.0000000Z\",\n"
+                                + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
+                                + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("PowerAA_EXAMPLE_FLOW_1", syslogMessage.getAppName());
+        Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(PowerAutomateActivityType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+    }
+
+    @Test
     void testPostgreSQLType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/postgre.json")));
