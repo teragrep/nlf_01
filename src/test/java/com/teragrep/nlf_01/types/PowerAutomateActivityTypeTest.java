@@ -79,6 +79,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class PowerAutomateActivityTypeTest {
@@ -273,5 +274,45 @@ class PowerAutomateActivityTypeTest {
 
         Assertions
                 .assertEquals(PowerAutomateActivityType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+    }
+
+    /**
+     * Tests the regEx matcher, and expects and Exception to be throws, since the 'FlowDetailsUrl' field does not
+     * contain the expected structure
+     */
+    @Test
+    @DisplayName("appName() throws PluginException if regex does not match")
+    void appNameThrowsPluginExceptionIfRegexDoesNotMatch() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/powerautomateactivity_missing_appname.json", new EventPartitionContextStub(),
+                new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
+                new EventOffsetStub()
+        );
+
+        final PowerAutomateActivityType type = new PowerAutomateActivityType(parsedEvent, "localhost");
+
+        final Exception exception = Assertions.assertThrowsExactly(PluginException.class, type::appName);
+
+        Assertions.assertEquals("Could not parse environment from FlowDetailsUrl", exception.getMessage());
+    }
+
+    /**
+     * Tests the regEx matcher, and expects and Exception to be throws, since the 'FlowDetailsUrl' field contains the
+     * expected structure, but value is null OR empty
+     */
+    @Test
+    @DisplayName("appName() throws PluginException if regex value is null")
+    void appNameThrowsPluginExceptionIfRegexValueIsNull() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/powerautomateactivity_empty_appname.json", new EventPartitionContextStub(),
+                new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
+                new EventOffsetStub()
+        );
+
+        final PowerAutomateActivityType type = new PowerAutomateActivityType(parsedEvent, "localhost");
+
+        final Exception exception = Assertions.assertThrowsExactly(PluginException.class, type::appName);
+
+        Assertions.assertEquals("Capture group 'environment' was not found", exception.getMessage());
     }
 }

@@ -134,7 +134,7 @@ public final class PowerAutomateActivityType implements EventType {
         }
 
         final String environment = matcher.group("environment");
-        if (environment == null) {
+        if (environment == null || environment.isEmpty()) {
             throw new PluginException("Capture group 'environment' was not found");
         }
 
