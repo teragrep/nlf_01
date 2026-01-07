@@ -129,17 +129,17 @@ public final class PowerAutomateActivityType implements EventType {
         final String flowDetailsUrl = record.getString("FlowDetailsUrl");
 
         final Matcher matcher = appNamePattern.matcher(flowDetailsUrl);
-        if (matcher.find()) {
-            final String environment = matcher.group("environment");
-            if (environment == null) {
-                throw new PluginException("Capture group 'environment' was not found");
-            }
-            // Prepend 'PowerAA_' before the actual environment name. AA standing for AutomateActivity
-            return new ValidRFC5424AppName(new ASCIIString("PowerAA_" + environment).withNonAsciiCharsRemoved())
-                    .appName();
+        if (!matcher.find()) {
+            throw new PluginException("Could not parse environment from FlowDetailsUrl");
         }
 
-        throw new PluginException("Could not parse environment from FlowDetailsUrl");
+        final String environment = matcher.group("environment");
+        if (environment == null) {
+            throw new PluginException("Capture group 'environment' was not found");
+        }
+
+        // Prepend 'PowerAA_' before the actual environment name. AA standing for AutomateActivity
+        return new ValidRFC5424AppName(new ASCIIString("PowerAA_" + environment).withNonAsciiCharsRemoved()).appName();
     }
 
     @Override
