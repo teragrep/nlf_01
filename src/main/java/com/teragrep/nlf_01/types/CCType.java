@@ -72,11 +72,14 @@ public final class CCType implements EventType {
     private final String realHostname;
     private final Pattern appNamePattern;
 
+    /**
+     * Parses the appName from data.resourceName's value between the second '=' symbol and the next '/' symbol
+     */
     public CCType(final ParsedEvent parsedEvent, final String realHostname) {
         this(parsedEvent, realHostname, Pattern.compile("=.*?=(?<value>.*?)(?=/)"));
     }
 
-    public CCType(final ParsedEvent parsedEvent, final String realHostname, final Pattern appNamePattern) {
+    private CCType(final ParsedEvent parsedEvent, final String realHostname, final Pattern appNamePattern) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
         this.appNamePattern = appNamePattern;
@@ -115,9 +118,6 @@ public final class CCType implements EventType {
         ).hostnameWithInvalidCharsRemoved();
     }
 
-    /**
-     * Parses the appName from data.resourceName's value between the second '=' symbol and the next '/' symbol
-     */
     @Override
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
