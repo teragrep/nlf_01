@@ -63,15 +63,23 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class CCType implements EventType {
 
     private final ParsedEvent parsedEvent;
     private final String realHostname;
+    private final Pattern appNamePattern;
 
     public CCType(final ParsedEvent parsedEvent, final String realHostname) {
+        this(parsedEvent, realHostname, Pattern.compile("=.*?=(?<value>.*?)(?=/)"));
+    }
+
+    public CCType(final ParsedEvent parsedEvent, final String realHostname, final Pattern appNamePattern) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
+        this.appNamePattern = appNamePattern;
     }
 
     private void assertKey(final JsonObject obj, final String key, final JsonValue.ValueType type)
@@ -108,7 +116,7 @@ public final class CCType implements EventType {
     }
 
     /**
-     * Parses the appName from data.resourceName's value after the last '=' symbol
+     * Parses the appName from data.resourceName's value between the second '=' symbol and the next '/' symbol
      */
     @Override
     public String appName() throws PluginException {
@@ -119,13 +127,16 @@ public final class CCType implements EventType {
         assertKey(data, "resourceName", JsonValue.ValueType.STRING);
         final String resourceName = data.getString("resourceName");
 
-        final String lastValueInResourceName = resourceName.substring(resourceName.lastIndexOf("=") + 1);
-
-        if (lastValueInResourceName.isEmpty()) {
-            throw new PluginException("Could not parse appName from data.resourceName");
+        final Matcher matcher = appNamePattern.matcher(resourceName);
+        if (!matcher.find()) {
+            throw new PluginException("Could not parse environment from data.resourceName");
+        }
+        final String value = matcher.group("value");
+        if (value == null || value.isEmpty()) {
+            throw new PluginException("Capture group 'value' was not found");
         }
 
-        return new ValidRFC5424AppName(new ASCIIString(lastValueInResourceName).withNonAsciiCharsRemoved()).appName();
+        return new ValidRFC5424AppName(new ASCIIString(value).withNonAsciiCharsRemoved()).appName();
     }
 
     @Override
