@@ -77,7 +77,7 @@ final class ValidKeyTest {
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asString);
 
-        final String expectedMessage = "Key key1 is not of type STRING";
+        final String expectedMessage = "Value for key 'key1' is not of type STRING";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
@@ -102,7 +102,7 @@ final class ValidKeyTest {
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asString);
 
-        final String expectedMessage = "Key was requested as a String, but keyValueType was NUMBER";
+        final String expectedMessage = "Value was requested as a String, but keyValueType was NUMBER";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
@@ -115,7 +115,7 @@ final class ValidKeyTest {
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asString);
 
-        final String expectedMessage = "Key was requested as a String, but keyValueType was ARRAY";
+        final String expectedMessage = "Value was requested as a String, but keyValueType was ARRAY";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
@@ -128,7 +128,7 @@ final class ValidKeyTest {
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asString);
 
-        final String expectedMessage = "Key was requested as a String, but keyValueType was OBJECT";
+        final String expectedMessage = "Value was requested as a String, but keyValueType was OBJECT";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
@@ -141,7 +141,7 @@ final class ValidKeyTest {
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asString);
 
-        final String expectedMessage = "Key was requested as a String, but keyValueType was TRUE";
+        final String expectedMessage = "Value was requested as a String, but keyValueType was TRUE";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
@@ -154,7 +154,7 @@ final class ValidKeyTest {
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asString);
 
-        final String expectedMessage = "Key was requested as a String, but keyValueType was FALSE";
+        final String expectedMessage = "Value was requested as a String, but keyValueType was FALSE";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
@@ -167,7 +167,7 @@ final class ValidKeyTest {
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asString);
 
-        final String expectedMessage = "Key was requested as a String, but keyValueType was NULL";
+        final String expectedMessage = "Value was requested as a String, but keyValueType was NULL";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
@@ -193,7 +193,7 @@ final class ValidKeyTest {
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
 
-        final String expectedMessage = "Key key1 is not of type OBJECT";
+        final String expectedMessage = "Value for key 'key1' is not of type OBJECT";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
@@ -206,7 +206,7 @@ final class ValidKeyTest {
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
 
-        final String expectedMessage = "Key was requested as a JsonObject, but keyValueType was STRING";
+        final String expectedMessage = "Value was requested as a JsonObject, but keyValueType was STRING";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
@@ -219,7 +219,7 @@ final class ValidKeyTest {
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
 
-        final String expectedMessage = "Key was requested as a JsonObject, but keyValueType was NUMBER";
+        final String expectedMessage = "Value was requested as a JsonObject, but keyValueType was NUMBER";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
@@ -232,7 +232,7 @@ final class ValidKeyTest {
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
 
-        final String expectedMessage = "Key was requested as a JsonObject, but keyValueType was TRUE";
+        final String expectedMessage = "Value was requested as a JsonObject, but keyValueType was TRUE";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
@@ -245,7 +245,7 @@ final class ValidKeyTest {
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
 
-        final String expectedMessage = "Key was requested as a JsonObject, but keyValueType was FALSE";
+        final String expectedMessage = "Value was requested as a JsonObject, but keyValueType was FALSE";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
@@ -258,7 +258,7 @@ final class ValidKeyTest {
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
 
-        final String expectedMessage = "Key was requested as a JsonObject, but keyValueType was ARRAY";
+        final String expectedMessage = "Value was requested as a JsonObject, but keyValueType was ARRAY";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
@@ -271,7 +271,7 @@ final class ValidKeyTest {
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
 
-        final String expectedMessage = "Key was requested as a JsonObject, but keyValueType was NULL";
+        final String expectedMessage = "Value was requested as a JsonObject, but keyValueType was NULL";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
