@@ -71,16 +71,6 @@ public final class CLType implements EventType {
         this.realHostname = realHostname;
     }
 
-    private void assertKey(final JsonObject obj, final String key, JsonValue.ValueType type) throws PluginException {
-        if (!obj.containsKey(key)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " does not exist"));
-        }
-
-        if (!obj.get(key).getValueType().equals(type)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " is not of type " + type));
-        }
-    }
-
     @Override
     public Severity severity() {
         return Severity.NOTICE;
@@ -94,20 +84,20 @@ public final class CLType implements EventType {
     @Override
     public String hostname() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(mainObject, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
-        final String internalWorkspaceResourceId = mainObject.getString("_Internal_WorkspaceResourceId");
+        final ValidKey validKey = new ValidKey(mainObject, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
 
         // hostname = internal workspace resource id MD5 + resourceName from resourceId, with non-ascii chars removed
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(internalWorkspaceResourceId).md5().concat("-").concat(new ASCIIString(new ResourceId(internalWorkspaceResourceId).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(validKey.asString()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.asString()).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 
     @Override
     public String appName() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(mainObject, "FilePath", JsonValue.ValueType.STRING);
-        final String filePath = mainObject.getString("FilePath");
+
+        final ValidKey validKey = new ValidKey(mainObject, "FilePath", JsonValue.ValueType.STRING);
+        final String filePath = validKey.asString();
 
         final String truncatedMd5 = new MD5Hash(filePath).md5().substring(0, 8);
 
@@ -121,9 +111,10 @@ public final class CLType implements EventType {
     @Override
     public long timestamp() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING);
 
-        return new ValidRFC5424Timestamp(mainObject.getString("TimeGenerated")).validTimestamp();
+        return new ValidRFC5424Timestamp(
+                new ValidKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING).asString()
+        ).validTimestamp();
     }
 
     @Override
@@ -170,8 +161,8 @@ public final class CLType implements EventType {
 
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(mainObject, "_ResourceId", JsonValue.ValueType.STRING);
-        final String resourceId = mainObject.getString("_ResourceId");
+        final ValidKey validKey = new ValidKey(mainObject, "_ResourceId", JsonValue.ValueType.STRING);
+        final String resourceId = validKey.asString();
 
         elems.add(new SDElement("origin@48577").addSDParam("_ResourceId", resourceId));
         elems.add(new SDElement("nlf_01@48577").addSDParam("eventType", this.getClass().getSimpleName()));

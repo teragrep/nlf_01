@@ -51,6 +51,7 @@ import com.teragrep.nlf_01.PropertiesJson;
 import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
+import com.teragrep.nlf_01.util.ValidKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
 import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
@@ -74,17 +75,6 @@ public final class FunctionAppLogsType implements EventType {
         this.realHostname = realHostname;
     }
 
-    private void assertKey(final JsonObject obj, final String key, final JsonValue.ValueType type)
-            throws PluginException {
-        if (!obj.containsKey(key)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " does not exist"));
-        }
-
-        if (!obj.get(key).getValueType().equals(type)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " is not of type " + type));
-        }
-    }
-
     @Override
     public Severity severity() {
         return Severity.NOTICE;
@@ -99,11 +89,10 @@ public final class FunctionAppLogsType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "_ResourceId", JsonValue.ValueType.STRING);
-        final String resourceId = record.getString("_ResourceId");
+        final ValidKey validKey = new ValidKey(record, "_ResourceId", JsonValue.ValueType.STRING);
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(resourceId).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(validKey.asString()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.asString()).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 
@@ -111,18 +100,17 @@ public final class FunctionAppLogsType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "AppName", JsonValue.ValueType.STRING);
-
-        return new ValidRFC5424AppName(record.getString("AppName")).appName();
+        return new ValidRFC5424AppName(
+                new ASCIIString(new ValidKey(record, "AppName", JsonValue.ValueType.STRING).asString()).withNonAsciiCharsRemoved()
+        ).appName();
     }
 
     @Override
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "TimeGenerated", JsonValue.ValueType.STRING);
-
-        return new ValidRFC5424Timestamp(record.getString("TimeGenerated")).validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString())
+                .validTimestamp();
     }
 
     @Override
