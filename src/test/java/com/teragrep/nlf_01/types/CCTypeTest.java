@@ -278,7 +278,7 @@ class CCTypeTest {
      */
     @Test
     @DisplayName("appName() throws PluginException if regex does not match")
-    void appNameThrowsPluginExceptionIfRegexDoesNotMatch() {
+    void testAppNameThrowsPluginExceptionIfRegexDoesNotMatch() {
         final ParsedEvent parsedEvent = testEvent(
                 "src/test/resources/cc_missing_appname.json", new EventPartitionContextStub(),
                 new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
@@ -298,7 +298,7 @@ class CCTypeTest {
      */
     @Test
     @DisplayName("appName() throws PluginException if regex value is empty")
-    void appNameThrowsPluginExceptionIfRegexValueIsEmpty() {
+    void testAppNameThrowsPluginExceptionIfRegexValueIsEmpty() {
         final ParsedEvent parsedEvent = testEvent(
                 "src/test/resources/cc_empty_appname.json", new EventPartitionContextStub(), new EventPropertiesStub(),
                 new EventSystemPropertiesStub(), new EnqueuedTimeStub(), new EventOffsetStub()
