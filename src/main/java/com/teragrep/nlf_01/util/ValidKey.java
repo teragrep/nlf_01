@@ -52,9 +52,9 @@ import jakarta.json.JsonValue.ValueType;
 
 public final class ValidKey {
 
-    final JsonObject jsonObject;
-    final String keyName;
-    final JsonValue.ValueType keyValueType;
+    private final JsonObject jsonObject;
+    private final String keyName;
+    private final JsonValue.ValueType keyValueType;
 
     public ValidKey(final JsonObject jsonObject, final String keyName, final JsonValue.ValueType keyValueType) {
         this.jsonObject = jsonObject;
