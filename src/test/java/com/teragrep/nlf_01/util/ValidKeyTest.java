@@ -83,8 +83,8 @@ final class ValidKeyTest {
     }
 
     @Test
-    @DisplayName("asString returns String of the key if conditions are met")
-    void asStringReturnsStringOfTheKeyIfConditionsAreMet() {
+    @DisplayName("asString returns String from the key's value if conditions are met")
+    void asStringReturnsStringFromTheKeysValueIfConditionsAreMet() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", "keyValue").build();
         final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.STRING);
 
@@ -134,8 +134,8 @@ final class ValidKeyTest {
     }
 
     @Test
-    @DisplayName("asJsonObject returns String of the key if conditions are met")
-    void asJsonObjectReturnsStringOfTheKeyIfConditionsAreMet() {
+    @DisplayName("asJsonObject returns JsonObject from the key's value if conditions are met")
+    void asJsonObjectReturnsJsonObjectFromTheKeysValueIfConditionsAreMet() {
         final JsonObject jsonObject = Json
                 .createObjectBuilder()
                 .add("key1", Json.createObjectBuilder().build())
