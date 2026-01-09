@@ -282,7 +282,7 @@ class PowerAutomateActivityTypeTest {
      */
     @Test
     @DisplayName("appName() throws PluginException if regex does not match")
-    void appNameThrowsPluginExceptionIfRegexDoesNotMatch() {
+    void testAppNameThrowsPluginExceptionIfRegexDoesNotMatch() {
         final ParsedEvent parsedEvent = testEvent(
                 "src/test/resources/powerautomateactivity_missing_appname.json", new EventPartitionContextStub(),
                 new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
@@ -302,7 +302,7 @@ class PowerAutomateActivityTypeTest {
      */
     @Test
     @DisplayName("appName() throws PluginException if regex value is null")
-    void appNameThrowsPluginExceptionIfRegexValueIsNull() {
+    void testAppNameThrowsPluginExceptionIfRegexValueIsNull() {
         final ParsedEvent parsedEvent = testEvent(
                 "src/test/resources/powerautomateactivity_empty_appname.json", new EventPartitionContextStub(),
                 new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
