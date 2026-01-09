@@ -67,6 +67,12 @@ public final class ValidKey {
             throw new PluginException(new IllegalArgumentException("Key " + keyName + " does not exist"));
         }
 
+        if (!this.keyValueType.equals(ValueType.STRING)) {
+            throw new PluginException(
+                    new IllegalArgumentException("Key was requested as a String, but keyValueType was " + keyValueType)
+            );
+        }
+
         if (!jsonObject.get(keyName).getValueType().equals(keyValueType)) {
             throw new PluginException(
                     new IllegalArgumentException("Key " + keyName + " is not of type " + keyValueType)

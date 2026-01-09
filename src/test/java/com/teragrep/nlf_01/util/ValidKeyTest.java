@@ -95,27 +95,92 @@ final class ValidKeyTest {
     }
 
     @Test
-    @DisplayName("asJsonObject() throws PluginException if JsonObject does not contain the key")
-    void asJsonObjectThrowsPluginExceptionIfJsonObjectDoesNotContainTheKey() {
-        final JsonObject jsonObject = Json.createObjectBuilder().add("key2", "value").build();
-        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.STRING);
+    @DisplayName("asString() throws PluginException if the requested key's ValueType is NUMBER")
+    void asStringThrowsPluginExceptionIfTheRequestedKeysValueTypeIsNumber() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", 1).build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.NUMBER);
 
-        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asString);
 
-        final String expectedMessage = "Key key1 does not exist";
+        final String expectedMessage = "Key was requested as a String, but keyValueType was NUMBER";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
 
     @Test
-    @DisplayName("asJsonObject() throws PluginException if the keyValueType parameter is not OBJECT")
-    void asJsonObjectThrowsPluginExceptionIfTheKeyValueTypeParameterIsNotObject() {
-        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", "value").build();
-        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.STRING);
+    @DisplayName("asString() throws PluginException if the requested key's ValueType is ARRAY")
+    void asStringThrowsPluginExceptionIfTheRequestedKeysValueTypeIsArray() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.EMPTY_JSON_ARRAY).build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.ARRAY);
+
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asString);
+
+        final String expectedMessage = "Key was requested as a String, but keyValueType was ARRAY";
+        final Throwable innerException = exception.getCause(); // Exception is wrapped
+        Assertions.assertEquals(expectedMessage, innerException.getMessage());
+    }
+
+    @Test
+    @DisplayName("asString() throws PluginException if the requested key's ValueType is OBJECT")
+    void asStringThrowsPluginExceptionIfTheRequestedKeysValueTypeIsObject() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.EMPTY_JSON_OBJECT).build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.OBJECT);
+
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asString);
+
+        final String expectedMessage = "Key was requested as a String, but keyValueType was OBJECT";
+        final Throwable innerException = exception.getCause(); // Exception is wrapped
+        Assertions.assertEquals(expectedMessage, innerException.getMessage());
+    }
+
+    @Test
+    @DisplayName("asString() throws PluginException if the requested key's ValueType is TRUE")
+    void asStringThrowsPluginExceptionIfTheRequestedKeysValueTypeIsTrue() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.TRUE).build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.TRUE);
+
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asString);
+
+        final String expectedMessage = "Key was requested as a String, but keyValueType was TRUE";
+        final Throwable innerException = exception.getCause(); // Exception is wrapped
+        Assertions.assertEquals(expectedMessage, innerException.getMessage());
+    }
+
+    @Test
+    @DisplayName("asString() throws PluginException if the requested key's ValueType is FALSE")
+    void asStringThrowsPluginExceptionIfTheRequestedKeysValueTypeIsFalse() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.FALSE).build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.FALSE);
+
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asString);
+
+        final String expectedMessage = "Key was requested as a String, but keyValueType was FALSE";
+        final Throwable innerException = exception.getCause(); // Exception is wrapped
+        Assertions.assertEquals(expectedMessage, innerException.getMessage());
+    }
+
+    @Test
+    @DisplayName("asString() throws PluginException if the requested key's ValueType is NULL")
+    void asStringThrowsPluginExceptionIfTheRequestedKeysValueTypeIsNull() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.NULL).build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.NULL);
+
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asString);
+
+        final String expectedMessage = "Key was requested as a String, but keyValueType was NULL";
+        final Throwable innerException = exception.getCause(); // Exception is wrapped
+        Assertions.assertEquals(expectedMessage, innerException.getMessage());
+    }
+
+    @Test
+    @DisplayName("asJsonObject() throws PluginException if JsonObject does not contain the key")
+    void asJsonObjectThrowsPluginExceptionIfJsonObjectDoesNotContainTheKey() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key2", "value").build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.OBJECT);
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
 
-        final String expectedMessage = "Key was requested as a JsonObject, but keyValueType was STRING";
+        final String expectedMessage = "Key key1 does not exist";
         final Throwable innerException = exception.getCause(); // Exception is wrapped
         Assertions.assertEquals(expectedMessage, innerException.getMessage());
     }
@@ -134,6 +199,84 @@ final class ValidKeyTest {
     }
 
     @Test
+    @DisplayName("asJsonObject() throws PluginException if the requested key's ValueType is STRING")
+    void asJsonObjectThrowsPluginExceptionIfTheRequestedKeySValueTypeIsString() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", "String").build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.STRING);
+
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
+
+        final String expectedMessage = "Key was requested as a JsonObject, but keyValueType was STRING";
+        final Throwable innerException = exception.getCause(); // Exception is wrapped
+        Assertions.assertEquals(expectedMessage, innerException.getMessage());
+    }
+
+    @Test
+    @DisplayName("asJsonObject() throws PluginException if the requested key's ValueType is NUMBER")
+    void asJsonObjectThrowsPluginExceptionIfTheRequestedKeySValueTypeIsNumber() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", 1).build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.NUMBER);
+
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
+
+        final String expectedMessage = "Key was requested as a JsonObject, but keyValueType was NUMBER";
+        final Throwable innerException = exception.getCause(); // Exception is wrapped
+        Assertions.assertEquals(expectedMessage, innerException.getMessage());
+    }
+
+    @Test
+    @DisplayName("asJsonObject() throws PluginException if the requested key's ValueType is TRUE")
+    void asJsonObjectThrowsPluginExceptionIfTheRequestedKeySValueTypeIsTrue() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.TRUE).build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.TRUE);
+
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
+
+        final String expectedMessage = "Key was requested as a JsonObject, but keyValueType was TRUE";
+        final Throwable innerException = exception.getCause(); // Exception is wrapped
+        Assertions.assertEquals(expectedMessage, innerException.getMessage());
+    }
+
+    @Test
+    @DisplayName("asJsonObject() throws PluginException if the requested key's ValueType is FALSE")
+    void asJsonObjectThrowsPluginExceptionIfTheRequestedKeySValueTypeIsFalse() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.FALSE).build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.FALSE);
+
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
+
+        final String expectedMessage = "Key was requested as a JsonObject, but keyValueType was FALSE";
+        final Throwable innerException = exception.getCause(); // Exception is wrapped
+        Assertions.assertEquals(expectedMessage, innerException.getMessage());
+    }
+
+    @Test
+    @DisplayName("asJsonObject() throws PluginException if the requested key's ValueType is ARRAY")
+    void asJsonObjectThrowsPluginExceptionIfTheRequestedKeySValueTypeIsArray() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.EMPTY_JSON_ARRAY).build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.ARRAY);
+
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
+
+        final String expectedMessage = "Key was requested as a JsonObject, but keyValueType was ARRAY";
+        final Throwable innerException = exception.getCause(); // Exception is wrapped
+        Assertions.assertEquals(expectedMessage, innerException.getMessage());
+    }
+
+    @Test
+    @DisplayName("asJsonObject() throws PluginException if the requested key's ValueType is NULL")
+    void asJsonObjectThrowsPluginExceptionIfTheRequestedKeySValueTypeIsNull() {
+        final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.NULL).build();
+        final ValidKey validKey = new ValidKey(jsonObject, "key1", ValueType.NULL);
+
+        final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::asJsonObject);
+
+        final String expectedMessage = "Key was requested as a JsonObject, but keyValueType was NULL";
+        final Throwable innerException = exception.getCause(); // Exception is wrapped
+        Assertions.assertEquals(expectedMessage, innerException.getMessage());
+    }
+
+    @Test
     @DisplayName("asJsonObject returns JsonObject from the key's value if conditions are met")
     void asJsonObjectReturnsJsonObjectFromTheKeysValueIfConditionsAreMet() {
         final JsonObject jsonObject = Json
@@ -147,4 +290,5 @@ final class ValidKeyTest {
         final JsonObject expectedJsonObject = JsonValue.EMPTY_JSON_OBJECT;
         Assertions.assertEquals(expectedJsonObject, returnedJsonObject);
     }
+
 }
