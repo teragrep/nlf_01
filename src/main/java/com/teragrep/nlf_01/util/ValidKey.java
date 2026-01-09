@@ -69,13 +69,13 @@ public final class ValidKey {
 
         if (!this.keyValueType.equals(ValueType.STRING)) {
             throw new PluginException(
-                    new IllegalArgumentException("Key was requested as a String, but keyValueType was " + keyValueType)
+                    new IllegalArgumentException("Value was requested as a String, but keyValueType was " + keyValueType)
             );
         }
 
         if (!jsonObject.get(keyName).getValueType().equals(keyValueType)) {
             throw new PluginException(
-                    new IllegalArgumentException("Key " + keyName + " is not of type " + keyValueType)
+                    new IllegalArgumentException("Value for key '" + keyName + "' is not of type " + keyValueType)
             );
         }
 
@@ -90,14 +90,14 @@ public final class ValidKey {
         if (!this.keyValueType.equals(ValueType.OBJECT)) {
             throw new PluginException(
                     new IllegalArgumentException(
-                            "Key was requested as a JsonObject, but keyValueType was " + keyValueType
+                            "Value was requested as a JsonObject, but keyValueType was " + keyValueType
                     )
             );
         }
 
         if (!jsonObject.get(keyName).getValueType().equals(keyValueType)) {
             throw new PluginException(
-                    new IllegalArgumentException("Key " + keyName + " is not of type " + keyValueType)
+                    new IllegalArgumentException("Value for key '" + keyName + "' is not of type " + keyValueType)
             );
         }
 
