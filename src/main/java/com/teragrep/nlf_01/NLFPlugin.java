@@ -124,6 +124,9 @@ public final class NLFPlugin implements Plugin {
             else if (jsonObject.getString("Type").equals("PowerAutomateActivity")) {
                 eventTypes.add(new PowerAutomateActivityType(parsedEvent, realHostname));
             }
+            else if (jsonObject.getString("Type").equals("PowerPlatformAdminActivity")) {
+                eventTypes.add(new PowerPlatformAdminActivityType(parsedEvent, realHostname));
+            }
             else if (jsonObject.getString("Type").endsWith("fluent_audit_log_events_CL")) {
                 eventTypes.add(new CCType(parsedEvent, realHostname));
             }
