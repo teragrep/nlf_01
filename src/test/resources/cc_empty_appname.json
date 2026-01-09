@@ -1,0 +1,26 @@
+{
+  "datacontenttype": "application/json",
+  "subject": "url://localhost.example.test/a=bb41a487-309b-4d21-9ab8-2a8b948b2d18/b=abc-a1b234/c=abc-d12efg/d=abc-d12efgh",
+  "specversion": "1.0",
+  "id": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
+  "source": "url://localhost.example.test/a=bb41a487-309b-4d21-9ab8-2a8b948b2d18/b=abc-a1b234/c=abc-d12efg/d=abc-d12efgh",
+  "data": {
+    "serviceName": "url://localhost.example.test/a=bb41a487-309b-4d21-9ab8-2a8b948b2d18/b=abc-a1b234/c=abc-d12efg/d=abc-d12efgh",
+    "methodName": "kafka.Authentication",
+    "resourceName": "url://localhost.example.test/a=bb41a487-309b-4d21-9ab8-2a8b948b2d18/b=/c=abc-d12efg/d=abc-d12efgh",
+    "authenticationInfo": {
+      "principal": "User:1234567",
+      "principalResourceId": "ab-cde1fgh",
+      "identity": "url://localhost.example.test/a=bb41a487-309b-4d21-9ab8-2a8b948b2d18/b=Abcdefg/c=ab-cde1fgh"
+    },
+    "requestMetadata": { "connection_id": "123456789012345678" },
+    "result": { "status": "SUCCESS" },
+    "clientAddress": [{ "ip": "127.0.0.1" }]
+  },
+  "TimeGenerated": "2025-10-06T00:00:00.0000000Z",
+  "_ItemId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
+  "TenantId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
+  "_TimeReceived": "2025-10-06T00:00:00.0000000Z",
+  "_Internal_WorkspaceResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+  "Type": "abcfluent_audit_log_events_CL"
+}

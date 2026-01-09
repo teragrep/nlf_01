@@ -79,6 +79,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class CCTypeTest {
@@ -136,7 +137,7 @@ class CCTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("abc-d12efgh", actualAppName);
+        Assertions.assertEquals("abc-a1b234", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
         Assertions
@@ -192,7 +193,7 @@ class CCTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("abc-d12efgh", actualAppName);
+        Assertions.assertEquals("abc-a1b234", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
         Assertions
@@ -269,5 +270,44 @@ class CCTypeTest {
         Assertions.assertEquals("generated", sdElementMap.get("aer_02@48577").get("timestamp_source"));
 
         Assertions.assertEquals(CCType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+    }
+
+    /**
+     * Tests the regEx matcher, and expects and Exception to be throws, since the 'data.resourceName' field does not
+     * contain the expected structure
+     */
+    @Test
+    @DisplayName("appName() throws PluginException if regex does not match")
+    void testAppNameThrowsPluginExceptionIfRegexDoesNotMatch() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/cc_missing_appname.json", new EventPartitionContextStub(),
+                new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
+                new EventOffsetStub()
+        );
+
+        final CCType type = new CCType(parsedEvent, "localhost");
+
+        final Exception exception = Assertions.assertThrowsExactly(PluginException.class, type::appName);
+
+        Assertions.assertEquals("Could not parse environment from data.resourceName", exception.getMessage());
+    }
+
+    /**
+     * Tests the regEx matcher, and expects and Exception to be throws, since the 'data.resourceName' field contains the
+     * expected structure, but value is empty
+     */
+    @Test
+    @DisplayName("appName() throws PluginException if regex value is empty")
+    void testAppNameThrowsPluginExceptionIfRegexValueIsEmpty() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/cc_empty_appname.json", new EventPartitionContextStub(), new EventPropertiesStub(),
+                new EventSystemPropertiesStub(), new EnqueuedTimeStub(), new EventOffsetStub()
+        );
+
+        final CCType type = new CCType(parsedEvent, "localhost");
+
+        final Exception exception = Assertions.assertThrowsExactly(PluginException.class, type::appName);
+
+        Assertions.assertEquals("Capture group 'value' was not found", exception.getMessage());
     }
 }
