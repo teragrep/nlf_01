@@ -93,7 +93,7 @@ public final class PostgreSQLType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey validKey = new ValidKey(record, "resourceId", JsonValue.ValueType.STRING);
+        final ValidStringKey validKey = new ValidStringKey(record, "resourceId", JsonValue.ValueType.STRING);
 
         return new ValidRFC5424Hostname(
                 "md5-".concat(new MD5Hash(validKey.asString()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.asString()).resourceName()).withNonAsciiCharsRemoved()))
@@ -104,10 +104,10 @@ public final class PostgreSQLType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey propertiesValidKey = new ValidKey(record, "properties", ValueType.OBJECT);
+        final ValidStringKey propertiesValidKey = new ValidStringKey(record, "properties", ValueType.OBJECT);
         final JsonObject properties = propertiesValidKey.asJsonObject();
 
-        final ValidKey messageValidKey = new ValidKey(properties, "message", ValueType.STRING);
+        final ValidStringKey messageValidKey = new ValidStringKey(properties, "message", ValueType.STRING);
         final String message = messageValidKey.asString();
 
         final Matcher matcher = appNamePattern.matcher(message);
@@ -126,7 +126,7 @@ public final class PostgreSQLType implements EventType {
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424Timestamp(new ValidKey(record, "time", JsonValue.ValueType.STRING).asString())
+        return new ValidRFC5424Timestamp(new ValidStringKey(record, "time", JsonValue.ValueType.STRING).asString())
                 .validTimestamp();
     }
 

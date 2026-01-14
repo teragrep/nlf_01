@@ -51,7 +51,7 @@ import com.teragrep.nlf_01.PropertiesJson;
 import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
-import com.teragrep.nlf_01.util.ValidKey;
+import com.teragrep.nlf_01.util.ValidStringKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
 import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
@@ -89,7 +89,7 @@ public final class ADFPipelineRunType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey validKey = new ValidKey(record, "_ResourceId", JsonValue.ValueType.STRING);
+        final ValidStringKey validKey = new ValidStringKey(record, "_ResourceId", JsonValue.ValueType.STRING);
 
         return new ValidRFC5424Hostname(
                 "md5-".concat(new MD5Hash(validKey.asString()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.asString()).resourceName()).withNonAsciiCharsRemoved()))
@@ -101,7 +101,7 @@ public final class ADFPipelineRunType implements EventType {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
         return new ValidRFC5424AppName(
-                new ASCIIString(new ValidKey(record, "PipelineName", JsonValue.ValueType.STRING).asString()).withNonAsciiCharsRemoved()
+                new ASCIIString(new ValidStringKey(record, "PipelineName", JsonValue.ValueType.STRING).asString()).withNonAsciiCharsRemoved()
         ).appName();
     }
 
@@ -109,8 +109,9 @@ public final class ADFPipelineRunType implements EventType {
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424Timestamp(new ValidKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString())
-                .validTimestamp();
+        return new ValidRFC5424Timestamp(
+                new ValidStringKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString()
+        ).validTimestamp();
     }
 
     @Override

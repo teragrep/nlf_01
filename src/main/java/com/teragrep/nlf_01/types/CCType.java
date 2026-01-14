@@ -51,7 +51,7 @@ import com.teragrep.nlf_01.PropertiesJson;
 import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
-import com.teragrep.nlf_01.util.ValidKey;
+import com.teragrep.nlf_01.util.ValidStringKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
 import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
@@ -100,7 +100,11 @@ public final class CCType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey validKey = new ValidKey(record, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
+        final ValidStringKey validKey = new ValidStringKey(
+                record,
+                "_Internal_WorkspaceResourceId",
+                JsonValue.ValueType.STRING
+        );
 
         return new ValidRFC5424Hostname(
                 "md5-".concat(new MD5Hash(validKey.asString()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.asString()).resourceName()).withNonAsciiCharsRemoved()))
@@ -111,10 +115,10 @@ public final class CCType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey validData = new ValidKey(record, "data", JsonValue.ValueType.OBJECT);
+        final ValidStringKey validData = new ValidStringKey(record, "data", JsonValue.ValueType.OBJECT);
 
         final JsonObject data = validData.asJsonObject();
-        final ValidKey validResourceName = new ValidKey(data, "resourceName", JsonValue.ValueType.STRING);
+        final ValidStringKey validResourceName = new ValidStringKey(data, "resourceName", JsonValue.ValueType.STRING);
 
         final String resourceName = validResourceName.asString();
 
@@ -134,8 +138,9 @@ public final class CCType implements EventType {
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424Timestamp(new ValidKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString())
-                .validTimestamp();
+        return new ValidRFC5424Timestamp(
+                new ValidStringKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString()
+        ).validTimestamp();
     }
 
     @Override

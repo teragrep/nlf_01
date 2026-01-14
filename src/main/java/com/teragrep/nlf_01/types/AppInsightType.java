@@ -84,7 +84,7 @@ public final class AppInsightType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey validKey = new ValidKey(record, "_ResourceId", JsonValue.ValueType.STRING);
+        final ValidStringKey validKey = new ValidStringKey(record, "_ResourceId", JsonValue.ValueType.STRING);
 
         return new ValidRFC5424Hostname(
                 "md5-".concat(new MD5Hash(validKey.asString()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.asString()).resourceName()).withNonAsciiCharsRemoved()))
@@ -97,7 +97,7 @@ public final class AppInsightType implements EventType {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
         return new ValidRFC5424AppName(
-                new ASCIIString(new ValidKey(record, "AppRoleName", JsonValue.ValueType.STRING).asString()).withNonAsciiCharsRemoved()
+                new ASCIIString(new ValidStringKey(record, "AppRoleName", JsonValue.ValueType.STRING).asString()).withNonAsciiCharsRemoved()
         ).appName();
     }
 
@@ -105,8 +105,9 @@ public final class AppInsightType implements EventType {
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424Timestamp(new ValidKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString())
-                .validTimestamp();
+        return new ValidRFC5424Timestamp(
+                new ValidStringKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString()
+        ).validTimestamp();
     }
 
     @Override

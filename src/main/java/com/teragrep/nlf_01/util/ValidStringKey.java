@@ -50,13 +50,13 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
-public final class ValidKey {
+public final class ValidStringKey {
 
     private final JsonObject jsonObject;
     private final String keyName;
     private final JsonValue.ValueType keyValueType;
 
-    public ValidKey(final JsonObject jsonObject, final String keyName, final JsonValue.ValueType keyValueType) {
+    public ValidStringKey(final JsonObject jsonObject, final String keyName, final JsonValue.ValueType keyValueType) {
         this.jsonObject = jsonObject;
         this.keyName = keyName;
         this.keyValueType = keyValueType;

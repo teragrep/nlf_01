@@ -92,7 +92,7 @@ public final class SyslogType implements EventType {
 
     private void validateProcessName() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        final ValidKey validKey = new ValidKey(mainObject, "ProcessName", JsonValue.ValueType.STRING);
+        final ValidStringKey validKey = new ValidStringKey(mainObject, "ProcessName", JsonValue.ValueType.STRING);
 
         final String processName = validKey.asString();
 
@@ -118,7 +118,11 @@ public final class SyslogType implements EventType {
         validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey validKey = new ValidKey(mainObject, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
+        final ValidStringKey validKey = new ValidStringKey(
+                mainObject,
+                "_Internal_WorkspaceResourceId",
+                JsonValue.ValueType.STRING
+        );
         final String internalWorkspaceResourceId = validKey.asString();
 
         // hostname = internal workspace resource id MD5 + resourceName from resourceId, with non-ascii chars removed
@@ -132,7 +136,7 @@ public final class SyslogType implements EventType {
         validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey validKey = new ValidKey(mainObject, "SyslogMessage", JsonValue.ValueType.STRING);
+        final ValidStringKey validKey = new ValidStringKey(mainObject, "SyslogMessage", JsonValue.ValueType.STRING);
         final String syslogMessage = validKey.asString();
 
         final Matcher matcher = appNamePattern.matcher(syslogMessage);
@@ -153,7 +157,7 @@ public final class SyslogType implements EventType {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
         return new ValidRFC5424Timestamp(
-                new ValidKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING).asString()
+                new ValidStringKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING).asString()
         ).validTimestamp();
     }
 

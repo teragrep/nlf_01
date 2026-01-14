@@ -52,7 +52,7 @@ import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.HashableRFC5424AppName;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
-import com.teragrep.nlf_01.util.ValidKey;
+import com.teragrep.nlf_01.util.ValidStringKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
 import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
@@ -90,8 +90,12 @@ public final class ContainerAppConsoleLogsType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey validResourceID = new ValidKey(record, "_ResourceId", JsonValue.ValueType.STRING);
-        final ValidKey validEnvironmentName = new ValidKey(record, "EnvironmentName", JsonValue.ValueType.STRING);
+        final ValidStringKey validResourceID = new ValidStringKey(record, "_ResourceId", JsonValue.ValueType.STRING);
+        final ValidStringKey validEnvironmentName = new ValidStringKey(
+                record,
+                "EnvironmentName",
+                JsonValue.ValueType.STRING
+        );
 
         final String concatenatedHostName = validResourceID
                 .asString()
@@ -106,13 +110,13 @@ public final class ContainerAppConsoleLogsType implements EventType {
     @Override
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
-        final ValidKey validKey;
+        final ValidStringKey validKey;
 
         if (record.containsKey("ContainerAppName")) {
-            validKey = new ValidKey(record, "ContainerAppName", JsonValue.ValueType.STRING);
+            validKey = new ValidStringKey(record, "ContainerAppName", JsonValue.ValueType.STRING);
         }
         else if (record.containsKey("JobName")) {
-            validKey = new ValidKey(record, "JobName", JsonValue.ValueType.STRING);
+            validKey = new ValidStringKey(record, "JobName", JsonValue.ValueType.STRING);
         }
         else {
             throw new PluginException(new IllegalArgumentException("A valid key does not exist"));
@@ -125,8 +129,9 @@ public final class ContainerAppConsoleLogsType implements EventType {
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424Timestamp(new ValidKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString())
-                .validTimestamp();
+        return new ValidRFC5424Timestamp(
+                new ValidStringKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString()
+        ).validTimestamp();
     }
 
     @Override

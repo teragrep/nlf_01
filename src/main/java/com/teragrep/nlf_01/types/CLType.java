@@ -84,7 +84,11 @@ public final class CLType implements EventType {
     @Override
     public String hostname() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        final ValidKey validKey = new ValidKey(mainObject, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
+        final ValidStringKey validKey = new ValidStringKey(
+                mainObject,
+                "_Internal_WorkspaceResourceId",
+                JsonValue.ValueType.STRING
+        );
 
         // hostname = internal workspace resource id MD5 + resourceName from resourceId, with non-ascii chars removed
         return new ValidRFC5424Hostname(
@@ -96,7 +100,7 @@ public final class CLType implements EventType {
     public String appName() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey validKey = new ValidKey(mainObject, "FilePath", JsonValue.ValueType.STRING);
+        final ValidStringKey validKey = new ValidStringKey(mainObject, "FilePath", JsonValue.ValueType.STRING);
         final String filePath = validKey.asString();
 
         final String truncatedMd5 = new MD5Hash(filePath).md5().substring(0, 8);
@@ -113,7 +117,7 @@ public final class CLType implements EventType {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
         return new ValidRFC5424Timestamp(
-                new ValidKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING).asString()
+                new ValidStringKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING).asString()
         ).validTimestamp();
     }
 
@@ -161,7 +165,7 @@ public final class CLType implements EventType {
 
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey validKey = new ValidKey(mainObject, "_ResourceId", JsonValue.ValueType.STRING);
+        final ValidStringKey validKey = new ValidStringKey(mainObject, "_ResourceId", JsonValue.ValueType.STRING);
         final String resourceId = validKey.asString();
 
         elems.add(new SDElement("origin@48577").addSDParam("_ResourceId", resourceId));
