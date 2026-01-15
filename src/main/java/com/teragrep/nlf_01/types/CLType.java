@@ -83,7 +83,7 @@ public final class CLType implements EventType {
     @Override
     public String hostname() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        final ValidStringKey validKey = new ValidStringKey(mainObject, "_Internal_WorkspaceResourceId");
+        final ValidKey<String> validKey = new ValidStringKey(mainObject, "_Internal_WorkspaceResourceId");
 
         // hostname = internal workspace resource id MD5 + resourceName from resourceId, with non-ascii chars removed
         return new ValidRFC5424Hostname(
@@ -95,7 +95,7 @@ public final class CLType implements EventType {
     public String appName() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validKey = new ValidStringKey(mainObject, "FilePath");
+        final ValidKey<String> validKey = new ValidStringKey(mainObject, "FilePath");
         final String filePath = validKey.value();
 
         final String truncatedMd5 = new MD5Hash(filePath).md5().substring(0, 8);
@@ -158,7 +158,7 @@ public final class CLType implements EventType {
 
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validKey = new ValidStringKey(mainObject, "_ResourceId");
+        final ValidKey<String> validKey = new ValidStringKey(mainObject, "_ResourceId");
         final String resourceId = validKey.value();
 
         elems.add(new SDElement("origin@48577").addSDParam("_ResourceId", resourceId));

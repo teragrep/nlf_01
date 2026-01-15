@@ -59,7 +59,7 @@ class ValidIntegerKeyTest {
     @DisplayName("value() throws PluginException if JsonObject does not contain the key")
     void valueThrowsPluginExceptionIfJsonObjectDoesNotContainTheKey() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key2", "value").build();
-        final ValidIntegerKey validKey = new ValidIntegerKey(jsonObject, "key1");
+        final ValidKey<Integer> validKey = new ValidIntegerKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 
@@ -71,7 +71,7 @@ class ValidIntegerKeyTest {
     @DisplayName("value() throws PluginException if the requested key's ValueType is not the one requested")
     void valueThrowsPluginExceptionIfTheRequestedKeySValueTypeIsNotTheOneRequested() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", "string").build();
-        final ValidIntegerKey validKey = new ValidIntegerKey(jsonObject, "key1");
+        final ValidKey<Integer> validKey = new ValidIntegerKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 
@@ -83,7 +83,7 @@ class ValidIntegerKeyTest {
     @DisplayName("value returns Integer from the key's value if conditions are met")
     void valueReturnsIntegerFromTheKeysValueIfConditionsAreMet() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", 1).build();
-        final ValidIntegerKey validKey = new ValidIntegerKey(jsonObject, "key1");
+        final ValidKey<Integer> validKey = new ValidIntegerKey(jsonObject, "key1");
 
         final Integer returnedInteger = Assertions.assertDoesNotThrow(validKey::value);
 
@@ -95,7 +95,7 @@ class ValidIntegerKeyTest {
     @DisplayName("value() throws PluginException if the requested key's ValueType is ARRAY")
     void valueThrowsPluginExceptionIfTheRequestedKeysValueTypeIsArray() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.EMPTY_JSON_ARRAY).build();
-        final ValidIntegerKey validKey = new ValidIntegerKey(jsonObject, "key1");
+        final ValidKey<Integer> validKey = new ValidIntegerKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 
@@ -107,7 +107,7 @@ class ValidIntegerKeyTest {
     @DisplayName("value() throws PluginException if the requested key's ValueType is OBJECT")
     void valueThrowsPluginExceptionIfTheRequestedKeysValueTypeIsObject() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.EMPTY_JSON_OBJECT).build();
-        final ValidIntegerKey validKey = new ValidIntegerKey(jsonObject, "key1");
+        final ValidKey<Integer> validKey = new ValidIntegerKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 
@@ -119,7 +119,7 @@ class ValidIntegerKeyTest {
     @DisplayName("value() throws PluginException if the requested key's ValueType is TRUE")
     void valueThrowsPluginExceptionIfTheRequestedKeysValueTypeIsTrue() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.TRUE).build();
-        final ValidIntegerKey validKey = new ValidIntegerKey(jsonObject, "key1");
+        final ValidKey<Integer> validKey = new ValidIntegerKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 
@@ -131,7 +131,7 @@ class ValidIntegerKeyTest {
     @DisplayName("value() throws PluginException if the requested key's ValueType is FALSE")
     void valueThrowsPluginExceptionIfTheRequestedKeysValueTypeIsFalse() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.FALSE).build();
-        final ValidIntegerKey validKey = new ValidIntegerKey(jsonObject, "key1");
+        final ValidKey<Integer> validKey = new ValidIntegerKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 
@@ -143,7 +143,7 @@ class ValidIntegerKeyTest {
     @DisplayName("value() throws PluginException if the requested key's ValueType is NULL")
     void valueThrowsPluginExceptionIfTheRequestedKeysValueTypeIsNull() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.NULL).build();
-        final ValidIntegerKey validKey = new ValidIntegerKey(jsonObject, "key1");
+        final ValidKey<Integer> validKey = new ValidIntegerKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 

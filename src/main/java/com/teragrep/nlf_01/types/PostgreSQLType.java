@@ -91,7 +91,7 @@ public final class PostgreSQLType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validKey = new ValidStringKey(record, "resourceId");
+        final ValidKey<String> validKey = new ValidStringKey(record, "resourceId");
 
         return new ValidRFC5424Hostname(
                 "md5-".concat(new MD5Hash(validKey.value()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.value()).resourceName()).withNonAsciiCharsRemoved()))
@@ -102,10 +102,10 @@ public final class PostgreSQLType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidJsonObjectKey propertiesValidKey = new ValidJsonObjectKey(record, "properties");
+        final ValidKey<JsonObject> propertiesValidKey = new ValidJsonObjectKey(record, "properties");
         final JsonObject properties = propertiesValidKey.value();
 
-        final ValidStringKey messageValidKey = new ValidStringKey(properties, "message");
+        final ValidKey<String> messageValidKey = new ValidStringKey(properties, "message");
         final String message = messageValidKey.value();
 
         final Matcher matcher = appNamePattern.matcher(message);

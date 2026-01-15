@@ -91,7 +91,7 @@ public final class SyslogType implements EventType {
 
     private void validateProcessName() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        final ValidStringKey validKey = new ValidStringKey(mainObject, "ProcessName");
+        final ValidKey<String> validKey = new ValidStringKey(mainObject, "ProcessName");
 
         final String processName = validKey.value();
         if (!processName.equals(expectedProcessName)) {
@@ -116,7 +116,7 @@ public final class SyslogType implements EventType {
         validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validKey = new ValidStringKey(mainObject, "_Internal_WorkspaceResourceId");
+        final ValidKey<String> validKey = new ValidStringKey(mainObject, "_Internal_WorkspaceResourceId");
 
         final String internalWorkspaceResourceId = validKey.value();
 
@@ -131,7 +131,7 @@ public final class SyslogType implements EventType {
         validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validKey = new ValidStringKey(mainObject, "SyslogMessage");
+        final ValidKey<String> validKey = new ValidStringKey(mainObject, "SyslogMessage");
 
         final String syslogMessage = validKey.value();
 
@@ -152,7 +152,7 @@ public final class SyslogType implements EventType {
     public long timestamp() throws PluginException {
         validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        final ValidStringKey validKey = new ValidStringKey(mainObject, "TimeGenerated");
+        final ValidKey<String> validKey = new ValidStringKey(mainObject, "TimeGenerated");
 
         return new ValidRFC5424Timestamp(validKey.value()).validTimestamp();
     }

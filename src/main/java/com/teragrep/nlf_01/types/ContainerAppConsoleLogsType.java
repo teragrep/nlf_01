@@ -52,6 +52,7 @@ import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.HashableRFC5424AppName;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
+import com.teragrep.nlf_01.util.ValidKey;
 import com.teragrep.nlf_01.util.ValidStringKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
@@ -89,8 +90,8 @@ public final class ContainerAppConsoleLogsType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validResourceID = new ValidStringKey(record, "_ResourceId");
-        final ValidStringKey validEnvironmentName = new ValidStringKey(record, "EnvironmentName");
+        final ValidKey<String> validResourceID = new ValidStringKey(record, "_ResourceId");
+        final ValidKey<String> validEnvironmentName = new ValidStringKey(record, "EnvironmentName");
 
         final String concatenatedHostName = validResourceID.value().concat("/").concat(validEnvironmentName.value());
 
@@ -102,7 +103,7 @@ public final class ContainerAppConsoleLogsType implements EventType {
     @Override
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
-        final ValidStringKey validKey;
+        final ValidKey<String> validKey;
 
         if (record.containsKey("ContainerAppName")) {
             validKey = new ValidStringKey(record, "ContainerAppName");

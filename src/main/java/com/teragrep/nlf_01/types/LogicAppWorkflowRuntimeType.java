@@ -51,6 +51,7 @@ import com.teragrep.nlf_01.PropertiesJson;
 import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
+import com.teragrep.nlf_01.util.ValidKey;
 import com.teragrep.nlf_01.util.ValidStringKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
@@ -88,7 +89,7 @@ public final class LogicAppWorkflowRuntimeType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validKey = new ValidStringKey(record, "_ResourceId");
+        final ValidKey<String> validKey = new ValidStringKey(record, "_ResourceId");
 
         return new ValidRFC5424Hostname(
                 "md5-".concat(new MD5Hash(validKey.value()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.value()).resourceName()).withNonAsciiCharsRemoved()))

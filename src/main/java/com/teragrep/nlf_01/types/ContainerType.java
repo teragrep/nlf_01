@@ -93,13 +93,19 @@ public final class ContainerType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidJsonObjectKey kubernetesMetadataValidKey = new ValidJsonObjectKey(mainObject, "KubernetesMetadata");
+        final ValidKey<JsonObject> kubernetesMetadataValidKey = new ValidJsonObjectKey(
+                mainObject,
+                "KubernetesMetadata"
+        );
         final JsonObject kubernetesMetadata = kubernetesMetadataValidKey.value();
 
-        final ValidJsonObjectKey podAnnotationsValidKey = new ValidJsonObjectKey(kubernetesMetadata, "podAnnotations");
+        final ValidKey<JsonObject> podAnnotationsValidKey = new ValidJsonObjectKey(
+                kubernetesMetadata,
+                "podAnnotations"
+        );
         final JsonObject podAnnotations = podAnnotationsValidKey.value();
 
-        final ValidStringKey containerLogHostnameKeyValidKey = new ValidStringKey(
+        final ValidKey<String> containerLogHostnameKeyValidKey = new ValidStringKey(
                 podAnnotations,
                 containerLogHostnameKey
         );
@@ -111,13 +117,19 @@ public final class ContainerType implements EventType {
     public String appName() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidJsonObjectKey kubernetesMetadataValidKey = new ValidJsonObjectKey(mainObject, "KubernetesMetadata");
+        final ValidKey<JsonObject> kubernetesMetadataValidKey = new ValidJsonObjectKey(
+                mainObject,
+                "KubernetesMetadata"
+        );
         final JsonObject kubernetesMetadata = kubernetesMetadataValidKey.value();
 
-        final ValidJsonObjectKey podAnnotationsValidKey = new ValidJsonObjectKey(kubernetesMetadata, "podAnnotations");
+        final ValidKey<JsonObject> podAnnotationsValidKey = new ValidJsonObjectKey(
+                kubernetesMetadata,
+                "podAnnotations"
+        );
         final JsonObject podAnnotations = podAnnotationsValidKey.value();
 
-        final ValidStringKey logSourceValidKey = new ValidStringKey(mainObject, "LogSource");
+        final ValidKey<String> logSourceValidKey = new ValidStringKey(mainObject, "LogSource");
         final String logSource = logSourceValidKey.value();
         final String logSourceSuffix;
 
@@ -131,7 +143,7 @@ public final class ContainerType implements EventType {
             throw new PluginException(new JsonException("Unknown log source: " + logSource));
         }
 
-        final ValidStringKey containerLogAppNameKeyValidKey = new ValidStringKey(
+        final ValidKey<String> containerLogAppNameKeyValidKey = new ValidStringKey(
                 podAnnotations,
                 containerLogAppNameKey
         );
@@ -190,18 +202,18 @@ public final class ContainerType implements EventType {
 
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey resourceIdValidKey = new ValidStringKey(mainObject, "_ResourceId");
+        final ValidKey<String> resourceIdValidKey = new ValidStringKey(mainObject, "_ResourceId");
         final ResourceId resourceId = new ResourceId(resourceIdValidKey.value());
         final String subscriptionId = resourceId.subscriptionId();
         final String clusterName = resourceId.resourceName();
 
-        final ValidStringKey podNameValidKey = new ValidStringKey(mainObject, "PodName");
+        final ValidKey<String> podNameValidKey = new ValidStringKey(mainObject, "PodName");
         final String podName = podNameValidKey.value();
 
-        final ValidStringKey podNamespaceValidKey = new ValidStringKey(mainObject, "PodNamespace");
+        final ValidKey<String> podNamespaceValidKey = new ValidStringKey(mainObject, "PodNamespace");
         final String podNamespace = podNamespaceValidKey.value();
 
-        final ValidStringKey containerIdValidKey = new ValidStringKey(mainObject, "ContainerId");
+        final ValidKey<String> containerIdValidKey = new ValidStringKey(mainObject, "ContainerId");
         final String containerId = containerIdValidKey.value();
 
         elems

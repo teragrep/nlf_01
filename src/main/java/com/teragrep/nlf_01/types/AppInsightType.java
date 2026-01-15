@@ -83,7 +83,7 @@ public final class AppInsightType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validKey = new ValidStringKey(record, "_ResourceId");
+        final ValidKey<String> validKey = new ValidStringKey(record, "_ResourceId");
 
         return new ValidRFC5424Hostname(
                 "md5-".concat(new MD5Hash(validKey.value()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.value()).resourceName()).withNonAsciiCharsRemoved()))

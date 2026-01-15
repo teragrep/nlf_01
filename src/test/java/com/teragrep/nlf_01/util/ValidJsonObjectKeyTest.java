@@ -59,7 +59,7 @@ class ValidJsonObjectKeyTest {
     @DisplayName("value() throws PluginException if JsonObject does not contain the key")
     void valueThrowsPluginExceptionIfJsonObjectDoesNotContainTheKey() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key2", "value").build();
-        final ValidJsonObjectKey validKey = new ValidJsonObjectKey(jsonObject, "key1");
+        final ValidKey<JsonObject> validKey = new ValidJsonObjectKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 
@@ -71,7 +71,7 @@ class ValidJsonObjectKeyTest {
     @DisplayName("value() throws PluginException if the requested key's ValueType is not the one requested")
     void valueThrowsPluginExceptionIfTheRequestedKeySValueTypeIsNotTheOneRequested() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", 1).build();
-        final ValidJsonObjectKey validKey = new ValidJsonObjectKey(jsonObject, "key1");
+        final ValidKey<JsonObject> validKey = new ValidJsonObjectKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 
@@ -83,7 +83,7 @@ class ValidJsonObjectKeyTest {
     @DisplayName("value() throws PluginException if the requested key's ValueType is STRING")
     void valueThrowsPluginExceptionIfTheRequestedKeySValueTypeIsString() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", "String").build();
-        final ValidJsonObjectKey validKey = new ValidJsonObjectKey(jsonObject, "key1");
+        final ValidKey<JsonObject> validKey = new ValidJsonObjectKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 
@@ -95,7 +95,7 @@ class ValidJsonObjectKeyTest {
     @DisplayName("value() throws PluginException if the requested key's ValueType is NUMBER")
     void valueThrowsPluginExceptionIfTheRequestedKeySValueTypeIsNumber() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", 1).build();
-        final ValidJsonObjectKey validKey = new ValidJsonObjectKey(jsonObject, "key1");
+        final ValidKey<JsonObject> validKey = new ValidJsonObjectKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 
@@ -107,7 +107,7 @@ class ValidJsonObjectKeyTest {
     @DisplayName("value() throws PluginException if the requested key's ValueType is TRUE")
     void valueThrowsPluginExceptionIfTheRequestedKeySValueTypeIsTrue() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.TRUE).build();
-        final ValidJsonObjectKey validKey = new ValidJsonObjectKey(jsonObject, "key1");
+        final ValidKey<JsonObject> validKey = new ValidJsonObjectKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 
@@ -119,7 +119,7 @@ class ValidJsonObjectKeyTest {
     @DisplayName("value() throws PluginException if the requested key's ValueType is FALSE")
     void valueThrowsPluginExceptionIfTheRequestedKeySValueTypeIsFalse() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.FALSE).build();
-        final ValidJsonObjectKey validKey = new ValidJsonObjectKey(jsonObject, "key1");
+        final ValidKey<JsonObject> validKey = new ValidJsonObjectKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 
@@ -131,7 +131,7 @@ class ValidJsonObjectKeyTest {
     @DisplayName("value() throws PluginException if the requested key's ValueType is ARRAY")
     void valueThrowsPluginExceptionIfTheRequestedKeySValueTypeIsArray() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.EMPTY_JSON_ARRAY).build();
-        final ValidJsonObjectKey validKey = new ValidJsonObjectKey(jsonObject, "key1");
+        final ValidKey<JsonObject> validKey = new ValidJsonObjectKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 
@@ -143,7 +143,7 @@ class ValidJsonObjectKeyTest {
     @DisplayName("value() throws PluginException if the requested key's ValueType is NULL")
     void valueThrowsPluginExceptionIfTheRequestedKeySValueTypeIsNull() {
         final JsonObject jsonObject = Json.createObjectBuilder().add("key1", JsonValue.NULL).build();
-        final ValidJsonObjectKey validKey = new ValidJsonObjectKey(jsonObject, "key1");
+        final ValidKey<JsonObject> validKey = new ValidJsonObjectKey(jsonObject, "key1");
 
         final PluginException exception = Assertions.assertThrowsExactly(PluginException.class, validKey::value);
 
@@ -158,7 +158,7 @@ class ValidJsonObjectKeyTest {
                 .createObjectBuilder()
                 .add("key1", Json.createObjectBuilder().build())
                 .build();
-        final ValidJsonObjectKey validKey = new ValidJsonObjectKey(jsonObject, "key1");
+        final ValidKey<JsonObject> validKey = new ValidJsonObjectKey(jsonObject, "key1");
 
         final JsonObject returnedJsonObject = Assertions.assertDoesNotThrow(validKey::value);
 

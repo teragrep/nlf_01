@@ -52,6 +52,7 @@ import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
 import com.teragrep.nlf_01.util.ValidJsonObjectKey;
+import com.teragrep.nlf_01.util.ValidKey;
 import com.teragrep.nlf_01.util.ValidStringKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
@@ -100,7 +101,7 @@ public final class CCType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validKey = new ValidStringKey(record, "_Internal_WorkspaceResourceId");
+        final ValidKey<String> validKey = new ValidStringKey(record, "_Internal_WorkspaceResourceId");
 
         return new ValidRFC5424Hostname(
                 "md5-".concat(new MD5Hash(validKey.value()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.value()).resourceName()).withNonAsciiCharsRemoved()))
@@ -111,10 +112,10 @@ public final class CCType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidJsonObjectKey validData = new ValidJsonObjectKey(record, "data");
+        final ValidKey<JsonObject> validData = new ValidJsonObjectKey(record, "data");
 
         final JsonObject data = validData.value();
-        final ValidStringKey validResourceName = new ValidStringKey(data, "resourceName");
+        final ValidKey<String> validResourceName = new ValidStringKey(data, "resourceName");
 
         final String resourceName = validResourceName.value();
 
