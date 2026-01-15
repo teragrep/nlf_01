@@ -47,6 +47,12 @@ package com.teragrep.nlf_01.util;
 
 import com.teragrep.akv_01.plugin.PluginException;
 
+/**
+ * Interface for objects that work with JsonStructures, and want to return a value that is compatible with Java's value
+ * types, e.g. String and Integer
+ * 
+ * @param <T> This parameter should tell which Java value should be returned from the {@link #value()} method.
+ */
 public interface ValidKey<T> {
 
     public T value() throws PluginException;
