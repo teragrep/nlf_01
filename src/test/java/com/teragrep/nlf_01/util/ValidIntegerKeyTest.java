@@ -45,8 +45,6 @@
  */
 package com.teragrep.nlf_01.util;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.teragrep.akv_01.plugin.PluginException;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
