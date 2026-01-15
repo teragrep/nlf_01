@@ -59,7 +59,6 @@ import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -89,10 +88,10 @@ public final class FunctionAppLogsType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validKey = new ValidStringKey(record, "_ResourceId", JsonValue.ValueType.STRING);
+        final ValidStringKey validKey = new ValidStringKey(record, "_ResourceId");
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(validKey.asString()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.asString()).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(validKey.value()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.value()).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 
@@ -101,7 +100,7 @@ public final class FunctionAppLogsType implements EventType {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
         return new ValidRFC5424AppName(
-                new ASCIIString(new ValidStringKey(record, "AppName", JsonValue.ValueType.STRING).asString()).withNonAsciiCharsRemoved()
+                new ASCIIString(new ValidStringKey(record, "AppName").value()).withNonAsciiCharsRemoved()
         ).appName();
     }
 
@@ -109,9 +108,7 @@ public final class FunctionAppLogsType implements EventType {
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424Timestamp(
-                new ValidStringKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString()
-        ).validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidStringKey(record, "TimeGenerated").value()).validTimestamp();
     }
 
     @Override

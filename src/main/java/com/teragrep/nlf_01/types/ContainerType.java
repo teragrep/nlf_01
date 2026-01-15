@@ -54,9 +54,7 @@ import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 
-import jakarta.json.JsonValue.ValueType;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -95,49 +93,32 @@ public final class ContainerType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey kubernetesMetadataValidKey = new ValidStringKey(
-                mainObject,
-                "KubernetesMetadata",
-                ValueType.OBJECT
-        );
-        final JsonObject kubernetesMetadata = kubernetesMetadataValidKey.asJsonObject();
+        final ValidJsonObjectKey kubernetesMetadataValidKey = new ValidJsonObjectKey(mainObject, "KubernetesMetadata");
+        final JsonObject kubernetesMetadata = kubernetesMetadataValidKey.value();
 
-        final ValidStringKey podAnnotationsValidKey = new ValidStringKey(
-                kubernetesMetadata,
-                "podAnnotations",
-                ValueType.OBJECT
-        );
-        final JsonObject podAnnotations = podAnnotationsValidKey.asJsonObject();
+        final ValidJsonObjectKey podAnnotationsValidKey = new ValidJsonObjectKey(kubernetesMetadata, "podAnnotations");
+        final JsonObject podAnnotations = podAnnotationsValidKey.value();
 
         final ValidStringKey containerLogHostnameKeyValidKey = new ValidStringKey(
                 podAnnotations,
-                containerLogHostnameKey,
-                ValueType.STRING
+                containerLogHostnameKey
         );
 
-        return new ValidRFC5424Hostname(containerLogHostnameKeyValidKey.asString()).validHostname();
+        return new ValidRFC5424Hostname(containerLogHostnameKeyValidKey.value()).validHostname();
     }
 
     @Override
     public String appName() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey kubernetesMetadataValidKey = new ValidStringKey(
-                mainObject,
-                "KubernetesMetadata",
-                ValueType.OBJECT
-        );
-        final JsonObject kubernetesMetadata = kubernetesMetadataValidKey.asJsonObject();
+        final ValidJsonObjectKey kubernetesMetadataValidKey = new ValidJsonObjectKey(mainObject, "KubernetesMetadata");
+        final JsonObject kubernetesMetadata = kubernetesMetadataValidKey.value();
 
-        final ValidStringKey podAnnotationsValidKey = new ValidStringKey(
-                kubernetesMetadata,
-                "podAnnotations",
-                ValueType.OBJECT
-        );
-        final JsonObject podAnnotations = podAnnotationsValidKey.asJsonObject();
+        final ValidJsonObjectKey podAnnotationsValidKey = new ValidJsonObjectKey(kubernetesMetadata, "podAnnotations");
+        final JsonObject podAnnotations = podAnnotationsValidKey.value();
 
-        final ValidStringKey logSourceValidKey = new ValidStringKey(mainObject, "LogSource", ValueType.STRING);
-        final String logSource = logSourceValidKey.asString();
+        final ValidStringKey logSourceValidKey = new ValidStringKey(mainObject, "LogSource");
+        final String logSource = logSourceValidKey.value();
         final String logSourceSuffix;
 
         if ("stdout".equals(logSource)) {
@@ -152,20 +133,17 @@ public final class ContainerType implements EventType {
 
         final ValidStringKey containerLogAppNameKeyValidKey = new ValidStringKey(
                 podAnnotations,
-                containerLogAppNameKey,
-                ValueType.STRING
+                containerLogAppNameKey
         );
 
-        return new ValidRFC5424AppName(containerLogAppNameKeyValidKey.asString() + logSourceSuffix).appName();
+        return new ValidRFC5424AppName(containerLogAppNameKeyValidKey.value() + logSourceSuffix).appName();
     }
 
     @Override
     public long timestamp() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424Timestamp(
-                new ValidStringKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING).asString()
-        ).validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidStringKey(mainObject, "TimeGenerated").value()).validTimestamp();
     }
 
     @Override
@@ -212,31 +190,19 @@ public final class ContainerType implements EventType {
 
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey resourceIdValidKey = new ValidStringKey(
-                mainObject,
-                "_ResourceId",
-                JsonValue.ValueType.STRING
-        );
-        final ResourceId resourceId = new ResourceId(resourceIdValidKey.asString());
+        final ValidStringKey resourceIdValidKey = new ValidStringKey(mainObject, "_ResourceId");
+        final ResourceId resourceId = new ResourceId(resourceIdValidKey.value());
         final String subscriptionId = resourceId.subscriptionId();
         final String clusterName = resourceId.resourceName();
 
-        final ValidStringKey podNameValidKey = new ValidStringKey(mainObject, "PodName", JsonValue.ValueType.STRING);
-        final String podName = podNameValidKey.asString();
+        final ValidStringKey podNameValidKey = new ValidStringKey(mainObject, "PodName");
+        final String podName = podNameValidKey.value();
 
-        final ValidStringKey podNamespaceValidKey = new ValidStringKey(
-                mainObject,
-                "PodNamespace",
-                JsonValue.ValueType.STRING
-        );
-        final String podNamespace = podNamespaceValidKey.asString();
+        final ValidStringKey podNamespaceValidKey = new ValidStringKey(mainObject, "PodNamespace");
+        final String podNamespace = podNamespaceValidKey.value();
 
-        final ValidStringKey containerIdValidKey = new ValidStringKey(
-                mainObject,
-                "ContainerId",
-                JsonValue.ValueType.STRING
-        );
-        final String containerId = containerIdValidKey.asString();
+        final ValidStringKey containerIdValidKey = new ValidStringKey(mainObject, "ContainerId");
+        final String containerId = containerIdValidKey.value();
 
         elems
                 .add(new SDElement("origin@48577").addSDParam("subscription", subscriptionId).addSDParam("clusterName", clusterName).addSDParam("namespace", podNamespace).addSDParam("pod", podName).addSDParam("containerId", containerId));

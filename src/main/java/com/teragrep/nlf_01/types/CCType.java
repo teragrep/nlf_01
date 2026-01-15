@@ -51,6 +51,7 @@ import com.teragrep.nlf_01.PropertiesJson;
 import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
+import com.teragrep.nlf_01.util.ValidJsonObjectKey;
 import com.teragrep.nlf_01.util.ValidStringKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
@@ -59,7 +60,6 @@ import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -100,14 +100,10 @@ public final class CCType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validKey = new ValidStringKey(
-                record,
-                "_Internal_WorkspaceResourceId",
-                JsonValue.ValueType.STRING
-        );
+        final ValidStringKey validKey = new ValidStringKey(record, "_Internal_WorkspaceResourceId");
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(validKey.asString()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.asString()).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(validKey.value()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.value()).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 
@@ -115,12 +111,12 @@ public final class CCType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validData = new ValidStringKey(record, "data", JsonValue.ValueType.OBJECT);
+        final ValidJsonObjectKey validData = new ValidJsonObjectKey(record, "data");
 
-        final JsonObject data = validData.asJsonObject();
-        final ValidStringKey validResourceName = new ValidStringKey(data, "resourceName", JsonValue.ValueType.STRING);
+        final JsonObject data = validData.value();
+        final ValidStringKey validResourceName = new ValidStringKey(data, "resourceName");
 
-        final String resourceName = validResourceName.asString();
+        final String resourceName = validResourceName.value();
 
         final Matcher matcher = appNamePattern.matcher(resourceName);
         if (!matcher.find()) {
@@ -138,9 +134,7 @@ public final class CCType implements EventType {
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424Timestamp(
-                new ValidStringKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString()
-        ).validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidStringKey(record, "TimeGenerated").value()).validTimestamp();
     }
 
     @Override

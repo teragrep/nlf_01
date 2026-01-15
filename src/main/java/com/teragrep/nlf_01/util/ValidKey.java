@@ -46,46 +46,9 @@
 package com.teragrep.nlf_01.util;
 
 import com.teragrep.akv_01.plugin.PluginException;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
-import jakarta.json.JsonValue.ValueType;
 
-public final class ValidStringKey implements ValidKey<String> {
+public interface ValidKey<T> {
 
-    private final JsonObject jsonObject;
-    private final String keyName;
-    private final JsonValue.ValueType keyValueType;
+    public T value() throws PluginException;
 
-    private ValidStringKey(final JsonObject jsonObject, final String keyName, final JsonValue.ValueType keyValueType) {
-        this.jsonObject = jsonObject;
-        this.keyName = keyName;
-        this.keyValueType = keyValueType;
-    }
-
-    public ValidStringKey(final JsonObject jsonObject, final String keyName) {
-        this(jsonObject, keyName, ValueType.STRING);
-    }
-
-    public String value() throws PluginException {
-        if (!this.valid()) {
-            throw new PluginException("Key <[" + keyName + "]> was not valid");
-        }
-        else {
-            return jsonObject.getString(keyName);
-        }
-    }
-
-    private boolean valid() {
-        final boolean valid;
-        if (!jsonObject.containsKey(keyName)) {
-            valid = false;
-        }
-        else if (!jsonObject.get(keyName).getValueType().equals(keyValueType)) {
-            valid = false;
-        }
-        else {
-            valid = true;
-        }
-        return valid;
-    }
 }

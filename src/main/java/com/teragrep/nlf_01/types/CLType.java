@@ -53,7 +53,6 @@ import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -84,15 +83,11 @@ public final class CLType implements EventType {
     @Override
     public String hostname() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        final ValidStringKey validKey = new ValidStringKey(
-                mainObject,
-                "_Internal_WorkspaceResourceId",
-                JsonValue.ValueType.STRING
-        );
+        final ValidStringKey validKey = new ValidStringKey(mainObject, "_Internal_WorkspaceResourceId");
 
         // hostname = internal workspace resource id MD5 + resourceName from resourceId, with non-ascii chars removed
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(validKey.asString()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.asString()).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(validKey.value()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.value()).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 
@@ -100,8 +95,8 @@ public final class CLType implements EventType {
     public String appName() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validKey = new ValidStringKey(mainObject, "FilePath", JsonValue.ValueType.STRING);
-        final String filePath = validKey.asString();
+        final ValidStringKey validKey = new ValidStringKey(mainObject, "FilePath");
+        final String filePath = validKey.value();
 
         final String truncatedMd5 = new MD5Hash(filePath).md5().substring(0, 8);
 
@@ -116,9 +111,7 @@ public final class CLType implements EventType {
     public long timestamp() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424Timestamp(
-                new ValidStringKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING).asString()
-        ).validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidStringKey(mainObject, "TimeGenerated").value()).validTimestamp();
     }
 
     @Override
@@ -165,8 +158,8 @@ public final class CLType implements EventType {
 
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validKey = new ValidStringKey(mainObject, "_ResourceId", JsonValue.ValueType.STRING);
-        final String resourceId = validKey.asString();
+        final ValidStringKey validKey = new ValidStringKey(mainObject, "_ResourceId");
+        final String resourceId = validKey.value();
 
         elems.add(new SDElement("origin@48577").addSDParam("_ResourceId", resourceId));
         elems.add(new SDElement("nlf_01@48577").addSDParam("eventType", this.getClass().getSimpleName()));

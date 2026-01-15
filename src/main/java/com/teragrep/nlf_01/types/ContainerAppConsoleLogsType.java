@@ -60,7 +60,6 @@ import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -90,20 +89,13 @@ public final class ContainerAppConsoleLogsType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validResourceID = new ValidStringKey(record, "_ResourceId", JsonValue.ValueType.STRING);
-        final ValidStringKey validEnvironmentName = new ValidStringKey(
-                record,
-                "EnvironmentName",
-                JsonValue.ValueType.STRING
-        );
+        final ValidStringKey validResourceID = new ValidStringKey(record, "_ResourceId");
+        final ValidStringKey validEnvironmentName = new ValidStringKey(record, "EnvironmentName");
 
-        final String concatenatedHostName = validResourceID
-                .asString()
-                .concat("/")
-                .concat(validEnvironmentName.asString());
+        final String concatenatedHostName = validResourceID.value().concat("/").concat(validEnvironmentName.value());
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(concatenatedHostName).md5().concat("-").concat(new ASCIIString(new ResourceId(validResourceID.asString()).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(concatenatedHostName).md5().concat("-").concat(new ASCIIString(new ResourceId(validResourceID.value()).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 
@@ -113,25 +105,23 @@ public final class ContainerAppConsoleLogsType implements EventType {
         final ValidStringKey validKey;
 
         if (record.containsKey("ContainerAppName")) {
-            validKey = new ValidStringKey(record, "ContainerAppName", JsonValue.ValueType.STRING);
+            validKey = new ValidStringKey(record, "ContainerAppName");
         }
         else if (record.containsKey("JobName")) {
-            validKey = new ValidStringKey(record, "JobName", JsonValue.ValueType.STRING);
+            validKey = new ValidStringKey(record, "JobName");
         }
         else {
             throw new PluginException(new IllegalArgumentException("A valid key does not exist"));
         }
 
-        return new ValidRFC5424AppName(new HashableRFC5424AppName(validKey.asString()).appName()).appName();
+        return new ValidRFC5424AppName(new HashableRFC5424AppName(validKey.value()).appName()).appName();
     }
 
     @Override
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424Timestamp(
-                new ValidStringKey(record, "TimeGenerated", JsonValue.ValueType.STRING).asString()
-        ).validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidStringKey(record, "TimeGenerated").value()).validTimestamp();
     }
 
     @Override

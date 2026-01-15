@@ -47,37 +47,40 @@ package com.teragrep.nlf_01.util;
 
 import com.teragrep.akv_01.plugin.PluginException;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
-public final class ValidStringKey implements ValidKey<String> {
+public final class ValidJsonObjectKey implements ValidKey<JsonObject> {
 
     private final JsonObject jsonObject;
     private final String keyName;
-    private final JsonValue.ValueType keyValueType;
+    private final ValueType keyValueType;
 
-    private ValidStringKey(final JsonObject jsonObject, final String keyName, final JsonValue.ValueType keyValueType) {
+    private ValidJsonObjectKey(final JsonObject jsonObject, final String keyName, final ValueType keyValueType) {
         this.jsonObject = jsonObject;
         this.keyName = keyName;
         this.keyValueType = keyValueType;
     }
 
-    public ValidStringKey(final JsonObject jsonObject, final String keyName) {
-        this(jsonObject, keyName, ValueType.STRING);
+    public ValidJsonObjectKey(final JsonObject jsonObject, final String keyName) {
+        this(jsonObject, keyName, ValueType.OBJECT);
     }
 
-    public String value() throws PluginException {
+    @Override
+    public JsonObject value() throws PluginException {
         if (!this.valid()) {
             throw new PluginException("Key <[" + keyName + "]> was not valid");
         }
         else {
-            return jsonObject.getString(keyName);
+            return jsonObject.getJsonObject(keyName);
         }
     }
 
     private boolean valid() {
         final boolean valid;
         if (!jsonObject.containsKey(keyName)) {
+            valid = false;
+        }
+        else if (!this.keyValueType.equals(ValueType.OBJECT)) {
             valid = false;
         }
         else if (!jsonObject.get(keyName).getValueType().equals(keyValueType)) {

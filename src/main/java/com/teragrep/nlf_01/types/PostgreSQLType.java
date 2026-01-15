@@ -53,9 +53,7 @@ import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 
-import jakarta.json.JsonValue.ValueType;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -93,10 +91,10 @@ public final class PostgreSQLType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey validKey = new ValidStringKey(record, "resourceId", JsonValue.ValueType.STRING);
+        final ValidStringKey validKey = new ValidStringKey(record, "resourceId");
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(validKey.asString()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.asString()).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(validKey.value()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.value()).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 
@@ -104,11 +102,11 @@ public final class PostgreSQLType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidStringKey propertiesValidKey = new ValidStringKey(record, "properties", ValueType.OBJECT);
-        final JsonObject properties = propertiesValidKey.asJsonObject();
+        final ValidJsonObjectKey propertiesValidKey = new ValidJsonObjectKey(record, "properties");
+        final JsonObject properties = propertiesValidKey.value();
 
-        final ValidStringKey messageValidKey = new ValidStringKey(properties, "message", ValueType.STRING);
-        final String message = messageValidKey.asString();
+        final ValidStringKey messageValidKey = new ValidStringKey(properties, "message");
+        final String message = messageValidKey.value();
 
         final Matcher matcher = appNamePattern.matcher(message);
         if (matcher.find()) {
@@ -126,8 +124,7 @@ public final class PostgreSQLType implements EventType {
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424Timestamp(new ValidStringKey(record, "time", JsonValue.ValueType.STRING).asString())
-                .validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidStringKey(record, "time").value()).validTimestamp();
     }
 
     @Override
