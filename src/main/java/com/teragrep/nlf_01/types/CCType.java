@@ -51,6 +51,9 @@ import com.teragrep.nlf_01.PropertiesJson;
 import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
+import com.teragrep.nlf_01.util.ValidJsonObjectKey;
+import com.teragrep.nlf_01.util.ValidKey;
+import com.teragrep.nlf_01.util.ValidStringKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
 import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
@@ -58,7 +61,6 @@ import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -85,17 +87,6 @@ public final class CCType implements EventType {
         this.appNamePattern = appNamePattern;
     }
 
-    private void assertKey(final JsonObject obj, final String key, final JsonValue.ValueType type)
-            throws PluginException {
-        if (!obj.containsKey(key)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " does not exist"));
-        }
-
-        if (!obj.get(key).getValueType().equals(type)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " is not of type " + type));
-        }
-    }
-
     @Override
     public Severity severity() throws PluginException {
         return Severity.NOTICE;
@@ -110,11 +101,10 @@ public final class CCType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
-        final String resourceId = record.getString("_Internal_WorkspaceResourceId");
+        final ValidKey<String> validKey = new ValidStringKey(record, "_Internal_WorkspaceResourceId");
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(resourceId).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(validKey.value()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.value()).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 
@@ -122,10 +112,12 @@ public final class CCType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "data", JsonValue.ValueType.OBJECT);
-        final JsonObject data = record.getJsonObject("data");
-        assertKey(data, "resourceName", JsonValue.ValueType.STRING);
-        final String resourceName = data.getString("resourceName");
+        final ValidKey<JsonObject> validData = new ValidJsonObjectKey(record, "data");
+
+        final JsonObject data = validData.value();
+        final ValidKey<String> validResourceName = new ValidStringKey(data, "resourceName");
+
+        final String resourceName = validResourceName.value();
 
         final Matcher matcher = appNamePattern.matcher(resourceName);
         if (!matcher.find()) {
@@ -142,10 +134,8 @@ public final class CCType implements EventType {
     @Override
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(record, "TimeGenerated", JsonValue.ValueType.STRING);
-        final String time = record.getString("TimeGenerated");
 
-        return new ValidRFC5424Timestamp(time).validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidStringKey(record, "TimeGenerated").value()).validTimestamp();
     }
 
     @Override

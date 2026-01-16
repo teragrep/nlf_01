@@ -53,7 +53,6 @@ import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -92,21 +91,11 @@ public final class SyslogType implements EventType {
 
     private void validateProcessName() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(mainObject, "ProcessName", JsonValue.ValueType.STRING);
-        final String processName = mainObject.getString("ProcessName");
+        final ValidKey<String> validKey = new ValidStringKey(mainObject, "ProcessName");
 
+        final String processName = validKey.value();
         if (!processName.equals(expectedProcessName)) {
             throw new PluginException("Expected <[" + expectedProcessName + "]> but found <[" + processName + "]>");
-        }
-    }
-
-    private void assertKey(final JsonObject obj, final String key, JsonValue.ValueType type) throws PluginException {
-        if (!obj.containsKey(key)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " does not exist"));
-        }
-
-        if (!obj.get(key).getValueType().equals(type)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " is not of type " + type));
         }
     }
 
@@ -126,8 +115,10 @@ public final class SyslogType implements EventType {
     public String hostname() throws PluginException {
         validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(mainObject, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
-        final String internalWorkspaceResourceId = mainObject.getString("_Internal_WorkspaceResourceId");
+
+        final ValidKey<String> validKey = new ValidStringKey(mainObject, "_Internal_WorkspaceResourceId");
+
+        final String internalWorkspaceResourceId = validKey.value();
 
         // hostname = internal workspace resource id MD5 + resourceName from resourceId, with non-ascii chars removed
         return new ValidRFC5424Hostname(
@@ -139,8 +130,10 @@ public final class SyslogType implements EventType {
     public String appName() throws PluginException {
         validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(mainObject, "SyslogMessage", JsonValue.ValueType.STRING);
-        final String syslogMessage = mainObject.getString("SyslogMessage");
+
+        final ValidKey<String> validKey = new ValidStringKey(mainObject, "SyslogMessage");
+
+        final String syslogMessage = validKey.value();
 
         final Matcher matcher = appNamePattern.matcher(syslogMessage);
         if (matcher.find()) {
@@ -152,15 +145,16 @@ public final class SyslogType implements EventType {
         }
 
         throw new PluginException("Could not parse appName from SyslogMessage key");
+
     }
 
     @Override
     public long timestamp() throws PluginException {
         validateProcessName();
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(mainObject, "TimeGenerated", JsonValue.ValueType.STRING);
+        final ValidKey<String> validKey = new ValidStringKey(mainObject, "TimeGenerated");
 
-        return new ValidRFC5424Timestamp(mainObject.getString("TimeGenerated")).validTimestamp();
+        return new ValidRFC5424Timestamp(validKey.value()).validTimestamp();
     }
 
     @Override

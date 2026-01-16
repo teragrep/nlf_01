@@ -52,6 +52,8 @@ import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.HashableRFC5424AppName;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
+import com.teragrep.nlf_01.util.ValidKey;
+import com.teragrep.nlf_01.util.ValidStringKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
 import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
@@ -59,7 +61,6 @@ import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -73,17 +74,6 @@ public final class ContainerAppConsoleLogsType implements EventType {
     public ContainerAppConsoleLogsType(final ParsedEvent parsedEvent, final String realHostname) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
-    }
-
-    private void assertKey(final JsonObject obj, final String key, final JsonValue.ValueType type)
-            throws PluginException {
-        if (!obj.containsKey(key)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " does not exist"));
-        }
-
-        if (!obj.get(key).getValueType().equals(type)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " is not of type " + type));
-        }
     }
 
     @Override
@@ -100,45 +90,39 @@ public final class ContainerAppConsoleLogsType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "_ResourceId", JsonValue.ValueType.STRING);
-        final String resourceId = record.getString("_ResourceId");
+        final ValidKey<String> validResourceID = new ValidStringKey(record, "_ResourceId");
+        final ValidKey<String> validEnvironmentName = new ValidStringKey(record, "EnvironmentName");
 
-        assertKey(record, "EnvironmentName", JsonValue.ValueType.STRING);
-        final String environmentName = record.getString("EnvironmentName");
-
-        final String concatenatedHostName = resourceId.concat("/").concat(environmentName);
+        final String concatenatedHostName = validResourceID.value().concat("/").concat(validEnvironmentName.value());
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(concatenatedHostName).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(concatenatedHostName).md5().concat("-").concat(new ASCIIString(new ResourceId(validResourceID.value()).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 
     @Override
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
-        final String keyValue;
+        final ValidKey<String> validKey;
+
         if (record.containsKey("ContainerAppName")) {
-            assertKey(record, "ContainerAppName", JsonValue.ValueType.STRING);
-            keyValue = record.getString("ContainerAppName");
+            validKey = new ValidStringKey(record, "ContainerAppName");
         }
         else if (record.containsKey("JobName")) {
-            assertKey(record, "JobName", JsonValue.ValueType.STRING);
-            keyValue = record.getString("JobName");
+            validKey = new ValidStringKey(record, "JobName");
         }
         else {
             throw new PluginException(new IllegalArgumentException("A valid key does not exist"));
         }
 
-        return new ValidRFC5424AppName(new HashableRFC5424AppName(keyValue).appName()).appName();
+        return new ValidRFC5424AppName(new HashableRFC5424AppName(validKey.value()).appName()).appName();
     }
 
     @Override
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(record, "TimeGenerated", JsonValue.ValueType.STRING);
-        final String time = record.getString("TimeGenerated");
 
-        return new ValidRFC5424Timestamp(time).validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidStringKey(record, "TimeGenerated").value()).validTimestamp();
     }
 
     @Override
