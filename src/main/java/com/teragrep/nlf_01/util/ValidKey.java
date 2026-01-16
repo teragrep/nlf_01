@@ -54,6 +54,6 @@ import com.teragrep.akv_01.plugin.PluginException;
  */
 public interface ValidKey<T> {
 
-    public T value() throws PluginException;
+    public abstract T value() throws PluginException;
 
 }
