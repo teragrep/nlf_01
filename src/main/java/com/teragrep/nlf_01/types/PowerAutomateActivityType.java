@@ -51,14 +51,15 @@ import com.teragrep.nlf_01.PropertiesJson;
 import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
+import com.teragrep.nlf_01.util.ValidKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
 import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
+import com.teragrep.nlf_01.util.ValidStringKey;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -86,17 +87,6 @@ public final class PowerAutomateActivityType implements EventType {
         this.appNamePattern = appNamePattern;
     }
 
-    private void assertKey(final JsonObject obj, final String key, final JsonValue.ValueType type)
-            throws PluginException {
-        if (!obj.containsKey(key)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " does not exist"));
-        }
-
-        if (!obj.get(key).getValueType().equals(type)) {
-            throw new PluginException(new IllegalArgumentException("Key " + key + " is not of type " + type));
-        }
-    }
-
     @Override
     public Severity severity() {
         return Severity.NOTICE;
@@ -111,8 +101,9 @@ public final class PowerAutomateActivityType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "_Internal_WorkspaceResourceId", JsonValue.ValueType.STRING);
-        final String resourceId = record.getString("_Internal_WorkspaceResourceId");
+        final ValidKey<String> validKey = new ValidStringKey(record, "_Internal_WorkspaceResourceId");
+
+        final String resourceId = validKey.value();
 
         return new ValidRFC5424Hostname(
                 "md5-".concat(new MD5Hash(resourceId).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
@@ -124,11 +115,9 @@ public final class PowerAutomateActivityType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        assertKey(record, "FlowDetailsUrl", JsonValue.ValueType.STRING);
+        final ValidKey<String> validKey = new ValidStringKey(record, "FlowDetailsUrl");
 
-        final String flowDetailsUrl = record.getString("FlowDetailsUrl");
-
-        final Matcher matcher = appNamePattern.matcher(flowDetailsUrl);
+        final Matcher matcher = appNamePattern.matcher(validKey.value());
         if (!matcher.find()) {
             throw new PluginException("Could not parse environment from FlowDetailsUrl");
         }
@@ -145,10 +134,10 @@ public final class PowerAutomateActivityType implements EventType {
     @Override
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
-        assertKey(record, "TimeGenerated", JsonValue.ValueType.STRING);
-        final String time = record.getString("TimeGenerated");
 
-        return new ValidRFC5424Timestamp(time).validTimestamp();
+        final ValidKey<String> validKey = new ValidStringKey(record, "TimeGenerated");
+
+        return new ValidRFC5424Timestamp(validKey.value()).validTimestamp();
     }
 
     @Override
