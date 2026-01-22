@@ -64,6 +64,7 @@ import com.teragrep.akv_01.event.metadata.time.EnqueuedTime;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeImpl;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeStub;
 import com.teragrep.akv_01.plugin.PluginException;
+import com.teragrep.nlf_01.fakes.FakeTestMetadata;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.SDParam;
@@ -74,7 +75,6 @@ import jakarta.json.JsonReader;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -106,23 +106,14 @@ class ADFPipelineRunTypeTest {
 
     @Test
     void testIdealCase() {
-        final Map<String, Object> partitionContextMap = new HashMap<>();
-        partitionContextMap.put("FullyQualifiedNamespace", "fully-qualified-namespace");
-        partitionContextMap.put("EventHubName", "event-hub-name");
-        partitionContextMap.put("PartitionId", "123");
-        partitionContextMap.put("ConsumerGroup", "consumer-group");
-
-        final Map<String, Object> systemPropertiesMap = new HashMap<>();
-        systemPropertiesMap.put("PartitionKey", "456");
-        systemPropertiesMap.put("SequenceNumber", "12345678900");
-
-        final Map<String, Object> propertiesMap = new HashMap<>();
-        propertiesMap.put("prop-key", "prop-value");
-        propertiesMap.put(null, "important-null-value");
-        propertiesMap.put("important-key", null);
+        final FakeTestMetadata fakeTestMetadata = new FakeTestMetadata();
 
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/adfpipelinerun.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
+                "src/test/resources/adfpipelinerun.json", new EventPartitionContextImpl(
+                        fakeTestMetadata.partitionContextMap()
+                ), new EventPropertiesImpl(fakeTestMetadata.propertiesMap()), new EventSystemPropertiesImpl(
+                        fakeTestMetadata.systemPropertiesMap()
+                ), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
         final ADFPipelineRunType type = new ADFPipelineRunType(parsedEvent, "localhost");
