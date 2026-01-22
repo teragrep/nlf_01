@@ -112,6 +112,9 @@ public final class NLFPlugin implements Plugin {
             else if (jsonObject.getString("Type").equals("ContainerAppConsoleLogs")) {
                 eventTypes.add(new ContainerAppConsoleLogsType(parsedEvent, realHostname));
             }
+            else if (jsonObject.getString("Type").equals("DataverseActivity")) {
+                eventTypes.add(new DataverseActivityType(parsedEvent, realHostname));
+            }
             else if (jsonObject.getString("Type").equals("FunctionAppLogs")) {
                 eventTypes.add(new FunctionAppLogsType(parsedEvent, realHostname));
             }
