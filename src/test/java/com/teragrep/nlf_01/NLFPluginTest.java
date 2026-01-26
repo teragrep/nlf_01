@@ -545,6 +545,66 @@ public class NLFPluginTest {
     }
 
     @Test
+    void appEventsTypeTest() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/appevents.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"AppRoleInstance\": \"app-role-instance\",\n"
+                                + "  \"AppRoleName\": \"app-role-name\",\n" + "  \"ClientBrowser\": \"Browser\",\n"
+                                + "  \"ClientCity\": \"City\",\n" + "  \"ClientCountryOrRegion\": \"Country\",\n"
+                                + "  \"ClientIP\": \"192.168.1.2\",\n" + "  \"ClientModel\": \"CModel\",\n"
+                                + "  \"ClientOS\": \"OperatingSystem\",\n" + "  \"ClientStateOrProvince\": \"State\",\n"
+                                + "  \"ClientType\": \"client-type\",\n" + "  \"IKey\": \"i-key\",\n"
+                                + "  \"ItemCount\": 1,\n" + "  \"Measurements\": \"{}\",\n"
+                                + "  \"Name\": \"Human Readable Name\",\n" + "  \"OperationId\": \"123\",\n"
+                                + "  \"ParentId\": \"456\",\n" + "  \"Properties\": {\n"
+                                + "    \"ProcessId\":\"1234\",\n" + "    \"HostInstanceId\":\"123456\",\n"
+                                + "    \"prop__{OriginalFormat}\":\"abc\",\n" + "    \"prop__RouteName\":\"xyz\",\n"
+                                + "    \"LogLevel\":\"Debug\",\n" + "    \"EventId\":\"1\",\n"
+                                + "    \"prop__RouteTemplate\":\"route/template\",\n"
+                                + "    \"Category\":\"192.168.3.1\",\n" + "    \"EventName\":\"event-name\"\n"
+                                + "  },\n" + "  \"ResourceGUID\": \"123456789\",\n"
+                                + "  \"SDKVersion\": \"12: 192.168.x.x\",\n" + "  \"SessionId\": \"12: 192.168.x.x\",\n"
+                                + "  \"SourceSystem\": \"Azure\",\n" + "  \"SyntheticSource\": \"Source\",\n"
+                                + "  \"TenantId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"TimeGenerated\": \"2020-01-01T01:02:34.5678999Z\",\n"
+                                + "  \"Type\": \"AppEvents\",\n"
+                                + "  \"UserAccountId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"UserAuthenticatedId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"UserId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"_BilledSize\": 1,\n" + "  \"_ItemId\": \"12-34-56-78\",\n"
+                                + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
+                                + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("AppEvents", syslogMessage.getAppName());
+        Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions.assertEquals(AppEventsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+    }
+
+    @Test
     void appServiceConsoleLogsType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/appserviceconsolelogs.json")));

@@ -103,6 +103,9 @@ public final class NLFPlugin implements Plugin {
             else if (jsonObject.getString("Type").equals("ADFPipelineRun")) {
                 eventTypes.add(new ADFPipelineRunType(parsedEvent, realHostname));
             }
+            else if (jsonObject.getString("Type").equals("AppEvents")) {
+                eventTypes.add(new AppEventsType(parsedEvent, realHostname));
+            }
             else if (jsonObject.getString("Type").equals("AppServiceConsoleLogs")) {
                 eventTypes.add(new AppServiceConsoleLogsType(parsedEvent, realHostname));
             }
