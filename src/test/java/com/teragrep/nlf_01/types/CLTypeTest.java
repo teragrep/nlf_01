@@ -52,18 +52,18 @@ import com.teragrep.akv_01.event.metadata.offset.EventOffset;
 import com.teragrep.akv_01.event.metadata.offset.EventOffsetImpl;
 import com.teragrep.akv_01.event.metadata.offset.EventOffsetStub;
 import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContext;
-import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContextImpl;
 import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContextStub;
 import com.teragrep.akv_01.event.metadata.properties.EventProperties;
-import com.teragrep.akv_01.event.metadata.properties.EventPropertiesImpl;
 import com.teragrep.akv_01.event.metadata.properties.EventPropertiesStub;
 import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemProperties;
-import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemPropertiesImpl;
 import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemPropertiesStub;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTime;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeImpl;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeStub;
 import com.teragrep.akv_01.plugin.PluginException;
+import com.teragrep.nlf_01.fakes.EventPartitionContextFake;
+import com.teragrep.nlf_01.fakes.EventPropertiesFake;
+import com.teragrep.nlf_01.fakes.EventSystemPropertiesFake;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.SDParam;
@@ -72,17 +72,15 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public final class CLTypeTest {
 
@@ -111,23 +109,9 @@ public final class CLTypeTest {
 
     @Test
     void testIdealCase() {
-        final Map<String, Object> partitionContextMap = new HashMap<>();
-        partitionContextMap.put("FullyQualifiedNamespace", "fully-qualified-namespace");
-        partitionContextMap.put("EventHubName", "event-hub-name");
-        partitionContextMap.put("PartitionId", "123");
-        partitionContextMap.put("ConsumerGroup", "consumer-group");
-
-        final Map<String, Object> systemPropertiesMap = new HashMap<>();
-        systemPropertiesMap.put("PartitionKey", "456");
-        systemPropertiesMap.put("SequenceNumber", "12345678900");
-
-        final Map<String, Object> propertiesMap = new HashMap<>();
-        propertiesMap.put("prop-key", "prop-value");
-        propertiesMap.put(null, "important-null-value");
-        propertiesMap.put("important-key", null);
-
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/cl.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
+                "src/test/resources/cl.json", new EventPartitionContextFake(), new EventPropertiesFake(),
+                new EventSystemPropertiesFake(), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
         final CLType type = new CLType(parsedEvent, "localhost");
