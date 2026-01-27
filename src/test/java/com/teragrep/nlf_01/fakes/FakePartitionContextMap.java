@@ -45,12 +45,13 @@
  */
 package com.teragrep.nlf_01.fakes;
 
+import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContext;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class FakePartitionContextMap {
+public final class FakePartitionContextMap implements EventPartitionContext {
 
-    public Map<String, Object> map() {
+    public Map<String, Object> asMap() {
         final Map<String, Object> partitionContextMap = new HashMap<>();
         partitionContextMap.put("FullyQualifiedNamespace", "fully-qualified-namespace");
         partitionContextMap.put("EventHubName", "event-hub-name");
@@ -58,5 +59,10 @@ public final class FakePartitionContextMap {
         partitionContextMap.put("ConsumerGroup", "consumer-group");
 
         return partitionContextMap;
+    }
+
+    @Override
+    public boolean isStub() {
+        return true;
     }
 }

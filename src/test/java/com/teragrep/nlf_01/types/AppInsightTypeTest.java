@@ -112,12 +112,16 @@ public final class AppInsightTypeTest {
 
     @Test
     void testIdealCase() {
-        final FakePartitionContextMap fakePartitionContextMap = new FakePartitionContextMap();
-        final FakePropertiesMap fakePropertiesMap = new FakePropertiesMap();
-        final FakeSystemPropertiesMap fakeSystemPropertiesMap = new FakeSystemPropertiesMap();
+        final EventPartitionContext fakePartitionContextMap = new FakePartitionContextMap();
+        final EventProperties fakePropertiesMap = new FakePropertiesMap();
+        final EventSystemProperties fakeSystemPropertiesMap = new FakeSystemPropertiesMap();
 
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/appinsight_object.json", new EventPartitionContextImpl(fakePartitionContextMap.map()), new EventPropertiesImpl(fakePropertiesMap.map()), new EventSystemPropertiesImpl(fakeSystemPropertiesMap.map()), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
+                "src/test/resources/appinsight_object.json", new EventPartitionContextImpl(
+                        fakePartitionContextMap.asMap()
+                ), new EventPropertiesImpl(fakePropertiesMap.asMap()), new EventSystemPropertiesImpl(
+                        fakeSystemPropertiesMap.asMap()
+                ), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
         final AppInsightType type = new AppInsightType(parsedEvent, "localhost");

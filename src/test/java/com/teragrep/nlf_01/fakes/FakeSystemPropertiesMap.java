@@ -45,12 +45,13 @@
  */
 package com.teragrep.nlf_01.fakes;
 
+import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemProperties;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class FakeSystemPropertiesMap {
+public final class FakeSystemPropertiesMap implements EventSystemProperties {
 
-    public Map<String, Object> map() {
+    public Map<String, Object> asMap() {
         final Map<String, Object> systemPropertiesMap = new HashMap<>();
         systemPropertiesMap.put("PartitionKey", "456");
         systemPropertiesMap.put("SequenceNumber", "12345678900");
@@ -58,4 +59,8 @@ public final class FakeSystemPropertiesMap {
         return systemPropertiesMap;
     }
 
+    @Override
+    public boolean isStub() {
+        return true;
+    }
 }
