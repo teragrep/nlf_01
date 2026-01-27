@@ -52,13 +52,10 @@ import com.teragrep.akv_01.event.metadata.offset.EventOffset;
 import com.teragrep.akv_01.event.metadata.offset.EventOffsetImpl;
 import com.teragrep.akv_01.event.metadata.offset.EventOffsetStub;
 import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContext;
-import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContextImpl;
 import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContextStub;
 import com.teragrep.akv_01.event.metadata.properties.EventProperties;
-import com.teragrep.akv_01.event.metadata.properties.EventPropertiesImpl;
 import com.teragrep.akv_01.event.metadata.properties.EventPropertiesStub;
 import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemProperties;
-import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemPropertiesImpl;
 import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemPropertiesStub;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTime;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeImpl;
@@ -108,16 +105,9 @@ final class ContainerAppConsoleLogsTypeTest {
 
     @Test
     void testIdealCaseWithContainerAppName() {
-        final EventPartitionContext fakePartitionContextMap = new EventPartitionContextFake();
-        final EventProperties fakePropertiesMap = new EventPropertiesFake();
-        final EventSystemProperties fakeSystemPropertiesMap = new EventSystemPropertiesFake();
-
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/containerappconsolelogswithcontainerappname.json", new EventPartitionContextImpl(
-                        fakePartitionContextMap.asMap()
-                ), new EventPropertiesImpl(fakePropertiesMap.asMap()), new EventSystemPropertiesImpl(
-                        fakeSystemPropertiesMap.asMap()
-                ), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
+                "src/test/resources/containerappconsolelogswithcontainerappname.json", new EventPartitionContextFake(),
+                new EventPropertiesFake(), new EventSystemPropertiesFake(), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
         final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost");
@@ -170,16 +160,10 @@ final class ContainerAppConsoleLogsTypeTest {
 
     @Test
     void testIdealCaseWithJobName() {
-        final EventPartitionContext fakePartitionContextMap = new EventPartitionContextFake();
-        final EventProperties fakePropertiesMap = new EventPropertiesFake();
-        final EventSystemProperties fakeSystemPropertiesMap = new EventSystemPropertiesFake();
 
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/containerappconsolelogswithjobname.json", new EventPartitionContextImpl(
-                        fakePartitionContextMap.asMap()
-                ), new EventPropertiesImpl(fakePropertiesMap.asMap()), new EventSystemPropertiesImpl(
-                        fakeSystemPropertiesMap.asMap()
-                ), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
+                "src/test/resources/containerappconsolelogswithjobname.json", new EventPartitionContextFake(),
+                new EventPropertiesFake(), new EventSystemPropertiesFake(), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
         final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost");
