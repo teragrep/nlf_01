@@ -45,19 +45,18 @@
  */
 package com.teragrep.nlf_01.fakes;
 
-import com.teragrep.akv_01.event.metadata.properties.EventProperties;
+import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemProperties;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class FakePropertiesMap implements EventProperties {
+public final class EventSystemPropertiesFake implements EventSystemProperties {
 
     public Map<String, Object> asMap() {
-        final Map<String, Object> propertiesMap = new HashMap<>();
-        propertiesMap.put("prop-key", "prop-value");
-        propertiesMap.put(null, "important-null-value");
-        propertiesMap.put("important-key", null);
+        final Map<String, Object> systemPropertiesMap = new HashMap<>();
+        systemPropertiesMap.put("PartitionKey", "456");
+        systemPropertiesMap.put("SequenceNumber", "12345678900");
 
-        return propertiesMap;
+        return systemPropertiesMap;
     }
 
     @Override

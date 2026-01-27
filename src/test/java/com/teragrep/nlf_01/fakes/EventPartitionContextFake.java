@@ -49,7 +49,7 @@ import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContext
 import java.util.HashMap;
 import java.util.Map;
 
-public final class FakePartitionContextMap implements EventPartitionContext {
+public final class EventPartitionContextFake implements EventPartitionContext {
 
     public Map<String, Object> asMap() {
         final Map<String, Object> partitionContextMap = new HashMap<>();

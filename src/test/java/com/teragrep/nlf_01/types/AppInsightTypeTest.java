@@ -64,9 +64,9 @@ import com.teragrep.akv_01.event.metadata.time.EnqueuedTime;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeImpl;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeStub;
 import com.teragrep.akv_01.plugin.PluginException;
-import com.teragrep.nlf_01.fakes.FakePartitionContextMap;
-import com.teragrep.nlf_01.fakes.FakePropertiesMap;
-import com.teragrep.nlf_01.fakes.FakeSystemPropertiesMap;
+import com.teragrep.nlf_01.fakes.EventPartitionContextFake;
+import com.teragrep.nlf_01.fakes.EventPropertiesFake;
+import com.teragrep.nlf_01.fakes.EventSystemPropertiesFake;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.SDParam;
@@ -112,9 +112,9 @@ public final class AppInsightTypeTest {
 
     @Test
     void testIdealCase() {
-        final EventPartitionContext fakePartitionContextMap = new FakePartitionContextMap();
-        final EventProperties fakePropertiesMap = new FakePropertiesMap();
-        final EventSystemProperties fakeSystemPropertiesMap = new FakeSystemPropertiesMap();
+        final EventPartitionContext fakePartitionContextMap = new EventPartitionContextFake();
+        final EventProperties fakePropertiesMap = new EventPropertiesFake();
+        final EventSystemProperties fakeSystemPropertiesMap = new EventSystemPropertiesFake();
 
         final ParsedEvent parsedEvent = testEvent(
                 "src/test/resources/appinsight_object.json", new EventPartitionContextImpl(
