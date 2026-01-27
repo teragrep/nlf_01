@@ -62,6 +62,6 @@ public final class FakePropertiesMap implements EventProperties {
 
     @Override
     public boolean isStub() {
-        return true;
+        return false;
     }
 }

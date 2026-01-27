@@ -63,6 +63,6 @@ public final class FakePartitionContextMap implements EventPartitionContext {
 
     @Override
     public boolean isStub() {
-        return true;
+        return false;
     }
 }

@@ -61,6 +61,6 @@ public final class FakeSystemPropertiesMap implements EventSystemProperties {
 
     @Override
     public boolean isStub() {
-        return true;
+        return false;
     }
 }
