@@ -48,19 +48,9 @@ package com.teragrep.nlf_01.fakes;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class FakeTestMetadata {
+public final class FakeSystemPropertiesMap {
 
-    public Map<String, Object> partitionContextMap() {
-        final Map<String, Object> partitionContextMap = new HashMap<>();
-        partitionContextMap.put("FullyQualifiedNamespace", "fully-qualified-namespace");
-        partitionContextMap.put("EventHubName", "event-hub-name");
-        partitionContextMap.put("PartitionId", "123");
-        partitionContextMap.put("ConsumerGroup", "consumer-group");
-
-        return partitionContextMap;
-    }
-
-    public Map<String, Object> systemPropertiesMap() {
+    public Map<String, Object> map() {
         final Map<String, Object> systemPropertiesMap = new HashMap<>();
         systemPropertiesMap.put("PartitionKey", "456");
         systemPropertiesMap.put("SequenceNumber", "12345678900");
@@ -68,12 +58,4 @@ public final class FakeTestMetadata {
         return systemPropertiesMap;
     }
 
-    public Map<String, Object> propertiesMap() {
-        final Map<String, Object> propertiesMap = new HashMap<>();
-        propertiesMap.put("prop-key", "prop-value");
-        propertiesMap.put(null, "important-null-value");
-        propertiesMap.put("important-key", null);
-
-        return propertiesMap;
-    }
 }
