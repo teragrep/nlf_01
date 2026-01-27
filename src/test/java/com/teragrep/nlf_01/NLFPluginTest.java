@@ -381,6 +381,70 @@ public class NLFPluginTest {
     }
 
     @Test
+    void dataverseActivityType() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/dataverseactivity.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"ClientIp\": \"127.0.0.1\",\n"
+                                + "  \"CorrelationId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"CrmOrganizationUniqueName\": \"Organization-1\",\n"
+                                + "  \"EntityId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"EntityName\": \"Entity-1\",\n" + "  \"Fields\": \"{}\",\n"
+                                + "  \"InstanceUrl\": \"https://{uri1}\",\n" + "  \"ItemType\": \"Message\",\n"
+                                + "  \"ItemUrl\": \"https://{uri1}/{uri2}/{uri3}\",\n"
+                                + "  \"Message\": \"Message 1\",\n" + "  \"Operation\": \"Operation 1\",\n"
+                                + "  \"OrganizationId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"OriginalObjectId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"Query\": \"Query\",\n" + "  \"QueryResults\": \"2\",\n"
+                                + "  \"ResultStatus\": \"Success\",\n"
+                                + "  \"ServiceContextId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"ServiceContextIdType\": \"Token 1\",\n" + "  \"ServiceName\": \"Service 1\",\n"
+                                + "  \"SourceRecordId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"SourceSystem\": \"Azure\",\n"
+                                + "  \"SystemUserId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"TenantId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"TimeGenerated\": \"2025-10-06T00:00:00.0000000Z\",\n"
+                                + "  \"Type\": \"DataverseActivity\",\n"
+                                + "  \"UserAgent\": \"Mozilla/5.0 (<system-information>) <platform> (<platform-details>) <extensions>\",\n"
+                                + "  \"UserId\": \"user@localhost.example.test\",\n" + "  \"UserKey\": \"UserKey-1\",\n"
+                                + "  \"UserType\": \"Admin\",\n" + "  \"UserUpn\": \"user@localhost.example.test\",\n"
+                                + "  \"Workload\": \"Service1\",\n"
+                                + "  \"_ItemId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_SubscriptionId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"_TimeReceived\": \"2025-10-06T00:00:00.0000000Z\",\n"
+                                + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
+                                + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("DataverseA_https://{uri1}/{uri2}/{uri3}", syslogMessage.getAppName());
+        Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(DataverseActivityType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+    }
+
+    @Test
     void adfActivityRunType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/adfactivityrun.json")));
