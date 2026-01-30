@@ -137,15 +137,23 @@ public final class NLFPlugin implements Plugin {
                 eventTypes.add(new CLType(parsedEvent, realHostname));
             }
             else if (jsonObject.getString("Type").equals("ContainerLogV2")) {
-                eventTypes
-                        .add(
-                                new ContainerType(
-                                        parsedEvent,
-                                        containerLogHostnameKey,
-                                        containerLogAppNameKey,
-                                        realHostname
-                                )
-                        );
+                if (
+                    jsonObject.containsKey("PodNamespace")
+                            && jsonObject.getString("PodNamespace").contains("aks-istio-ingress")
+                ) {
+                    eventTypes.add(new IstioIngressContainerType(parsedEvent, realHostname));
+                }
+                else {
+                    eventTypes
+                            .add(
+                                    new ContainerType(
+                                            parsedEvent,
+                                            containerLogHostnameKey,
+                                            containerLogAppNameKey,
+                                            realHostname
+                                    )
+                            );
+                }
             }
             else if (jsonObject.getString("Type").equals("Syslog")) {
                 eventTypes.add(new SyslogType(parsedEvent, syslogExpectedProcessName, realHostname));
