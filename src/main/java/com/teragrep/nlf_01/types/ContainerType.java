@@ -156,7 +156,7 @@ public final class ContainerType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
-        final DefaultSDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
+        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
         final Set<SDElement> elems = defaultSDElements.sdElements();
 
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();

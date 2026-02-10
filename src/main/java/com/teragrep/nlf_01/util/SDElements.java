@@ -43,29 +43,12 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.nlf_01.types;
+package com.teragrep.nlf_01.util;
 
-import com.teragrep.akv_01.plugin.PluginException;
-import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
-import com.teragrep.rlo_14.Severity;
 import java.util.Set;
 
-public interface EventType {
+public interface SDElements {
 
-    public abstract Severity severity() throws PluginException;
-
-    public abstract Facility facility() throws PluginException;
-
-    public abstract String hostname() throws PluginException;
-
-    public abstract String appName() throws PluginException;
-
-    public abstract long timestamp() throws PluginException;
-
-    public abstract Set<SDElement> sdElements() throws PluginException;
-
-    public abstract String msgId() throws PluginException;
-
-    public abstract String msg() throws PluginException;
+    public abstract Set<SDElement> sdElements();
 }

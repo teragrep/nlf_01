@@ -51,6 +51,7 @@ import com.teragrep.nlf_01.util.ASCIIString;
 import com.teragrep.nlf_01.util.DefaultSDElements;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
+import com.teragrep.nlf_01.util.SDElements;
 import com.teragrep.nlf_01.util.ValidKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
@@ -114,7 +115,7 @@ public final class AppEventsType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
-        final DefaultSDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
+        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
 
         return defaultSDElements.sdElements();
     }

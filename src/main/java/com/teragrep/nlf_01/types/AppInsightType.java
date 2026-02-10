@@ -105,7 +105,7 @@ public final class AppInsightType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() {
-        final DefaultSDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
+        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
 
         return defaultSDElements.sdElements();
     }

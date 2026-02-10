@@ -96,7 +96,7 @@ class DefaultSDElementsTest {
                 new EnqueuedTimeStub(), new EventOffsetStub()
         );
 
-        final DefaultSDElements defaultSDElements = new DefaultSDElements(
+        final SDElements defaultSDElements = new DefaultSDElements(
                 parsedEvent,
                 "hostname",
                 DefaultSDElementsTest.class

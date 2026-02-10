@@ -156,7 +156,7 @@ public final class SyslogType implements EventType {
     @Override
     public Set<SDElement> sdElements() throws PluginException {
         validateProcessName();
-        final DefaultSDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
+        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
 
         return defaultSDElements.sdElements();
     }

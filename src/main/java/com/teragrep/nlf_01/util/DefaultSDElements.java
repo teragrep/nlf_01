@@ -54,7 +54,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-public final class DefaultSDElements {
+public final class DefaultSDElements implements SDElements {
 
     private final ParsedEvent parsedEvent;
     private final String realHostname;
@@ -70,6 +70,7 @@ public final class DefaultSDElements {
         this.className = className;
     }
 
+    @Override
     public Set<SDElement> sdElements() {
         final Set<SDElement> elems = new HashSet<>();
         final String time;
