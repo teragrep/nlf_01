@@ -60,14 +60,14 @@ public final class DefaultSDElements {
     private final String realHostname;
     private final String className;
 
+    public DefaultSDElements(final ParsedEvent parsedEvent, final String realHostname, final Class<?> inputClass) {
+        this(parsedEvent, realHostname, inputClass.getSimpleName());
+    }
+
     public DefaultSDElements(final ParsedEvent parsedEvent, final String realHostname, final String className) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
         this.className = className;
-    }
-
-    public DefaultSDElements(final ParsedEvent parsedEvent, final String realHostname, final Class<?> inputClass) {
-        this(parsedEvent, realHostname, inputClass.getSimpleName());
     }
 
     public Set<SDElement> sdElements() {
