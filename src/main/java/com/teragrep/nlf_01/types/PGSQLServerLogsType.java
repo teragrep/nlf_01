@@ -116,15 +116,16 @@ public final class PGSQLServerLogsType implements EventType {
         final String message = messageValidKey.value();
 
         final Matcher matcher = appNamePattern.matcher(message);
-        if (matcher.find()) {
+        if (!matcher.find()) {
+            throw new PluginException("Could not parse dbName from Message");
+        }
+        else {
             final String dbName = matcher.group("dbName");
-            if (dbName == null) {
+            if (dbName == null || dbName.isEmpty()) {
                 throw new PluginException("Capture group 'dbName' was not found");
             }
             return new ValidRFC5424AppName(new ASCIIString(dbName).withNonAsciiCharsRemoved()).appName();
         }
-
-        throw new PluginException("Could not parse dbName from properties.message");
     }
 
     @Override

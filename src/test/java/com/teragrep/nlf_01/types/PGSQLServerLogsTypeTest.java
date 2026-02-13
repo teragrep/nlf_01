@@ -78,6 +78,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class PGSQLServerLogsTypeTest {
@@ -247,5 +248,39 @@ class PGSQLServerLogsTypeTest {
                 );
         Assertions.assertEquals("", actualMsgId);
         Assertions.assertEquals(Severity.NOTICE, actualSeverity);
+    }
+
+    @Test
+    @DisplayName("test with missing dbName in appName()")
+    void testWithMissingDbNameInAppName() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/pgsqlserverlogs_missing_dbname.json", new EventPartitionContextStub(),
+                new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
+                new EventOffsetStub()
+        );
+
+        final PGSQLServerLogsType type = new PGSQLServerLogsType(parsedEvent, "localhost");
+
+        final Exception exception = Assertions.assertThrowsExactly(PluginException.class, type::appName);
+        final String expectedExceptionMessage = "Could not parse dbName from Message";
+
+        Assertions.assertEquals(expectedExceptionMessage, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("test with null dbName in appName()")
+    void testWithNullDbNameInAppName() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/pgsqlserverlogs_null_dbname.json", new EventPartitionContextStub(),
+                new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
+                new EventOffsetStub()
+        );
+
+        final PGSQLServerLogsType type = new PGSQLServerLogsType(parsedEvent, "localhost");
+
+        final Exception exception = Assertions.assertThrowsExactly(PluginException.class, type::appName);
+        final String expectedExceptionMessage = "Capture group 'dbName' was not found";
+
+        Assertions.assertEquals(expectedExceptionMessage, exception.getMessage());
     }
 }
