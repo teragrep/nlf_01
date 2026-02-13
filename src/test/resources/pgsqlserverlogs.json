@@ -1,0 +1,17 @@
+{
+  "BackendType":"backend",
+  "ErrorLevel":"LOG",
+  "_Internal_WorkspaceResourceId":"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+  "Location":"countrycentral",
+  "LogicalServerName":"efgh-ijklmn-xx-DEV-01",
+  "Message":"2020-10-01 11:59:26 UTC-12abcd3e.4f5678-user=user012,db=dbase_maintenance,app=[unknown],client=127.0.0.1LOG:  AUDIT: SESSION,4,1,WRITE,INSERT,,,\"insert into test.abcmover (id, update_time) select 1, now() on conflict on constraint abcmover_pk do update set id = test.abcmover.id+1, update_time=now()\",<not logged>",
+  "ProcessId":12345,
+  "ReplicaRole":"Primary",
+  "_ResourceId":"/SUBSCRIPTIONS/uuid/RESOURCEGROUPS/ab-cd-efgh-ijklmn-xx-DEV-01/PROVIDERS/postgres-db/FLEXIBLESERVERS/efgh-ijklmn-xx-DEV-01",
+  "SourceSystem":"Azure",
+  "SqlErrorCode":"07000",
+  "_SubscriptionId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
+  "TenantId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
+  "TimeGenerated":"2020-10-01T11:59:26.256Z",
+  "Type": "PGSQLServerLogs"
+}

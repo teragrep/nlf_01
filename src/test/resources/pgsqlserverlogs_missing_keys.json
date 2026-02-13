@@ -1,0 +1,13 @@
+{
+  "BackendType":"backend",
+  "ErrorLevel":"LOG",
+  "Location":"countrycentral",
+  "LogicalServerName":"efgh-ijklmn-xx-DEV-01",
+  "ProcessId":12345,
+  "ReplicaRole":"Primary",
+  "SourceSystem":"Azure",
+  "SqlErrorCode":"07000",
+  "_SubscriptionId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
+  "TenantId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
+  "Type": "PGSQLServerLogs"
+}
