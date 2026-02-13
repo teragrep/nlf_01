@@ -127,7 +127,7 @@ public final class PGSQLServerLogsType implements EventType {
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424Timestamp(new ValidStringKey(record, "time").value()).validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidStringKey(record, "TimeGenerated").value()).validTimestamp();
     }
 
     @Override
@@ -190,13 +190,9 @@ public final class PGSQLServerLogsType implements EventType {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
         final ValidKey<String> resourceIdValidKey = new ValidStringKey(mainObject, "_ResourceId");
-        final ResourceId resourceId = new ResourceId(resourceIdValidKey.value());
-        final String subscriptionId = resourceId.subscriptionId();
-        final String sqlServerName = resourceId.resourceName();
+        final String resourceId = resourceIdValidKey.value();
 
-        elems
-                .add(new SDElement("origin@48577").addSDParam("subscription", subscriptionId).addSDParam("serverName", sqlServerName));
-
+        elems.add(new SDElement("origin@48577").addSDParam("_ResourceId", resourceId));
         elems.add(new SDElement("nlf_01@48577").addSDParam("eventType", this.getClass().getSimpleName()));
 
         return elems;
