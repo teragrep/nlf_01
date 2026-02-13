@@ -77,7 +77,11 @@ public final class PGSQLServerLogsType implements EventType {
         this(parsedEvent, realHostname, Pattern.compile("^.*?db=(?<dbName>.*?),"));
     }
 
-    public PGSQLServerLogsType(final ParsedEvent parsedEvent, final String realHostname, final Pattern appNamePattern) {
+    private PGSQLServerLogsType(
+            final ParsedEvent parsedEvent,
+            final String realHostname,
+            final Pattern appNamePattern
+    ) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
         this.appNamePattern = appNamePattern;
