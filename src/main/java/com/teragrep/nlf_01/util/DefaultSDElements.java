@@ -59,15 +59,27 @@ public final class DefaultSDElements implements SDElements {
     private final ParsedEvent parsedEvent;
     private final String realHostname;
     private final String className;
+    private final String componentNameForPartitions;
 
-    public DefaultSDElements(final ParsedEvent parsedEvent, final String realHostname, final Class<?> inputClass) {
-        this(parsedEvent, realHostname, inputClass.getSimpleName());
+    public DefaultSDElements(
+            final ParsedEvent parsedEvent,
+            final String realHostname,
+            final Class<?> inputClass,
+            final String componentNameForPartitions
+    ) {
+        this(parsedEvent, realHostname, inputClass.getSimpleName(), componentNameForPartitions);
     }
 
-    public DefaultSDElements(final ParsedEvent parsedEvent, final String realHostname, final String className) {
+    public DefaultSDElements(
+            final ParsedEvent parsedEvent,
+            final String realHostname,
+            final String className,
+            final String componentNameForPartitions
+    ) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
         this.className = className;
+        this.componentNameForPartitions = componentNameForPartitions;
     }
 
     @Override
@@ -100,10 +112,10 @@ public final class DefaultSDElements implements SDElements {
         }
 
         elems
-                .add(new SDElement("aer_02_partition@48577").addSDParam("fully_qualified_namespace", fullyQualifiedNamespace).addSDParam("eventhub_name", eventHubName).addSDParam("partition_id", partitionId).addSDParam("consumer_group", consumerGroup));
+                .add(new SDElement(componentNameForPartitions + "_partition@48577").addSDParam("fully_qualified_namespace", fullyQualifiedNamespace).addSDParam("eventhub_name", eventHubName).addSDParam("partition_id", partitionId).addSDParam("consumer_group", consumerGroup));
 
         elems
-                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", realHostname).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
+                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", realHostname).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", componentNameForPartitions));
 
         final String partitionKey;
         if (!parsedEvent.systemProperties().isStub()) {
@@ -122,10 +134,10 @@ public final class DefaultSDElements implements SDElements {
         }
 
         elems
-                .add(new SDElement("aer_02_event@48577").addSDParam("offset", offset).addSDParam("enqueued_time", time).addSDParam("partition_key", partitionKey).addSDParam("properties", new PropertiesJson(parsedEvent.properties()).toJsonObject().toString()));
+                .add(new SDElement(componentNameForPartitions + "_event@48577").addSDParam("offset", offset).addSDParam("enqueued_time", time).addSDParam("partition_key", partitionKey).addSDParam("properties", new PropertiesJson(parsedEvent.properties()).toJsonObject().toString()));
 
         elems
-                .add(new SDElement("aer_02@48577").addSDParam("timestamp_source", time.isEmpty() ? "generated" : "timeEnqueued"));
+                .add(new SDElement(componentNameForPartitions + "@48577").addSDParam("timestamp_source", time.isEmpty() ? "generated" : "timeEnqueued"));
 
         elems.add(new SDElement("nlf_01@48577").addSDParam("eventType", className));
 
@@ -137,14 +149,14 @@ public final class DefaultSDElements implements SDElements {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         final DefaultSDElements that = (DefaultSDElements) o;
-        return Objects.equals(parsedEvent, that.parsedEvent) && Objects.equals(realHostname, that.realHostname)
-                && Objects.equals(className, that.className);
+        return Objects.equals(parsedEvent, that.parsedEvent) && Objects
+                .equals(realHostname, that.realHostname) && Objects.equals(className, that.className)
+                && Objects.equals(componentNameForPartitions, that.componentNameForPartitions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(parsedEvent, realHostname, className);
+        return Objects.hash(parsedEvent, realHostname, className, componentNameForPartitions);
     }
 }

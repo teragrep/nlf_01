@@ -63,13 +63,20 @@ public final class SyslogType implements EventType {
     private final String expectedProcessName;
     private final String realHostname;
     private final Pattern appNamePattern;
+    private final String componentNameForPartitions;
 
-    public SyslogType(final ParsedEvent parsedEvent, final String expectedProcessName, final String realHostname) {
+    public SyslogType(
+            final ParsedEvent parsedEvent,
+            final String expectedProcessName,
+            final String realHostname,
+            final String componentNameForPartitions
+    ) {
         this(
                 parsedEvent,
                 expectedProcessName,
                 realHostname,
-                Pattern.compile("^.*?(?<uuid>[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})")
+                Pattern.compile("^.*?(?<uuid>[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})"),
+                componentNameForPartitions
         );
     }
 
@@ -77,12 +84,14 @@ public final class SyslogType implements EventType {
             final ParsedEvent parsedEvent,
             final String expectedProcessName,
             final String realHostname,
-            final Pattern appNamePattern
+            final Pattern appNamePattern,
+            final String componentNameForPartitions
     ) {
         this.parsedEvent = parsedEvent;
         this.expectedProcessName = expectedProcessName;
         this.realHostname = realHostname;
         this.appNamePattern = appNamePattern;
+        this.componentNameForPartitions = componentNameForPartitions;
     }
 
     private void validateProcessName() throws PluginException {
@@ -156,7 +165,12 @@ public final class SyslogType implements EventType {
     @Override
     public Set<SDElement> sdElements() throws PluginException {
         validateProcessName();
-        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
+        final SDElements defaultSDElements = new DefaultSDElements(
+                parsedEvent,
+                realHostname,
+                this.getClass(),
+                componentNameForPartitions
+        );
 
         return defaultSDElements.sdElements();
     }

@@ -67,10 +67,16 @@ public final class ADFPipelineRunType implements EventType {
 
     private final ParsedEvent parsedEvent;
     private final String realHostname;
+    private final String componentNameForPartitions;
 
-    public ADFPipelineRunType(final ParsedEvent parsedEvent, final String realHostname) {
+    public ADFPipelineRunType(
+            final ParsedEvent parsedEvent,
+            final String realHostname,
+            final String componentNameForPartitions
+    ) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
+        this.componentNameForPartitions = componentNameForPartitions;
     }
 
     @Override
@@ -112,7 +118,12 @@ public final class ADFPipelineRunType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() {
-        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
+        final SDElements defaultSDElements = new DefaultSDElements(
+                parsedEvent,
+                realHostname,
+                this.getClass(),
+                componentNameForPartitions
+        );
 
         return defaultSDElements.sdElements();
     }

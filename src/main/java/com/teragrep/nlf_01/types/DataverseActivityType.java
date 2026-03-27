@@ -67,10 +67,16 @@ public final class DataverseActivityType implements EventType {
 
     private final ParsedEvent parsedEvent;
     private final String realHostname;
+    private final String componentNameForPartitions;
 
-    public DataverseActivityType(final ParsedEvent parsedEvent, final String realHostname) {
+    public DataverseActivityType(
+            final ParsedEvent parsedEvent,
+            final String realHostname,
+            final String componentNameForPartitions
+    ) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
+        this.componentNameForPartitions = componentNameForPartitions;
     }
 
     @Override
@@ -119,7 +125,12 @@ public final class DataverseActivityType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
-        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
+        final SDElements defaultSDElements = new DefaultSDElements(
+                parsedEvent,
+                realHostname,
+                this.getClass(),
+                componentNameForPartitions
+        );
 
         return defaultSDElements.sdElements();
     }

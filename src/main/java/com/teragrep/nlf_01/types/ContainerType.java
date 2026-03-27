@@ -62,17 +62,20 @@ public final class ContainerType implements EventType {
     private final String containerLogHostnameKey;
     private final String containerLogAppNameKey;
     private final String realHostname;
+    private final String componentNameForPartitions;
 
     public ContainerType(
             final ParsedEvent parsedEvent,
             final String containerLogHostnameKey,
             final String containerLogAppNameKey,
-            final String realHostname
+            final String realHostname,
+            final String componentNameForPartitions
     ) {
         this.parsedEvent = parsedEvent;
         this.containerLogHostnameKey = containerLogHostnameKey;
         this.containerLogAppNameKey = containerLogAppNameKey;
         this.realHostname = realHostname;
+        this.componentNameForPartitions = componentNameForPartitions;
     }
 
     @Override
@@ -156,7 +159,12 @@ public final class ContainerType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
-        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
+        final SDElements defaultSDElements = new DefaultSDElements(
+                parsedEvent,
+                realHostname,
+                this.getClass(),
+                componentNameForPartitions
+        );
         final Set<SDElement> elems = defaultSDElements.sdElements();
 
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();

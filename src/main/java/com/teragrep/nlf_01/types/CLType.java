@@ -60,10 +60,12 @@ public final class CLType implements EventType {
 
     private final ParsedEvent parsedEvent;
     private final String realHostname;
+    private final String componentNameForPartitions;
 
-    public CLType(final ParsedEvent parsedEvent, final String realHostname) {
+    public CLType(final ParsedEvent parsedEvent, final String realHostname, final String componentNameForPartitions) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
+        this.componentNameForPartitions = componentNameForPartitions;
     }
 
     @Override
@@ -112,7 +114,12 @@ public final class CLType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
-        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
+        final SDElements defaultSDElements = new DefaultSDElements(
+                parsedEvent,
+                realHostname,
+                this.getClass(),
+                componentNameForPartitions
+        );
         final Set<SDElement> elems = defaultSDElements.sdElements();
 
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();

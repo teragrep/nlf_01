@@ -70,19 +70,31 @@ public final class PowerAutomateActivityType implements EventType {
     private final ParsedEvent parsedEvent;
     private final String realHostname;
     private final Pattern appNamePattern;
+    private final String componentNameForPartitions;
 
-    public PowerAutomateActivityType(final ParsedEvent parsedEvent, final String realHostname) {
-        this(parsedEvent, realHostname, Pattern.compile("/(?<=/environments/)(?<environment>.*?)(?=/flows/)/"));
+    public PowerAutomateActivityType(
+            final ParsedEvent parsedEvent,
+            final String realHostname,
+            final String componentNameForPartitions
+    ) {
+        this(
+                parsedEvent,
+                realHostname,
+                Pattern.compile("/(?<=/environments/)(?<environment>.*?)(?=/flows/)/"),
+                componentNameForPartitions
+        );
     }
 
     public PowerAutomateActivityType(
             final ParsedEvent parsedEvent,
             final String realHostname,
-            final Pattern appNamePattern
+            final Pattern appNamePattern,
+            final String componentNameForPartitions
     ) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
         this.appNamePattern = appNamePattern;
+        this.componentNameForPartitions = componentNameForPartitions;
     }
 
     @Override
@@ -140,7 +152,12 @@ public final class PowerAutomateActivityType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
-        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
+        final SDElements defaultSDElements = new DefaultSDElements(
+                parsedEvent,
+                realHostname,
+                this.getClass(),
+                componentNameForPartitions
+        );
 
         return defaultSDElements.sdElements();
     }

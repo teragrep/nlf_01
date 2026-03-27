@@ -66,19 +66,26 @@ public final class IstioIngressContainerType implements EventType {
     private final String staticAppname;
     private final ParsedEvent parsedEvent;
     private final String realHostname;
+    private final String componentNameForPartitions;
 
-    public IstioIngressContainerType(final ParsedEvent parsedEvent, final String realHostname) {
-        this("istio-ingress", parsedEvent, realHostname);
+    public IstioIngressContainerType(
+            final ParsedEvent parsedEvent,
+            final String realHostname,
+            final String componentNameForPartitions
+    ) {
+        this("istio-ingress", parsedEvent, realHostname, componentNameForPartitions);
     }
 
     private IstioIngressContainerType(
             final String staticAppname,
             final ParsedEvent parsedEvent,
-            final String realHostname
+            final String realHostname,
+            final String componentNameForPartitions
     ) {
         this.staticAppname = staticAppname;
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
+        this.componentNameForPartitions = componentNameForPartitions;
     }
 
     @Override
@@ -114,7 +121,12 @@ public final class IstioIngressContainerType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
-        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
+        final SDElements defaultSDElements = new DefaultSDElements(
+                parsedEvent,
+                realHostname,
+                this.getClass(),
+                componentNameForPartitions
+        );
         final Set<SDElement> elems = defaultSDElements.sdElements();
 
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();

@@ -72,19 +72,26 @@ public final class PGSQLServerLogsType implements EventType {
     private final ParsedEvent parsedEvent;
     private final String realHostname;
     private final Pattern appNamePattern;
+    private final String componentNameForPartitions;
 
-    public PGSQLServerLogsType(final ParsedEvent parsedEvent, final String realHostname) {
-        this(parsedEvent, realHostname, Pattern.compile("^.*?db=(?<dbName>.*?),"));
+    public PGSQLServerLogsType(
+            final ParsedEvent parsedEvent,
+            final String realHostname,
+            final String componentNameForPartitions
+    ) {
+        this(parsedEvent, realHostname, Pattern.compile("^.*?db=(?<dbName>.*?),"), componentNameForPartitions);
     }
 
     private PGSQLServerLogsType(
             final ParsedEvent parsedEvent,
             final String realHostname,
-            final Pattern appNamePattern
+            final Pattern appNamePattern,
+            final String componentNameForPartitions
     ) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
         this.appNamePattern = appNamePattern;
+        this.componentNameForPartitions = componentNameForPartitions;
     }
 
     @Override
@@ -165,10 +172,10 @@ public final class PGSQLServerLogsType implements EventType {
         }
 
         elems
-                .add(new SDElement("aer_02_partition@48577").addSDParam("fully_qualified_namespace", fullyQualifiedNamespace).addSDParam("eventhub_name", eventHubName).addSDParam("partition_id", partitionId).addSDParam("consumer_group", consumerGroup));
+                .add(new SDElement(componentNameForPartitions + "_partition@48577").addSDParam("fully_qualified_namespace", fullyQualifiedNamespace).addSDParam("eventhub_name", eventHubName).addSDParam("partition_id", partitionId).addSDParam("consumer_group", consumerGroup));
 
         elems
-                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", realHostname).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
+                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", realHostname).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", componentNameForPartitions));
 
         final String partitionKey;
         if (!parsedEvent.systemProperties().isStub()) {
@@ -187,10 +194,10 @@ public final class PGSQLServerLogsType implements EventType {
         }
 
         elems
-                .add(new SDElement("aer_02_event@48577").addSDParam("offset", offset).addSDParam("enqueued_time", time).addSDParam("partition_key", partitionKey).addSDParam("properties", new PropertiesJson(parsedEvent.properties()).toJsonObject().toString()));
+                .add(new SDElement(componentNameForPartitions + "_event@48577").addSDParam("offset", offset).addSDParam("enqueued_time", time).addSDParam("partition_key", partitionKey).addSDParam("properties", new PropertiesJson(parsedEvent.properties()).toJsonObject().toString()));
 
         elems
-                .add(new SDElement("aer_02@48577").addSDParam("timestamp_source", time.isEmpty() ? "generated" : "timeEnqueued"));
+                .add(new SDElement(componentNameForPartitions + "@48577").addSDParam("timestamp_source", time.isEmpty() ? "generated" : "timeEnqueued"));
 
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 

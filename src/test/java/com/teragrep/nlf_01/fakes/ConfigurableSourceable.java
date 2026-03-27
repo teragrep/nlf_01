@@ -47,40 +47,29 @@ package com.teragrep.nlf_01.fakes;
 
 import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.util.Sourceable;
+import java.util.Map;
 
-public final class FakeSourceable implements Sourceable {
+public final class ConfigurableSourceable implements Sourceable {
 
-    @Override
+    private final Map<String, String> envValues;
+
+    public ConfigurableSourceable(final Map<String, String> envValues) {
+        this.envValues = envValues;
+    }
+
     public String source(final String name, final String defaultValue) {
-        if (name.equals("containerlog.hostname.annotation")) {
-            return "hostname-annotation";
+        return envValues.getOrDefault(name, defaultValue);
+    }
+
+    public String source(final String name) throws PluginException {
+        if (!envValues.containsKey(name)) {
+            throw new PluginException(new IllegalArgumentException("No such environment variable: " + name));
         }
-        else if (name.equals("containerlog.appname.annotation")) {
-            return "appname-annotation";
-        }
-        else if (name.equals("syslogtype.processname")) {
-            return "Soft-Ware";
-        }
-        else if (name.equals("component.name")) {
-            return "aer";
-        }
-        return defaultValue;
+        return envValues.get(name);
     }
 
     @Override
-    public String source(final String name) throws PluginException {
-        if (name.equals("containerlog.hostname.annotation")) {
-            return "hostname-annotation";
-        }
-        else if (name.equals("containerlog.appname.annotation")) {
-            return "appname-annotation";
-        }
-        else if (name.equals("syslogtype.processname")) {
-            return "Soft-Ware";
-        }
-        else if (name.equals("component.name")) {
-            return "aer";
-        }
-        throw new PluginException(new IllegalArgumentException("No such fake variable: " + name));
+    public String toString() {
+        return "ConfigurableSourceable{" + "envValues=" + envValues + '}';
     }
 }
