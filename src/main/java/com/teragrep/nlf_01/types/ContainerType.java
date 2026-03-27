@@ -47,7 +47,6 @@ package com.teragrep.nlf_01.types;
 
 import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.PluginException;
-import com.teragrep.nlf_01.PropertiesJson;
 import com.teragrep.nlf_01.util.*;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
@@ -55,10 +54,7 @@ import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 
-import java.time.Instant;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 public final class ContainerType implements EventType {
 
@@ -160,45 +156,8 @@ public final class ContainerType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
-        Set<SDElement> elems = new HashSet<>();
-        String time = "";
-        if (!parsedEvent.enqueuedTimeUtc().isStub()) {
-            time = parsedEvent.enqueuedTimeUtc().zonedDateTime().toString();
-        }
-
-        String fullyQualifiedNamespace = "";
-        String eventHubName = "";
-        String partitionId = "";
-        String consumerGroup = "";
-        if (!parsedEvent.partitionCtx().isStub()) {
-            fullyQualifiedNamespace = String
-                    .valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("FullyQualifiedNamespace", ""));
-            eventHubName = String.valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("EventHubName", ""));
-            partitionId = String.valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("PartitionId", ""));
-            consumerGroup = String.valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("ConsumerGroup", ""));
-        }
-
-        elems
-                .add(new SDElement("aer_02_partition@48577").addSDParam("fully_qualified_namespace", fullyQualifiedNamespace).addSDParam("eventhub_name", eventHubName).addSDParam("partition_id", partitionId).addSDParam("consumer_group", consumerGroup));
-
-        elems
-                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", realHostname).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
-
-        String partitionKey = "";
-        if (!parsedEvent.systemProperties().isStub()) {
-            partitionKey = String.valueOf(parsedEvent.systemProperties().asMap().getOrDefault("PartitionKey", ""));
-        }
-
-        String offset = "";
-        if (!parsedEvent.offset().isStub()) {
-            offset = parsedEvent.offset().value();
-        }
-
-        elems
-                .add(new SDElement("aer_02_event@48577").addSDParam("offset", offset).addSDParam("enqueued_time", time).addSDParam("partition_key", partitionKey).addSDParam("properties", new PropertiesJson(parsedEvent.properties()).toJsonObject().toString()));
-
-        elems
-                .add(new SDElement("aer_02@48577").addSDParam("timestamp_source", time.isEmpty() ? "generated" : "timeEnqueued"));
+        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
+        final Set<SDElement> elems = defaultSDElements.sdElements();
 
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
@@ -218,8 +177,6 @@ public final class ContainerType implements EventType {
 
         elems
                 .add(new SDElement("origin@48577").addSDParam("subscription", subscriptionId).addSDParam("clusterName", clusterName).addSDParam("namespace", podNamespace).addSDParam("pod", podName).addSDParam("containerId", containerId));
-
-        elems.add(new SDElement("nlf_01@48577").addSDParam("eventType", this.getClass().getSimpleName()));
 
         return elems;
     }

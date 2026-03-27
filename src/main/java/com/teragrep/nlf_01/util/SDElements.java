@@ -43,40 +43,12 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.nlf_01;
+package com.teragrep.nlf_01.util;
 
-import com.teragrep.akv_01.event.metadata.properties.EventPropertiesImpl;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
-import java.util.HashMap;
-import java.util.Map;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import com.teragrep.rlo_14.SDElement;
+import java.util.Set;
 
-public final class PropertiesJsonTest {
+public interface SDElements {
 
-    @Test
-    void testPopulatedMapToJson() {
-        final Map<String, Object> map = new HashMap<>();
-        map.put("a", "b");
-        map.put("c", "d");
-
-        final PropertiesJson propertiesJson = new PropertiesJson(new EventPropertiesImpl(map));
-        final JsonObject actual = propertiesJson.toJsonObject();
-        final JsonObject expected = Json.createObjectBuilder().add("a", "b").add("c", "d").build();
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    void testEmptyMapToJson() {
-        final Map<String, Object> map = new HashMap<>();
-
-        final PropertiesJson propertiesJson = new PropertiesJson(new EventPropertiesImpl(map));
-        final JsonObject actual = propertiesJson.toJsonObject();
-        final JsonObject expected = JsonValue.EMPTY_JSON_OBJECT;
-
-        Assertions.assertEquals(expected, actual);
-    }
+    public abstract Set<SDElement> sdElements();
 }

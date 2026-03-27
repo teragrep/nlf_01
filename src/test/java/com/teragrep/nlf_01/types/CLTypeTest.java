@@ -52,10 +52,13 @@ import com.teragrep.akv_01.event.metadata.offset.EventOffset;
 import com.teragrep.akv_01.event.metadata.offset.EventOffsetImpl;
 import com.teragrep.akv_01.event.metadata.offset.EventOffsetStub;
 import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContext;
+import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContextImpl;
 import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContextStub;
 import com.teragrep.akv_01.event.metadata.properties.EventProperties;
+import com.teragrep.akv_01.event.metadata.properties.EventPropertiesImpl;
 import com.teragrep.akv_01.event.metadata.properties.EventPropertiesStub;
 import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemProperties;
+import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemPropertiesImpl;
 import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemPropertiesStub;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTime;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeImpl;
@@ -76,10 +79,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public final class CLTypeTest {
@@ -248,5 +253,61 @@ public final class CLTypeTest {
                 );
         Assertions.assertEquals("", actualMsgId);
         Assertions.assertEquals(Severity.NOTICE, actualSeverity);
+    }
+
+    @Test
+    @DisplayName("test sdElement() return value")
+    void testSdElementReturnValue() {
+        final Map<String, Object> partitionContextMap = new HashMap<>();
+        partitionContextMap.put("FullyQualifiedNamespace", "fully-qualified-namespace");
+        partitionContextMap.put("EventHubName", "event-hub-name");
+        partitionContextMap.put("PartitionId", "123");
+        partitionContextMap.put("ConsumerGroup", "consumer-group");
+
+        final Map<String, Object> systemPropertiesMap = new HashMap<>();
+        systemPropertiesMap.put("PartitionKey", "456");
+        systemPropertiesMap.put("SequenceNumber", "12345678900");
+
+        final Map<String, Object> propertiesMap = new HashMap<>();
+        propertiesMap.put("prop-key", "prop-value");
+        propertiesMap.put(null, "important-null-value");
+        propertiesMap.put("important-key", null);
+
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/cl.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
+        );
+
+        final CLType type = new CLType(parsedEvent, "localhost");
+
+        final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
+
+        final Map<String, Map<String, String>> sdElementMap = actualSDElements
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions
+                .assertEquals("fully-qualified-namespace", sdElementMap.get("aer_02_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("event-hub-name", sdElementMap.get("aer_02_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("123", sdElementMap.get("aer_02_partition@48577").get("partition_id"));
+        Assertions.assertEquals("consumer-group", sdElementMap.get("aer_02_partition@48577").get("consumer_group"));
+
+        Assertions.assertEquals("0", sdElementMap.get("aer_02_event@48577").get("offset"));
+        Assertions.assertEquals("2010-01-01T00:00Z", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("456", sdElementMap.get("aer_02_event@48577").get("partition_key"));
+        Assertions
+                .assertEquals(
+                        "{\"null\":\"important-null-value\",\"prop-key\":\"prop-value\",\"important-key\":null}",
+                        sdElementMap.get("aer_02_event@48577").get("properties")
+                );
+
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer_02@48577").get("timestamp_source"));
+
+        Assertions.assertEquals(CLType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions
+                .assertEquals(
+                        "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+                        sdElementMap.get("origin@48577").get("_ResourceId")
+                );
     }
 }

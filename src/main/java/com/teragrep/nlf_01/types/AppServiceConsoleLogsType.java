@@ -47,10 +47,11 @@ package com.teragrep.nlf_01.types;
 
 import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.PluginException;
-import com.teragrep.nlf_01.PropertiesJson;
 import com.teragrep.nlf_01.util.ASCIIString;
+import com.teragrep.nlf_01.util.DefaultSDElements;
 import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
+import com.teragrep.nlf_01.util.SDElements;
 import com.teragrep.nlf_01.util.ValidKey;
 import com.teragrep.nlf_01.util.ValidStringKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
@@ -60,10 +61,7 @@ import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
-import java.time.Instant;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 public final class AppServiceConsoleLogsType implements EventType {
 
@@ -112,64 +110,9 @@ public final class AppServiceConsoleLogsType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
-        final Set<SDElement> elems = new HashSet<>();
-        final String time;
-        if (!parsedEvent.enqueuedTimeUtc().isStub()) {
-            time = parsedEvent.enqueuedTimeUtc().zonedDateTime().toString();
-        }
-        else {
-            time = "";
-        }
+        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
 
-        final String fullyQualifiedNamespace;
-        final String eventHubName;
-        final String partitionId;
-        final String consumerGroup;
-        if (!parsedEvent.partitionCtx().isStub()) {
-            fullyQualifiedNamespace = String
-                    .valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("FullyQualifiedNamespace", ""));
-            eventHubName = String.valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("EventHubName", ""));
-            partitionId = String.valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("PartitionId", ""));
-            consumerGroup = String.valueOf(parsedEvent.partitionCtx().asMap().getOrDefault("ConsumerGroup", ""));
-        }
-        else {
-            fullyQualifiedNamespace = "";
-            eventHubName = "";
-            partitionId = "";
-            consumerGroup = "";
-        }
-
-        elems
-                .add(new SDElement("aer_02_partition@48577").addSDParam("fully_qualified_namespace", fullyQualifiedNamespace).addSDParam("eventhub_name", eventHubName).addSDParam("partition_id", partitionId).addSDParam("consumer_group", consumerGroup));
-
-        elems
-                .add(new SDElement("event_id@48577").addSDParam("uuid", UUID.randomUUID().toString()).addSDParam("hostname", realHostname).addSDParam("unixtime", Instant.now().toString()).addSDParam("id_source", "aer_02"));
-
-        final String partitionKey;
-        if (!parsedEvent.systemProperties().isStub()) {
-            partitionKey = String.valueOf(parsedEvent.systemProperties().asMap().getOrDefault("PartitionKey", ""));
-        }
-        else {
-            partitionKey = "";
-        }
-
-        final String offset;
-        if (!parsedEvent.offset().isStub()) {
-            offset = parsedEvent.offset().value();
-        }
-        else {
-            offset = "";
-        }
-
-        elems
-                .add(new SDElement("aer_02_event@48577").addSDParam("offset", offset).addSDParam("enqueued_time", time).addSDParam("partition_key", partitionKey).addSDParam("properties", new PropertiesJson(parsedEvent.properties()).toJsonObject().toString()));
-
-        elems
-                .add(new SDElement("aer_02@48577").addSDParam("timestamp_source", time.isEmpty() ? "generated" : "timeEnqueued"));
-
-        elems.add(new SDElement("nlf_01@48577").addSDParam("eventType", this.getClass().getSimpleName()));
-
-        return elems;
+        return defaultSDElements.sdElements();
     }
 
     @Override

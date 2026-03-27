@@ -49,7 +49,6 @@ import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
-
 import java.util.Set;
 
 public interface EventType {

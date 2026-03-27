@@ -47,10 +47,9 @@ package com.teragrep.nlf_01;
 
 import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
+import java.time.Instant;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.time.Instant;
 
 public final class ValidRFC5424TimestampTest {
 

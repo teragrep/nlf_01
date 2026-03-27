@@ -61,17 +61,33 @@ import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeStub;
 import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.fakes.EmptySourceable;
 import com.teragrep.nlf_01.fakes.FakeSourceable;
-import com.teragrep.nlf_01.types.*;
-import com.teragrep.rlo_14.*;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
+import com.teragrep.nlf_01.types.ADFActivityRunType;
+import com.teragrep.nlf_01.types.ADFPipelineRunType;
+import com.teragrep.nlf_01.types.AppEventsType;
+import com.teragrep.nlf_01.types.AppInsightType;
+import com.teragrep.nlf_01.types.AppServiceConsoleLogsType;
+import com.teragrep.nlf_01.types.CCType;
+import com.teragrep.nlf_01.types.ContainerAppConsoleLogsType;
+import com.teragrep.nlf_01.types.ContainerType;
+import com.teragrep.nlf_01.types.DataverseActivityType;
+import com.teragrep.nlf_01.types.FunctionAppLogsType;
+import com.teragrep.nlf_01.types.IstioIngressContainerType;
+import com.teragrep.nlf_01.types.LogicAppWorkflowRuntimeType;
+import com.teragrep.nlf_01.types.PostgreSQLType;
+import com.teragrep.nlf_01.types.PowerAutomateActivityType;
+import com.teragrep.nlf_01.types.PowerPlatformAdminActivityType;
+import com.teragrep.nlf_01.types.SyslogType;
+import com.teragrep.rlo_14.SDElement;
+import com.teragrep.rlo_14.SDParam;
+import com.teragrep.rlo_14.SyslogMessage;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class NLFPluginTest {
 
