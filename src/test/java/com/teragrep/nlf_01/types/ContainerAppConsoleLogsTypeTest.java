@@ -115,7 +115,7 @@ final class ContainerAppConsoleLogsTypeTest {
                 new EventPropertiesFake(), new EventSystemPropertiesFake(), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
-        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost");
+        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost", "aer");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -143,21 +143,21 @@ final class ContainerAppConsoleLogsTypeTest {
                 .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
 
         Assertions
-                .assertEquals("fully-qualified-namespace", sdElementMap.get("aer_02_partition@48577").get("fully_qualified_namespace"));
-        Assertions.assertEquals("event-hub-name", sdElementMap.get("aer_02_partition@48577").get("eventhub_name"));
-        Assertions.assertEquals("123", sdElementMap.get("aer_02_partition@48577").get("partition_id"));
-        Assertions.assertEquals("consumer-group", sdElementMap.get("aer_02_partition@48577").get("consumer_group"));
+                .assertEquals("fully-qualified-namespace", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("event-hub-name", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("123", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("consumer-group", sdElementMap.get("aer_partition@48577").get("consumer_group"));
 
-        Assertions.assertEquals("0", sdElementMap.get("aer_02_event@48577").get("offset"));
-        Assertions.assertEquals("2010-01-01T00:00Z", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
-        Assertions.assertEquals("456", sdElementMap.get("aer_02_event@48577").get("partition_key"));
+        Assertions.assertEquals("0", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("2010-01-01T00:00Z", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("456", sdElementMap.get("aer_event@48577").get("partition_key"));
         Assertions
                 .assertEquals(
                         "{\"null\":\"important-null-value\",\"prop-key\":\"prop-value\",\"important-key\":null}",
-                        sdElementMap.get("aer_02_event@48577").get("properties")
+                        sdElementMap.get("aer_event@48577").get("properties")
                 );
 
-        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer_02@48577").get("timestamp_source"));
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
 
         Assertions
                 .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
@@ -171,7 +171,7 @@ final class ContainerAppConsoleLogsTypeTest {
                 new EventPropertiesFake(), new EventSystemPropertiesFake(), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
-        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost");
+        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost", "aer");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -199,21 +199,21 @@ final class ContainerAppConsoleLogsTypeTest {
                 .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
 
         Assertions
-                .assertEquals("fully-qualified-namespace", sdElementMap.get("aer_02_partition@48577").get("fully_qualified_namespace"));
-        Assertions.assertEquals("event-hub-name", sdElementMap.get("aer_02_partition@48577").get("eventhub_name"));
-        Assertions.assertEquals("123", sdElementMap.get("aer_02_partition@48577").get("partition_id"));
-        Assertions.assertEquals("consumer-group", sdElementMap.get("aer_02_partition@48577").get("consumer_group"));
+                .assertEquals("fully-qualified-namespace", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("event-hub-name", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("123", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("consumer-group", sdElementMap.get("aer_partition@48577").get("consumer_group"));
 
-        Assertions.assertEquals("0", sdElementMap.get("aer_02_event@48577").get("offset"));
-        Assertions.assertEquals("2010-01-01T00:00Z", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
-        Assertions.assertEquals("456", sdElementMap.get("aer_02_event@48577").get("partition_key"));
+        Assertions.assertEquals("0", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("2010-01-01T00:00Z", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("456", sdElementMap.get("aer_event@48577").get("partition_key"));
         Assertions
                 .assertEquals(
                         "{\"null\":\"important-null-value\",\"prop-key\":\"prop-value\",\"important-key\":null}",
-                        sdElementMap.get("aer_02_event@48577").get("properties")
+                        sdElementMap.get("aer_event@48577").get("properties")
                 );
 
-        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer_02@48577").get("timestamp_source"));
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
 
         Assertions
                 .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
@@ -227,7 +227,7 @@ final class ContainerAppConsoleLogsTypeTest {
                 new EventOffsetStub()
         );
 
-        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost");
+        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost", "aer");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -254,17 +254,17 @@ final class ContainerAppConsoleLogsTypeTest {
                 .stream()
                 .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
 
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("fully_qualified_namespace"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("eventhub_name"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("partition_id"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("consumer_group"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("consumer_group"));
 
-        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("offset"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("partition_key"));
-        Assertions.assertEquals("{}", sdElementMap.get("aer_02_event@48577").get("properties"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("partition_key"));
+        Assertions.assertEquals("{}", sdElementMap.get("aer_event@48577").get("properties"));
 
-        Assertions.assertEquals("generated", sdElementMap.get("aer_02@48577").get("timestamp_source"));
+        Assertions.assertEquals("generated", sdElementMap.get("aer@48577").get("timestamp_source"));
 
         Assertions
                 .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
@@ -278,7 +278,7 @@ final class ContainerAppConsoleLogsTypeTest {
                 new EventOffsetStub()
         );
 
-        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost");
+        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost", "aer");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -305,17 +305,17 @@ final class ContainerAppConsoleLogsTypeTest {
                 .stream()
                 .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
 
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("fully_qualified_namespace"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("eventhub_name"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("partition_id"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("consumer_group"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("consumer_group"));
 
-        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("offset"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("partition_key"));
-        Assertions.assertEquals("{}", sdElementMap.get("aer_02_event@48577").get("properties"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("partition_key"));
+        Assertions.assertEquals("{}", sdElementMap.get("aer_event@48577").get("properties"));
 
-        Assertions.assertEquals("generated", sdElementMap.get("aer_02@48577").get("timestamp_source"));
+        Assertions.assertEquals("generated", sdElementMap.get("aer@48577").get("timestamp_source"));
 
         Assertions
                 .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
@@ -329,7 +329,7 @@ final class ContainerAppConsoleLogsTypeTest {
                 new EventOffsetStub()
         );
 
-        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost");
+        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost", "aer");
 
         Assertions.assertThrows(PluginException.class, type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -353,17 +353,17 @@ final class ContainerAppConsoleLogsTypeTest {
                 .stream()
                 .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
 
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("fully_qualified_namespace"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("eventhub_name"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("partition_id"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("consumer_group"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("consumer_group"));
 
-        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("offset"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("partition_key"));
-        Assertions.assertEquals("{}", sdElementMap.get("aer_02_event@48577").get("properties"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("partition_key"));
+        Assertions.assertEquals("{}", sdElementMap.get("aer_event@48577").get("properties"));
 
-        Assertions.assertEquals("generated", sdElementMap.get("aer_02@48577").get("timestamp_source"));
+        Assertions.assertEquals("generated", sdElementMap.get("aer@48577").get("timestamp_source"));
 
         Assertions
                 .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
@@ -394,7 +394,7 @@ final class ContainerAppConsoleLogsTypeTest {
                 new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
-        final ContainerAppConsoleLogsType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost");
+        final ContainerAppConsoleLogsType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost", "aer");
 
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
@@ -403,21 +403,21 @@ final class ContainerAppConsoleLogsTypeTest {
                 .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
 
         Assertions
-                .assertEquals("fully-qualified-namespace", sdElementMap.get("aer_02_partition@48577").get("fully_qualified_namespace"));
-        Assertions.assertEquals("event-hub-name", sdElementMap.get("aer_02_partition@48577").get("eventhub_name"));
-        Assertions.assertEquals("123", sdElementMap.get("aer_02_partition@48577").get("partition_id"));
-        Assertions.assertEquals("consumer-group", sdElementMap.get("aer_02_partition@48577").get("consumer_group"));
+                .assertEquals("fully-qualified-namespace", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("event-hub-name", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("123", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("consumer-group", sdElementMap.get("aer_partition@48577").get("consumer_group"));
 
-        Assertions.assertEquals("0", sdElementMap.get("aer_02_event@48577").get("offset"));
-        Assertions.assertEquals("2010-01-01T00:00Z", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
-        Assertions.assertEquals("456", sdElementMap.get("aer_02_event@48577").get("partition_key"));
+        Assertions.assertEquals("0", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("2010-01-01T00:00Z", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("456", sdElementMap.get("aer_event@48577").get("partition_key"));
         Assertions
                 .assertEquals(
                         "{\"null\":\"important-null-value\",\"prop-key\":\"prop-value\",\"important-key\":null}",
-                        sdElementMap.get("aer_02_event@48577").get("properties")
+                        sdElementMap.get("aer_event@48577").get("properties")
                 );
 
-        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer_02@48577").get("timestamp_source"));
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
 
         Assertions
                 .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));

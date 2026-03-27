@@ -62,15 +62,26 @@ public final class PostgreSQLType implements EventType {
     private final ParsedEvent parsedEvent;
     private final String realHostname;
     private final Pattern appNamePattern;
+    private final String componentNameForPartitions;
 
-    public PostgreSQLType(final ParsedEvent parsedEvent, final String realHostname) {
-        this(parsedEvent, realHostname, Pattern.compile("^.*?db=(?<dbName>.*?),"));
+    public PostgreSQLType(
+            final ParsedEvent parsedEvent,
+            final String realHostname,
+            final String componentNameForPartitions
+    ) {
+        this(parsedEvent, realHostname, Pattern.compile("^.*?db=(?<dbName>.*?),"), componentNameForPartitions);
     }
 
-    public PostgreSQLType(final ParsedEvent parsedEvent, final String realHostname, final Pattern appNamePattern) {
+    public PostgreSQLType(
+            final ParsedEvent parsedEvent,
+            final String realHostname,
+            final Pattern appNamePattern,
+            final String componentNameForPartitions
+    ) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
         this.appNamePattern = appNamePattern;
+        this.componentNameForPartitions = componentNameForPartitions;
     }
 
     @Override
@@ -125,7 +136,12 @@ public final class PostgreSQLType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
-        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
+        final SDElements defaultSDElements = new DefaultSDElements(
+                parsedEvent,
+                realHostname,
+                this.getClass(),
+                componentNameForPartitions
+        );
 
         return defaultSDElements.sdElements();
     }

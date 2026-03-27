@@ -59,6 +59,7 @@ import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemProperties
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeImpl;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeStub;
 import com.teragrep.akv_01.plugin.PluginException;
+import com.teragrep.nlf_01.fakes.ConfigurableSourceable;
 import com.teragrep.nlf_01.fakes.EmptySourceable;
 import com.teragrep.nlf_01.fakes.FakeSourceable;
 import com.teragrep.nlf_01.types.ADFActivityRunType;
@@ -77,6 +78,7 @@ import com.teragrep.nlf_01.types.PostgreSQLType;
 import com.teragrep.nlf_01.types.PowerAutomateActivityType;
 import com.teragrep.nlf_01.types.PowerPlatformAdminActivityType;
 import com.teragrep.nlf_01.types.SyslogType;
+import com.teragrep.nlf_01.util.Sourceable;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.SDParam;
 import com.teragrep.rlo_14.SyslogMessage;
@@ -125,10 +127,10 @@ public class NLFPluginTest {
         Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
         Assertions.assertEquals(ContainerType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
 
-        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer_02@48577").get("timestamp_source"));
-        Assertions.assertEquals("2020-01-01T00:00Z", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
+        Assertions.assertEquals("2020-01-01T00:00Z", sdElementMap.get("aer_event@48577").get("enqueued_time"));
     }
 
     @Test
@@ -166,10 +168,10 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(IstioIngressContainerType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
 
-        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer_02@48577").get("timestamp_source"));
-        Assertions.assertEquals("2020-01-01T00:00Z", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
+        Assertions.assertEquals("2020-01-01T00:00Z", sdElementMap.get("aer_event@48577").get("enqueued_time"));
     }
 
     @Test
@@ -224,10 +226,10 @@ public class NLFPluginTest {
         Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
         Assertions.assertEquals(ContainerType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
 
-        Assertions.assertEquals("generated", sdElementMap.get("aer_02@48577").get("timestamp_source"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("generated", sdElementMap.get("aer@48577").get("timestamp_source"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("enqueued_time"));
     }
 
     @Test
@@ -282,7 +284,7 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -314,10 +316,10 @@ public class NLFPluginTest {
         Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
         Assertions.assertEquals(CCType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
 
-        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer_02@48577").get("timestamp_source"));
-        Assertions.assertEquals("2020-01-01T00:00Z", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
+        Assertions.assertEquals("2020-01-01T00:00Z", sdElementMap.get("aer_event@48577").get("enqueued_time"));
     }
 
     @Test
@@ -349,7 +351,7 @@ public class NLFPluginTest {
                         sdElementMap.get("origin@48577").get("_ResourceId")
                 );
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -382,10 +384,10 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(ADFPipelineRunType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
 
-        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer_02@48577").get("timestamp_source"));
-        Assertions.assertEquals("2020-01-01T00:00Z", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
+        Assertions.assertEquals("2020-01-01T00:00Z", sdElementMap.get("aer_event@48577").get("enqueued_time"));
     }
 
     @Test
@@ -434,7 +436,7 @@ public class NLFPluginTest {
         Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
         Assertions.assertEquals(SyslogType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -498,7 +500,7 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(DataverseActivityType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -528,8 +530,8 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(ADFActivityRunType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertEquals(4, sdElementMap.get("aer_02_event@48577").size());
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertEquals(4, sdElementMap.get("aer_event@48577").size());
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -564,8 +566,8 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertEquals(4, sdElementMap.get("aer_02_event@48577").size());
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertEquals(4, sdElementMap.get("aer_event@48577").size());
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -597,8 +599,8 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertEquals(4, sdElementMap.get("aer_02_event@48577").size());
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertEquals(4, sdElementMap.get("aer_event@48577").size());
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -658,7 +660,7 @@ public class NLFPluginTest {
         Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
         Assertions.assertEquals(AppEventsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -702,7 +704,7 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(AppServiceConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -753,7 +755,7 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(FunctionAppLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -785,7 +787,7 @@ public class NLFPluginTest {
                         sdElementMap.get("origin@48577").get("_ResourceId")
                 );
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -843,7 +845,7 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(PowerAutomateActivityType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -896,7 +898,7 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(PostgreSQLType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -956,7 +958,7 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(LogicAppWorkflowRuntimeType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -1012,7 +1014,7 @@ public class NLFPluginTest {
         Assertions
                 .assertEquals(PowerPlatformAdminActivityType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
-        Assertions.assertTrue(sdElementMap.get("aer_02_event@48577").containsKey("properties"));
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
 
     @Test
@@ -1101,5 +1103,36 @@ public class NLFPluginTest {
                 .assertThrows(PluginException.class, () -> plugin.syslogMessage(parsedEvent));
         Assertions
                 .assertEquals("jakarta.json.JsonException: Event was not a JSON structure", pluginException.getMessage());
+    }
+
+    @Test
+    void testSyslogMessageWithMissingComponentNameEnvironmentVariable() {
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(
+                        "non-json payload",
+                        new EventPartitionContextStub(),
+                        new EventPropertiesStub(),
+                        new EventSystemPropertiesStub(),
+                        new EnqueuedTimeStub(),
+                        new EventOffsetStub()
+                )
+        ).parsedEvent();
+
+        final Map<String, String> envValues = new HashMap<>();
+        envValues.put("containerlog.appname.annotation", "appname");
+        envValues.put("containerlog.hostname.annotation", "appname");
+        envValues.put("syslogtype.processname", "appname");
+
+        final Sourceable sourceable = new ConfigurableSourceable(envValues);
+
+        final NLFPlugin plugin = new NLFPlugin(sourceable);
+        final PluginException pluginException = Assertions
+                .assertThrows(PluginException.class, () -> plugin.syslogMessage(parsedEvent));
+
+        Assertions
+                .assertEquals(
+                        "java.lang.IllegalArgumentException: No such environment variable: component.name",
+                        pluginException.getMessage()
+                );
     }
 }

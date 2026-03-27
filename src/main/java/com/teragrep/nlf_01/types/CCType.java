@@ -71,18 +71,25 @@ public final class CCType implements EventType {
     private final ParsedEvent parsedEvent;
     private final String realHostname;
     private final Pattern appNamePattern;
+    private final String componentNameForPartitions;
 
     /**
      * Parses the appName from data.resourceName's value between the second '=' symbol and the next '/' symbol
      */
-    public CCType(final ParsedEvent parsedEvent, final String realHostname) {
-        this(parsedEvent, realHostname, Pattern.compile("=.*?=(?<value>.*?)(?=/)"));
+    public CCType(final ParsedEvent parsedEvent, final String realHostname, final String componentNameForPartitions) {
+        this(parsedEvent, realHostname, Pattern.compile("=.*?=(?<value>.*?)(?=/)"), componentNameForPartitions);
     }
 
-    private CCType(final ParsedEvent parsedEvent, final String realHostname, final Pattern appNamePattern) {
+    private CCType(
+            final ParsedEvent parsedEvent,
+            final String realHostname,
+            final Pattern appNamePattern,
+            final String componentNameForPartitions
+    ) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
         this.appNamePattern = appNamePattern;
+        this.componentNameForPartitions = componentNameForPartitions;
     }
 
     @Override
@@ -138,7 +145,12 @@ public final class CCType implements EventType {
 
     @Override
     public Set<SDElement> sdElements() throws PluginException {
-        final SDElements defaultSDElements = new DefaultSDElements(parsedEvent, realHostname, this.getClass());
+        final SDElements defaultSDElements = new DefaultSDElements(
+                parsedEvent,
+                realHostname,
+                this.getClass(),
+                componentNameForPartitions
+        );
 
         return defaultSDElements.sdElements();
     }

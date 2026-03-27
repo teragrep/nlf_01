@@ -99,7 +99,8 @@ class DefaultSDElementsTest {
         final SDElements defaultSDElements = new DefaultSDElements(
                 parsedEvent,
                 "hostname",
-                DefaultSDElementsTest.class
+                DefaultSDElementsTest.class,
+                "aer"
         );
 
         final Set<SDElement> sdElements = defaultSDElements.sdElements();
@@ -108,17 +109,17 @@ class DefaultSDElementsTest {
                 .stream()
                 .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
 
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("fully_qualified_namespace"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("eventhub_name"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("partition_id"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_partition@48577").get("consumer_group"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("consumer_group"));
 
-        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("offset"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("enqueued_time"));
-        Assertions.assertEquals("", sdElementMap.get("aer_02_event@48577").get("partition_key"));
-        Assertions.assertEquals("{}", sdElementMap.get("aer_02_event@48577").get("properties"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("partition_key"));
+        Assertions.assertEquals("{}", sdElementMap.get("aer_event@48577").get("properties"));
 
-        Assertions.assertEquals("generated", sdElementMap.get("aer_02@48577").get("timestamp_source"));
+        Assertions.assertEquals("generated", sdElementMap.get("aer@48577").get("timestamp_source"));
 
         Assertions
                 .assertEquals(DefaultSDElementsTest.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
