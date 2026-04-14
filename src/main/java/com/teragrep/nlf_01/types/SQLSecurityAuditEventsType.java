@@ -1,0 +1,161 @@
+/*
+ * Teragrep Neon log format plugin for AKV_01
+ * Copyright (C) 2025 Suomen Kanuuna Oy
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ * Additional permission under GNU Affero General Public License version 3
+ * section 7
+ *
+ * If you modify this Program, or any covered work, by linking or combining it
+ * with other code, such other code is not for that reason alone subject to any
+ * of the requirements of the GNU Affero GPL version 3 as long as this Program
+ * is the same Program as licensed from Suomen Kanuuna Oy without any additional
+ * modifications.
+ *
+ * Supplemented terms under GNU Affero General Public License version 3
+ * section 7
+ *
+ * Origin of the software must be attributed to Suomen Kanuuna Oy. Any modified
+ * versions must be marked as "Modified version of" The Program.
+ *
+ * Names of the licensors and authors may not be used for publicity purposes.
+ *
+ * No rights are granted for use of trade names, trademarks, or service marks
+ * which are in The Program if any.
+ *
+ * Licensee must indemnify licensors and authors for any liability that these
+ * contractual assumptions impose on licensors and authors.
+ *
+ * To the extent this program is licensed as part of the Commercial versions of
+ * Teragrep, the applicable Commercial License may apply to this file if you as
+ * a licensee so wish it.
+ */
+package com.teragrep.nlf_01.types;
+
+import com.teragrep.akv_01.event.ParsedEvent;
+import com.teragrep.akv_01.plugin.PluginException;
+import com.teragrep.nlf_01.util.ASCIIString;
+import com.teragrep.nlf_01.util.DefaultSDElements;
+import com.teragrep.nlf_01.util.MD5Hash;
+import com.teragrep.nlf_01.util.ResourceId;
+import com.teragrep.nlf_01.util.SDElements;
+import com.teragrep.nlf_01.util.ValidKey;
+import com.teragrep.nlf_01.util.ValidRFC5424AppName;
+import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
+import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
+import com.teragrep.nlf_01.util.ValidStringKey;
+import com.teragrep.rlo_14.Facility;
+import com.teragrep.rlo_14.SDElement;
+import com.teragrep.rlo_14.Severity;
+import jakarta.json.JsonObject;
+import java.util.Objects;
+import java.util.Set;
+
+public final class SQLSecurityAuditEventsType implements EventType {
+
+    private final ParsedEvent parsedEvent;
+    private final String realHostname;
+    private final String componentNameForPartitions;
+
+    public SQLSecurityAuditEventsType(
+            final ParsedEvent parsedEvent,
+            final String realHostname,
+            final String componentNameForPartitions
+    ) {
+        this.parsedEvent = parsedEvent;
+        this.realHostname = realHostname;
+        this.componentNameForPartitions = componentNameForPartitions;
+    }
+
+    @Override
+    public Severity severity() {
+        return Severity.NOTICE;
+    }
+
+    @Override
+    public Facility facility() {
+        return Facility.AUDIT;
+    }
+
+    @Override
+    public String hostname() throws PluginException {
+        final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
+
+        final ValidKey<String> validKey = new ValidStringKey(record, "resourceId");
+
+        return new ValidRFC5424Hostname(
+                "md5-".concat(new MD5Hash(validKey.value()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.value()).resourceName()).withNonAsciiCharsRemoved()))
+        ).hostnameWithInvalidCharsRemoved();
+    }
+
+    @Override
+    public String appName() throws PluginException {
+        final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
+
+        return new ValidRFC5424AppName(new ValidStringKey(record, "operationName").value()).appName();
+    }
+
+    @Override
+    public long timestamp() throws PluginException {
+        final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
+
+        return new ValidRFC5424Timestamp(new ValidStringKey(record, "originalEventTimestamp").value()).validTimestamp();
+    }
+
+    @Override
+    public Set<SDElement> sdElements() throws PluginException {
+        final SDElements defaultSDElements = new DefaultSDElements(
+                parsedEvent,
+                realHostname,
+                this.getClass(),
+                componentNameForPartitions
+        );
+
+        return defaultSDElements.sdElements();
+    }
+
+    @Override
+    public String msgId() throws PluginException {
+        final String sequenceNumber;
+        if (!parsedEvent.systemProperties().isStub()) {
+            sequenceNumber = String.valueOf(parsedEvent.systemProperties().asMap().getOrDefault("SequenceNumber", ""));
+        }
+        else {
+            sequenceNumber = "";
+        }
+        return sequenceNumber;
+    }
+
+    @Override
+    public String msg() throws PluginException {
+        return parsedEvent.asString();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final SQLSecurityAuditEventsType that = (SQLSecurityAuditEventsType) o;
+        return Objects.equals(parsedEvent, that.parsedEvent) && Objects.equals(realHostname, that.realHostname)
+                && Objects.equals(componentNameForPartitions, that.componentNameForPartitions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(parsedEvent, realHostname, componentNameForPartitions);
+    }
+}
