@@ -182,7 +182,10 @@ public final class NLFPlugin implements Plugin {
                 eventTypes.add(new PostgreSQLType(parsedEvent, realHostname, componentNameForPartitions));
             }
         }
-        else if (jsonObject.containsKey("category")) {
+        else if (
+            jsonObject.containsKey("category")
+                    && jsonObject.get("category").getValueType().equals(JsonValue.ValueType.STRING)
+        ) {
             final String category = jsonObject.getString("category");
             if (category.equals("SQLSecurityAuditEvents")) {
                 eventTypes.add(new SQLSecurityAuditEventsType(parsedEvent, realHostname, componentNameForPartitions));
