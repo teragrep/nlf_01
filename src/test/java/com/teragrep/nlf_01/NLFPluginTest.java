@@ -77,6 +77,7 @@ import com.teragrep.nlf_01.types.LogicAppWorkflowRuntimeType;
 import com.teragrep.nlf_01.types.PostgreSQLType;
 import com.teragrep.nlf_01.types.PowerAutomateActivityType;
 import com.teragrep.nlf_01.types.PowerPlatformAdminActivityType;
+import com.teragrep.nlf_01.types.SQLSecurityAuditEventsType;
 import com.teragrep.nlf_01.types.SyslogType;
 import com.teragrep.nlf_01.util.Sourceable;
 import com.teragrep.rlo_14.SDElement;
@@ -1013,6 +1014,45 @@ public class NLFPluginTest {
         Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
         Assertions
                 .assertEquals(PowerPlatformAdminActivityType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+    }
+
+    @Test
+    void sqlSecurityAuditEventsTypeTest() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/sqlsecurityauditevents.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"category\": \"SQLSecurityAuditEvents\",\n"
+                                + "  \"operationName\": \"Operation-1\",\n"
+                                + "  \"originalEventTimestamp\": \"2025-10-06T00:00:00.0000000Z\",\n"
+                                + "  \"resourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
+                                + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("Operation-1", syslogMessage.getAppName());
+        Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(SQLSecurityAuditEventsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
         Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
