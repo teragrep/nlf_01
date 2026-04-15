@@ -187,7 +187,7 @@ public final class NLFPlugin implements Plugin {
                     && jsonObject.get("category").getValueType().equals(JsonValue.ValueType.STRING)
         ) {
             final String category = jsonObject.getString("category");
-            if (category.equals("SQLSecurityAuditEvents")) {
+            if ("SQLSecurityAuditEvents".equals(category)) {
                 eventTypes.add(new SQLSecurityAuditEventsType(parsedEvent, realHostname, componentNameForPartitions));
             }
         }
