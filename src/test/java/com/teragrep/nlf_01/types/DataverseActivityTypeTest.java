@@ -64,6 +64,9 @@ import com.teragrep.akv_01.event.metadata.time.EnqueuedTime;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeImpl;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeStub;
 import com.teragrep.akv_01.plugin.PluginException;
+import com.teragrep.nlf_01.fakes.EventPartitionContextFake;
+import com.teragrep.nlf_01.fakes.EventPropertiesFake;
+import com.teragrep.nlf_01.fakes.EventSystemPropertiesFake;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.SDParam;
@@ -79,6 +82,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class DataverseActivityTypeTest {
@@ -279,5 +283,49 @@ class DataverseActivityTypeTest {
 
         Assertions
                 .assertEquals(DataverseActivityType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+    }
+
+    @Test
+    @DisplayName("test that appName() throws PluginException if ItemUrl cannot be parsed with regex")
+    void testThatAppNameThrowsPluginExceptionIfItemUrlCannotBeParsedWithRegex() {
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(
+                        "{\"ItemUrl\": \"\"}",
+                        new EventPartitionContextFake(),
+                        new EventPropertiesFake(),
+                        new EventSystemPropertiesFake(),
+                        new EnqueuedTimeStub(),
+                        new EventOffsetStub()
+                )
+        ).parsedEvent();
+
+        final DataverseActivityType dataverseActivityType = new DataverseActivityType(parsedEvent, "hostname", "aer");
+
+        final PluginException pluginException = Assertions
+                .assertThrowsExactly(PluginException.class, dataverseActivityType::appName);
+
+        Assertions.assertEquals("Could not parse value from ItemUrl", pluginException.getMessage());
+    }
+
+    @Test
+    @DisplayName("test that appName() throws PluginException if captureGroup is empty")
+    void testThatAppNameThrowsPluginExceptionIfCaptureGroupIsEmpty() {
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(
+                        "{\"ItemUrl\": \"https://.crm.localhost.example.test\"}",
+                        new EventPartitionContextFake(),
+                        new EventPropertiesFake(),
+                        new EventSystemPropertiesFake(),
+                        new EnqueuedTimeStub(),
+                        new EventOffsetStub()
+                )
+        ).parsedEvent();
+
+        final DataverseActivityType dataverseActivityType = new DataverseActivityType(parsedEvent, "hostname", "aer");
+
+        final PluginException pluginException = Assertions
+                .assertThrowsExactly(PluginException.class, dataverseActivityType::appName);
+
+        Assertions.assertEquals("Capture group 'value' was not found", pluginException.getMessage());
     }
 }
