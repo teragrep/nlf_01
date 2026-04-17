@@ -62,11 +62,14 @@ import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class DataverseActivityType implements EventType {
 
     private final ParsedEvent parsedEvent;
     private final String realHostname;
+    private final Pattern appNamePattern;
     private final String componentNameForPartitions;
 
     public DataverseActivityType(
@@ -74,8 +77,18 @@ public final class DataverseActivityType implements EventType {
             final String realHostname,
             final String componentNameForPartitions
     ) {
+        this(parsedEvent, realHostname, Pattern.compile("https://(?<value>.*?)\\.crm.*"), componentNameForPartitions);
+    }
+
+    private DataverseActivityType(
+            final ParsedEvent parsedEvent,
+            final String realHostname,
+            final Pattern appNamePattern,
+            final String componentNameForPartitions
+    ) {
         this.parsedEvent = parsedEvent;
         this.realHostname = realHostname;
+        this.appNamePattern = appNamePattern;
         this.componentNameForPartitions = componentNameForPartitions;
     }
 
@@ -108,10 +121,21 @@ public final class DataverseActivityType implements EventType {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
         final ValidKey<String> validKey = new ValidStringKey(record, "ItemUrl");
+        final String itemUrl = validKey.value();
+
+        final Matcher matcher = appNamePattern.matcher(itemUrl);
+        if (!matcher.find()) {
+            throw new PluginException("Could not parse value from ItemUrl");
+        }
+        final String value = matcher.group("value");
+
+        // value cannot be null due to the signature of matcher.group() method
+        if (value.isEmpty()) {
+            throw new PluginException("Capture group 'value' was not found");
+        }
 
         // Prepend 'DataverseA_' before the actual ItemUrl. A standing for Activity
-        return new ValidRFC5424AppName(new ASCIIString("DataverseA_" + validKey.value()).withNonAsciiCharsRemoved())
-                .appName();
+        return new ValidRFC5424AppName(new ASCIIString("DataverseA_" + value).withNonAsciiCharsRemoved()).appName();
     }
 
     @Override

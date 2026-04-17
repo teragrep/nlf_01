@@ -7,7 +7,7 @@
   "Fields": "{}",
   "InstanceUrl": "https://{uri1}",
   "ItemType": "Message",
-  "ItemUrl": "https://{uri1}/{uri2}/{uri3}",
+  "ItemUrl": "https://{uri1}.crm.{uri2}",
   "Message": "Message 1",
   "Operation": "Operation 1",
   "OrganizationId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
