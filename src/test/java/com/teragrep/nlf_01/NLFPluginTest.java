@@ -462,8 +462,8 @@ public class NLFPluginTest {
                                 + "  \"EntityId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
                                 + "  \"EntityName\": \"Entity-1\",\n" + "  \"Fields\": \"{}\",\n"
                                 + "  \"InstanceUrl\": \"https://{uri1}\",\n" + "  \"ItemType\": \"Message\",\n"
-                                + "  \"ItemUrl\": \"https://{uri1}/{uri2}/{uri3}\",\n"
-                                + "  \"Message\": \"Message 1\",\n" + "  \"Operation\": \"Operation 1\",\n"
+                                + "  \"ItemUrl\": \"https://{uri1}.crm.{uri2}\",\n" + "  \"Message\": \"Message 1\",\n"
+                                + "  \"Operation\": \"Operation 1\",\n"
                                 + "  \"OrganizationId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
                                 + "  \"OriginalObjectId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
                                 + "  \"Query\": \"Query\",\n" + "  \"QueryResults\": \"2\",\n"
@@ -489,7 +489,7 @@ public class NLFPluginTest {
                         syslogMessage.getMsg()
                 );
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
-        Assertions.assertEquals("DataverseA_https://{uri1}/{uri2}/{uri3}", syslogMessage.getAppName());
+        Assertions.assertEquals("DataverseA_{uri1}", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
 
         final Map<String, Map<String, String>> sdElementMap = syslogMessage

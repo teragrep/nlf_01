@@ -64,6 +64,9 @@ import com.teragrep.akv_01.event.metadata.time.EnqueuedTime;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeImpl;
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeStub;
 import com.teragrep.akv_01.plugin.PluginException;
+import com.teragrep.nlf_01.fakes.EventPartitionContextFake;
+import com.teragrep.nlf_01.fakes.EventPropertiesFake;
+import com.teragrep.nlf_01.fakes.EventSystemPropertiesFake;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.SDParam;
@@ -79,6 +82,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class DataverseActivityTypeTest {
@@ -138,12 +142,12 @@ class DataverseActivityTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("DataverseA_https://{uri1}/{uri2}/{uri3}", actualAppName);
+        Assertions.assertEquals("DataverseA_{uri1}", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
         Assertions
                 .assertEquals(
-                        "{\"ClientIp\":\"127.0.0.1\",\"CorrelationId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"CrmOrganizationUniqueName\":\"Organization-1\",\"EntityId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"EntityName\":\"Entity-1\",\"Fields\":\"{}\",\"InstanceUrl\":\"https://{uri1}\",\"ItemType\":\"Message\",\"ItemUrl\":\"https://{uri1}/{uri2}/{uri3}\",\"Message\":\"Message 1\",\"Operation\":\"Operation 1\",\"OrganizationId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"OriginalObjectId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"Query\":\"Query\",\"QueryResults\":\"2\",\"ResultStatus\":\"Success\",\"ServiceContextId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"ServiceContextIdType\":\"Token 1\",\"ServiceName\":\"Service 1\",\"SourceRecordId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"SourceSystem\":\"Azure\",\"SystemUserId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"TenantId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"TimeGenerated\":\"2025-10-06T00:00:00.0000000Z\",\"Type\":\"DataverseActivity\",\"UserAgent\":\"Mozilla/5.0 (<system-information>) <platform> (<platform-details>) <extensions>\",\"UserId\":\"user@localhost.example.test\",\"UserKey\":\"UserKey-1\",\"UserType\":\"Admin\",\"UserUpn\":\"user@localhost.example.test\",\"Workload\":\"Service1\",\"_ItemId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_TimeReceived\":\"2025-10-06T00:00:00.0000000Z\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        "{\"ClientIp\":\"127.0.0.1\",\"CorrelationId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"CrmOrganizationUniqueName\":\"Organization-1\",\"EntityId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"EntityName\":\"Entity-1\",\"Fields\":\"{}\",\"InstanceUrl\":\"https://{uri1}\",\"ItemType\":\"Message\",\"ItemUrl\":\"https://{uri1}.crm.{uri2}\",\"Message\":\"Message 1\",\"Operation\":\"Operation 1\",\"OrganizationId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"OriginalObjectId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"Query\":\"Query\",\"QueryResults\":\"2\",\"ResultStatus\":\"Success\",\"ServiceContextId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"ServiceContextIdType\":\"Token 1\",\"ServiceName\":\"Service 1\",\"SourceRecordId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"SourceSystem\":\"Azure\",\"SystemUserId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"TenantId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"TimeGenerated\":\"2025-10-06T00:00:00.0000000Z\",\"Type\":\"DataverseActivity\",\"UserAgent\":\"Mozilla/5.0 (<system-information>) <platform> (<platform-details>) <extensions>\",\"UserId\":\"user@localhost.example.test\",\"UserKey\":\"UserKey-1\",\"UserType\":\"Admin\",\"UserUpn\":\"user@localhost.example.test\",\"Workload\":\"Service1\",\"_ItemId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_TimeReceived\":\"2025-10-06T00:00:00.0000000Z\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
                         actualMsg
                 );
         Assertions.assertEquals("12345678900", actualMsgId);
@@ -197,12 +201,12 @@ class DataverseActivityTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("DataverseA_https://{uri1}/{uri2}/{uri3}", actualAppName);
+        Assertions.assertEquals("DataverseA_{uri1}", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
         Assertions
                 .assertEquals(
-                        "{\"ClientIp\":\"127.0.0.1\",\"CorrelationId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"CrmOrganizationUniqueName\":\"Organization-1\",\"EntityId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"EntityName\":\"Entity-1\",\"Fields\":\"{}\",\"InstanceUrl\":\"https://{uri1}\",\"ItemType\":\"Message\",\"ItemUrl\":\"https://{uri1}/{uri2}/{uri3}\",\"Message\":\"Message 1\",\"Operation\":\"Operation 1\",\"OrganizationId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"OriginalObjectId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"Query\":\"Query\",\"QueryResults\":\"2\",\"ResultStatus\":\"Success\",\"ServiceContextId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"ServiceContextIdType\":\"Token 1\",\"ServiceName\":\"Service 1\",\"SourceRecordId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"SourceSystem\":\"Azure\",\"SystemUserId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"TenantId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"TimeGenerated\":\"2025-10-06T00:00:00.0000000Z\",\"Type\":\"DataverseActivity\",\"UserAgent\":\"Mozilla/5.0 (<system-information>) <platform> (<platform-details>) <extensions>\",\"UserId\":\"user@localhost.example.test\",\"UserKey\":\"UserKey-1\",\"UserType\":\"Admin\",\"UserUpn\":\"user@localhost.example.test\",\"Workload\":\"Service1\",\"_ItemId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_TimeReceived\":\"2025-10-06T00:00:00.0000000Z\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        "{\"ClientIp\":\"127.0.0.1\",\"CorrelationId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"CrmOrganizationUniqueName\":\"Organization-1\",\"EntityId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"EntityName\":\"Entity-1\",\"Fields\":\"{}\",\"InstanceUrl\":\"https://{uri1}\",\"ItemType\":\"Message\",\"ItemUrl\":\"https://{uri1}.crm.{uri2}\",\"Message\":\"Message 1\",\"Operation\":\"Operation 1\",\"OrganizationId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"OriginalObjectId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"Query\":\"Query\",\"QueryResults\":\"2\",\"ResultStatus\":\"Success\",\"ServiceContextId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"ServiceContextIdType\":\"Token 1\",\"ServiceName\":\"Service 1\",\"SourceRecordId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"SourceSystem\":\"Azure\",\"SystemUserId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"TenantId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"TimeGenerated\":\"2025-10-06T00:00:00.0000000Z\",\"Type\":\"DataverseActivity\",\"UserAgent\":\"Mozilla/5.0 (<system-information>) <platform> (<platform-details>) <extensions>\",\"UserId\":\"user@localhost.example.test\",\"UserKey\":\"UserKey-1\",\"UserType\":\"Admin\",\"UserUpn\":\"user@localhost.example.test\",\"Workload\":\"Service1\",\"_ItemId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_TimeReceived\":\"2025-10-06T00:00:00.0000000Z\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
                         actualMsg
                 );
         Assertions.assertEquals("", actualMsgId);
@@ -279,5 +283,49 @@ class DataverseActivityTypeTest {
 
         Assertions
                 .assertEquals(DataverseActivityType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+    }
+
+    @Test
+    @DisplayName("test that appName() throws PluginException if ItemUrl cannot be parsed with regex")
+    void testThatAppNameThrowsPluginExceptionIfItemUrlCannotBeParsedWithRegex() {
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(
+                        "{\"ItemUrl\": \"\"}",
+                        new EventPartitionContextFake(),
+                        new EventPropertiesFake(),
+                        new EventSystemPropertiesFake(),
+                        new EnqueuedTimeStub(),
+                        new EventOffsetStub()
+                )
+        ).parsedEvent();
+
+        final DataverseActivityType dataverseActivityType = new DataverseActivityType(parsedEvent, "hostname", "aer");
+
+        final PluginException pluginException = Assertions
+                .assertThrowsExactly(PluginException.class, dataverseActivityType::appName);
+
+        Assertions.assertEquals("Could not parse value from ItemUrl", pluginException.getMessage());
+    }
+
+    @Test
+    @DisplayName("test that appName() throws PluginException if captureGroup is empty")
+    void testThatAppNameThrowsPluginExceptionIfCaptureGroupIsEmpty() {
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(
+                        "{\"ItemUrl\": \"https://.crm.localhost.example.test\"}",
+                        new EventPartitionContextFake(),
+                        new EventPropertiesFake(),
+                        new EventSystemPropertiesFake(),
+                        new EnqueuedTimeStub(),
+                        new EventOffsetStub()
+                )
+        ).parsedEvent();
+
+        final DataverseActivityType dataverseActivityType = new DataverseActivityType(parsedEvent, "hostname", "aer");
+
+        final PluginException pluginException = Assertions
+                .assertThrowsExactly(PluginException.class, dataverseActivityType::appName);
+
+        Assertions.assertEquals("Capture group 'value' was not found", pluginException.getMessage());
     }
 }
