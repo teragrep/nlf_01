@@ -119,6 +119,9 @@ public final class NLFPlugin implements Plugin {
             else if (jsonObject.getString("Type").equals("DataverseActivity")) {
                 eventTypes.add(new DataverseActivityType(parsedEvent, realHostname, componentNameForPartitions));
             }
+            else if (jsonObject.getString("Type").equals("Event")) {
+                eventTypes.add(new WindowsEventType(parsedEvent, realHostname, componentNameForPartitions));
+            }
             else if (jsonObject.getString("Type").equals("FunctionAppLogs")) {
                 eventTypes.add(new FunctionAppLogsType(parsedEvent, realHostname, componentNameForPartitions));
             }
