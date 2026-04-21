@@ -1,0 +1,19 @@
+{
+  "AzureDeploymentID": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
+  "Computer": "computer",
+  "EventCategory": 1,
+  "EventData": "eventData",
+  "EventID": 12345,
+  "EventLevel": 40,
+  "EventLevelName": "Error",
+  "EventLog": "eventLog",
+  "ManagementGroupName": "managementGroup",
+  "Message": "message",
+  "ParameterXml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
+  "RenderedDescription": "rendererDescription",
+  "Role": "role",
+  "SourceSystem": "Windows",
+  "_SubscriptionId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
+  "Type": "Event",
+  "UserName": "userName"
+}
