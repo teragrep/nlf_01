@@ -86,4 +86,18 @@ final class ResourceIdWithSubtypeTest {
         Assertions.assertThrows(PluginException.class, r::subtype);
         Assertions.assertThrows(PluginException.class, r::subtypeName);
     }
+
+    @Test
+    void testWithLongerResourceId() {
+        final ResourceIdWithSubtype r = new ResourceIdWithSubtype(
+                "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}/{resourceSubtype}/{subtypeName}/{tooLongId}"
+        );
+        Assertions.assertThrows(PluginException.class, r::subscriptionId);
+        Assertions.assertThrows(PluginException.class, r::resourceGroupName);
+        Assertions.assertThrows(PluginException.class, r::resourceProviderNamespace);
+        Assertions.assertThrows(PluginException.class, r::resourceType);
+        Assertions.assertThrows(PluginException.class, r::resourceName);
+        Assertions.assertThrows(PluginException.class, r::subtype);
+        Assertions.assertThrows(PluginException.class, r::subtypeName);
+    }
 }
