@@ -69,7 +69,12 @@ public final class ResourceIdTest {
     @Test
     void testWithInvalidResourceId() {
         final ResourceId r = new ResourceId("/foo/bar");
-        Assertions.assertThrows(PluginException.class, r::subscriptionId);
+        final PluginException subscriptionIdPluginException = Assertions
+                .assertThrows(PluginException.class, r::subscriptionId);
+        final Throwable cause = subscriptionIdPluginException.getCause();
+        Assertions.assertEquals(IllegalArgumentException.class, cause.getClass());
+        Assertions.assertEquals("ResourceId must have 9 elements", cause.getMessage());
+
         Assertions.assertThrows(PluginException.class, r::resourceGroupName);
         Assertions.assertThrows(PluginException.class, r::resourceProviderNamespace);
         Assertions.assertThrows(PluginException.class, r::resourceType);
@@ -81,7 +86,12 @@ public final class ResourceIdTest {
         final ResourceId r = new ResourceId(
                 "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}/{resourceSubtype}/{subtypeName}"
         );
-        Assertions.assertThrows(PluginException.class, r::subscriptionId);
+        PluginException subscriptionIdPluginException = Assertions
+                .assertThrows(PluginException.class, r::subscriptionId);
+        final Throwable cause = subscriptionIdPluginException.getCause();
+        Assertions.assertEquals(IllegalArgumentException.class, cause.getClass());
+        Assertions.assertEquals("ResourceId must have 9 elements", cause.getMessage());
+
         Assertions.assertThrows(PluginException.class, r::resourceGroupName);
         Assertions.assertThrows(PluginException.class, r::resourceProviderNamespace);
         Assertions.assertThrows(PluginException.class, r::resourceType);

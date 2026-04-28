@@ -78,7 +78,12 @@ final class ResourceIdWithSubtypeTest {
         final ResourceIdWithSubtype r = new ResourceIdWithSubtype(
                 "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}"
         );
-        Assertions.assertThrows(PluginException.class, r::subscriptionId);
+        final PluginException subscriptionIdPluginException = Assertions
+                .assertThrows(PluginException.class, r::subscriptionId);
+        final Throwable cause = subscriptionIdPluginException.getCause();
+        Assertions.assertEquals(IllegalArgumentException.class, cause.getClass());
+        Assertions.assertEquals("ResourceIdWithSubtype must have 11 elements", cause.getMessage());
+
         Assertions.assertThrows(PluginException.class, r::resourceGroupName);
         Assertions.assertThrows(PluginException.class, r::resourceProviderNamespace);
         Assertions.assertThrows(PluginException.class, r::resourceType);
@@ -92,7 +97,12 @@ final class ResourceIdWithSubtypeTest {
         final ResourceIdWithSubtype r = new ResourceIdWithSubtype(
                 "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}/{resourceSubtype}/{subtypeName}/{tooLongId}"
         );
-        Assertions.assertThrows(PluginException.class, r::subscriptionId);
+        final PluginException subscriptionIdPluginException = Assertions
+                .assertThrows(PluginException.class, r::subscriptionId);
+        final Throwable cause = subscriptionIdPluginException.getCause();
+        Assertions.assertEquals(IllegalArgumentException.class, cause.getClass());
+        Assertions.assertEquals("ResourceIdWithSubtype must have 11 elements", cause.getMessage());
+
         Assertions.assertThrows(PluginException.class, r::resourceGroupName);
         Assertions.assertThrows(PluginException.class, r::resourceProviderNamespace);
         Assertions.assertThrows(PluginException.class, r::resourceType);
