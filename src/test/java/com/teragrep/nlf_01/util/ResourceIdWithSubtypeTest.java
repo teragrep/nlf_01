@@ -50,7 +50,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class ResourceIdWithSubtypeTest {
+final class ResourceIdWithSubtypeTest {
 
     @Test
     void equalsContractTest() {

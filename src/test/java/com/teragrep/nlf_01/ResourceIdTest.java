@@ -75,4 +75,16 @@ public final class ResourceIdTest {
         Assertions.assertThrows(PluginException.class, r::resourceType);
         Assertions.assertThrows(PluginException.class, r::resourceName);
     }
+
+    @Test
+    void testWithLongerResourceId() {
+        final ResourceId r = new ResourceId(
+                "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}/{resourceSubtype}/{subtypeName}"
+        );
+        Assertions.assertThrows(PluginException.class, r::subscriptionId);
+        Assertions.assertThrows(PluginException.class, r::resourceGroupName);
+        Assertions.assertThrows(PluginException.class, r::resourceProviderNamespace);
+        Assertions.assertThrows(PluginException.class, r::resourceType);
+        Assertions.assertThrows(PluginException.class, r::resourceName);
+    }
 }

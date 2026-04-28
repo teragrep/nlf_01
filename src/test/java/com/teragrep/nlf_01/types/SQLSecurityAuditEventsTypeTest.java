@@ -159,10 +159,10 @@ class SQLSecurityAuditEventsTypeTest {
 
         Assertions.assertEquals("Operation-1", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
-        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
+        Assertions.assertEquals("md5-63a8be7673efd1bb7439550f2ad118ce-resourceName", actualHostname);
         Assertions
                 .assertEquals(
-                        "{\"category\":\"SQLSecurityAuditEvents\",\"operationName\":\"Operation-1\",\"originalEventTimestamp\":\"2025-10-06T00:00:00.0000000Z\",\"resourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        "{\"category\":\"SQLSecurityAuditEvents\",\"operationName\":\"Operation-1\",\"originalEventTimestamp\":\"2025-10-06T00:00:00.0000000Z\",\"resourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}/{resourceSubtype}/{subtypeName}\"}",
                         actualMsg
                 );
         Assertions.assertEquals("12345678900", actualMsgId);
@@ -217,10 +217,10 @@ class SQLSecurityAuditEventsTypeTest {
 
         Assertions.assertEquals("Operation-1", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
-        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
+        Assertions.assertEquals("md5-63a8be7673efd1bb7439550f2ad118ce-resourceName", actualHostname);
         Assertions
                 .assertEquals(
-                        "{\"category\":\"SQLSecurityAuditEvents\",\"operationName\":\"Operation-1\",\"originalEventTimestamp\":\"2025-10-06T00:00:00.0000000Z\",\"resourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        "{\"category\":\"SQLSecurityAuditEvents\",\"operationName\":\"Operation-1\",\"originalEventTimestamp\":\"2025-10-06T00:00:00.0000000Z\",\"resourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}/{resourceSubtype}/{subtypeName}\"}",
                         actualMsg
                 );
         Assertions.assertEquals("", actualMsgId);
