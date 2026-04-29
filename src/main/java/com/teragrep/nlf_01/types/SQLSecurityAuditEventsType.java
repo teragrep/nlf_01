@@ -47,16 +47,7 @@ package com.teragrep.nlf_01.types;
 
 import com.teragrep.akv_01.event.ParsedEvent;
 import com.teragrep.akv_01.plugin.PluginException;
-import com.teragrep.nlf_01.util.ASCIIString;
-import com.teragrep.nlf_01.util.DefaultSDElements;
-import com.teragrep.nlf_01.util.MD5Hash;
-import com.teragrep.nlf_01.util.ResourceId;
-import com.teragrep.nlf_01.util.SDElements;
-import com.teragrep.nlf_01.util.ValidKey;
-import com.teragrep.nlf_01.util.ValidRFC5424AppName;
-import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
-import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
-import com.teragrep.nlf_01.util.ValidStringKey;
+import com.teragrep.nlf_01.util.*;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
@@ -97,7 +88,7 @@ public final class SQLSecurityAuditEventsType implements EventType {
         final ValidKey<String> validKey = new ValidStringKey(record, "resourceId");
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(validKey.value()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.value()).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(validKey.value()).md5().concat("-").concat(new ASCIIString(new ResourceIdWithSubtype(validKey.value()).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
     }
 

@@ -2,5 +2,5 @@
   "category": "SQLSecurityAuditEvents",
   "operationName": "Operation-1",
   "originalEventTimestamp": "2025-10-06T00:00:00.0000000Z",
-  "resourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}"
+  "resourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}/{resourceSubtype}/{subtypeName}"
 }

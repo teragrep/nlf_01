@@ -43,19 +43,24 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.nlf_01;
+package com.teragrep.nlf_01.util;
 
 import com.teragrep.akv_01.plugin.PluginException;
-import com.teragrep.nlf_01.util.ResourceId;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public final class ResourceIdTest {
+final class ResourceIdWithSubtypeTest {
+
+    @Test
+    void equalsContractTest() {
+        EqualsVerifier.forClass(ResourceIdWithSubtype.class).verify();
+    }
 
     @Test
     void testWithValidResourceId() {
-        final ResourceId r = new ResourceId(
-                "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}"
+        final ResourceIdWithSubtype r = new ResourceIdWithSubtype(
+                "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}/{resourceSubtype}/{subtypeName}"
         );
         Assertions.assertEquals("{subscriptionId}", Assertions.assertDoesNotThrow(r::subscriptionId));
         Assertions.assertEquals("{resourceGroupName}", Assertions.assertDoesNotThrow(r::resourceGroupName));
@@ -63,38 +68,46 @@ public final class ResourceIdTest {
                 .assertEquals("{resourceProviderNamespace}", Assertions.assertDoesNotThrow(r::resourceProviderNamespace));
         Assertions.assertEquals("{resourceType}", Assertions.assertDoesNotThrow(r::resourceType));
         Assertions.assertEquals("{resourceName}", Assertions.assertDoesNotThrow(r::resourceName));
-
+        Assertions.assertEquals("{resourceSubtype}", Assertions.assertDoesNotThrow(r::subtype));
+        Assertions.assertEquals("{subtypeName}", Assertions.assertDoesNotThrow(r::subtypeName));
     }
 
     @Test
     void testWithInvalidResourceId() {
-        final ResourceId r = new ResourceId("/foo/bar");
+        // 9 segments long, which shouldn't work with the subtype
+        final ResourceIdWithSubtype r = new ResourceIdWithSubtype(
+                "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}"
+        );
         final PluginException subscriptionIdPluginException = Assertions
                 .assertThrows(PluginException.class, r::subscriptionId);
         final Throwable cause = subscriptionIdPluginException.getCause();
         Assertions.assertEquals(IllegalArgumentException.class, cause.getClass());
-        Assertions.assertEquals("ResourceId must have 9 elements", cause.getMessage());
+        Assertions.assertEquals("ResourceIdWithSubtype must have 11 elements", cause.getMessage());
 
         Assertions.assertThrows(PluginException.class, r::resourceGroupName);
         Assertions.assertThrows(PluginException.class, r::resourceProviderNamespace);
         Assertions.assertThrows(PluginException.class, r::resourceType);
         Assertions.assertThrows(PluginException.class, r::resourceName);
+        Assertions.assertThrows(PluginException.class, r::subtype);
+        Assertions.assertThrows(PluginException.class, r::subtypeName);
     }
 
     @Test
     void testWithLongerResourceId() {
-        final ResourceId r = new ResourceId(
-                "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}/{resourceSubtype}/{subtypeName}"
+        final ResourceIdWithSubtype r = new ResourceIdWithSubtype(
+                "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}/{resourceSubtype}/{subtypeName}/{tooLongId}"
         );
-        PluginException subscriptionIdPluginException = Assertions
+        final PluginException subscriptionIdPluginException = Assertions
                 .assertThrows(PluginException.class, r::subscriptionId);
         final Throwable cause = subscriptionIdPluginException.getCause();
         Assertions.assertEquals(IllegalArgumentException.class, cause.getClass());
-        Assertions.assertEquals("ResourceId must have 9 elements", cause.getMessage());
+        Assertions.assertEquals("ResourceIdWithSubtype must have 11 elements", cause.getMessage());
 
         Assertions.assertThrows(PluginException.class, r::resourceGroupName);
         Assertions.assertThrows(PluginException.class, r::resourceProviderNamespace);
         Assertions.assertThrows(PluginException.class, r::resourceType);
         Assertions.assertThrows(PluginException.class, r::resourceName);
+        Assertions.assertThrows(PluginException.class, r::subtype);
+        Assertions.assertThrows(PluginException.class, r::subtypeName);
     }
 }

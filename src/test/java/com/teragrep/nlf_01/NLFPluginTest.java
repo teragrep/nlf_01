@@ -1037,11 +1037,11 @@ public class NLFPluginTest {
                         "{\n" + "  \"category\": \"SQLSecurityAuditEvents\",\n"
                                 + "  \"operationName\": \"Operation-1\",\n"
                                 + "  \"originalEventTimestamp\": \"2025-10-06T00:00:00.0000000Z\",\n"
-                                + "  \"resourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
+                                + "  \"resourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}/{resourceSubtype}/{subtypeName}\"\n"
                                 + "}",
                         syslogMessage.getMsg()
                 );
-        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("md5-63a8be7673efd1bb7439550f2ad118ce-resourceName", syslogMessage.getHostname());
         Assertions.assertEquals("Operation-1", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
 
