@@ -104,8 +104,9 @@ public final class ResourceIdWithSubtype {
 
     @Override
     public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass())
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         final ResourceIdWithSubtype that = (ResourceIdWithSubtype) o;
         return Arrays.deepEquals(splitResourceId, that.splitResourceId);
     }
