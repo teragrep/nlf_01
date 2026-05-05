@@ -307,6 +307,198 @@ public class NLFPluginTest {
     }
 
     @Test
+    void appDependenciesType() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/appdependencies.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"AppRoleInstance\": \"app-role-instance\",\n"
+                                + "  \"AppRoleName\": \"app-role-name\",\n" + "  \"AppVersion\": \"1.0.0\",\n"
+                                + "  \"ClientBrowser\": \"Browser-1\",\n" + "  \"ClientIP\": \"192.168.1.2\",\n"
+                                + "  \"ClientModel\": \"Model-1\",\n" + "  \"ClientOS\": \"OS-1\",\n"
+                                + "  \"ClientStateOrProvince\": \"State-1\",\n" + "  \"ClientType\": \"client-type\",\n"
+                                + "  \"Data\": \"url://localhost.example.test\",\n"
+                                + "  \"DependencyType\": \"http\",\n" + "  \"DurationMs\": 1234,\n"
+                                + "  \"Id\": \"{id}\",\n" + "  \"IKey\": \"i-key\",\n" + "  \"ItemCount\": 1,\n"
+                                + "  \"Measurements\": {},\n" + "  \"Name\": \"Dependency-1\",\n"
+                                + "  \"OperationId\": \"123\",\n" + "  \"OperationName\": \"Operation-1\",\n"
+                                + "  \"ParentId\": \"456\",\n" + "  \"Properties\": {\n"
+                                + "    \"ProcessId\": \"1234\",\n" + "    \"HostInstanceId\": \"123456\",\n"
+                                + "    \"prop__{OriginalFormat}\": \"abc\",\n" + "    \"prop__RouteName\": \"xyz\",\n"
+                                + "    \"LogLevel\": \"Debug\",\n" + "    \"EventId\": \"1\",\n"
+                                + "    \"prop__RouteTemplate\": \"route/template\",\n"
+                                + "    \"Category\": \"192.168.3.1\",\n" + "    \"EventName\": \"event-name\"\n"
+                                + "  },\n" + "  \"ReferencedItemId\": \"123456789\",\n"
+                                + "  \"ReferencedType\": \"Table-1\",\n" + "  \"ResourceGUID\": \"123456789\",\n"
+                                + "  \"ResultCode\": \"1\",\n" + "  \"SDKVersion\": \"12: 192.168.x.x\",\n"
+                                + "  \"SessionId\": \"12345567890\",\n" + "  \"SourceSystem\": \"Azure\",\n"
+                                + "  \"Success\": true,\n" + "  \"SyntheticSource\": \"AzureAgain\",\n"
+                                + "  \"Target\": \"WebServer1\",\n" + "  \"TenantId\": \"12\",\n"
+                                + "  \"TimeGenerated\": \"2020-01-01T01:02:34.5678999Z\",\n"
+                                + "  \"Type\": \"AppDependencies\",\n" + "  \"_BilledSize\": 1,\n"
+                                + "  \"_ItemId\": \"12-34-56-78\",\n"
+                                + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_SubscriptionId\": \"{subscriptionId}\"\n" + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("app-role-name", syslogMessage.getAppName());
+        Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+    }
+
+    @Test
+    void appExceptionsType() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/appexceptions.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"AppRoleInstance\": \"app-role-instance\",\n"
+                                + "  \"AppRoleName\": \"app-role-name\",\n" + "  \"AppVersion\": \"1.0.0\",\n"
+                                + "  \"ClientBrowser\": \"Browser-1\",\n" + "  \"ClientIP\": \"192.168.1.2\",\n"
+                                + "  \"ClientModel\": \"Model-1\",\n" + "  \"ClientOS\": \"OS-1\",\n"
+                                + "  \"ClientStateOrProvince\": \"State-1\",\n" + "  \"ClientType\": \"client-type\",\n"
+                                + "  \"Details\": {},\n" + "  \"ExceptionType\": \"NullPointerException\",\n"
+                                + "  \"HandledAt\": \"Location-1\",\n" + "  \"IKey\": \"i-key\",\n"
+                                + "  \"InnermostAssembly\": \"InnermostAssembly\",\n"
+                                + "  \"InnermostMessage\": \"InnermostMessage\",\n"
+                                + "  \"InnermostMethod\": \"InnermostMethod\",\n"
+                                + "  \"InnermostType\": \"InnermostType\",\n" + "  \"ItemCount\": 1,\n"
+                                + "  \"Measurements\": {},\n" + "  \"Message\": \"message\",\n"
+                                + "  \"Method\": \"app.Main\",\n" + "  \"OperationId\": \"123\",\n"
+                                + "  \"OperationName\": \"Operation-1\",\n"
+                                + "  \"OuterAssembly\": \"OuterAssembly\",\n"
+                                + "  \"OuterMessage\": \"OuterMessage\",\n" + "  \"OuterMethod\": \"OuterMethod\",\n"
+                                + "  \"OuterType\": \"OuterType\",\n" + "  \"ParentId\": \"456\",\n"
+                                + "  \"ProblemId\": \"789\",\n" + "  \"Properties\": {\n"
+                                + "    \"ProcessId\": \"1234\",\n" + "    \"HostInstanceId\": \"123456\",\n"
+                                + "    \"prop__{OriginalFormat}\": \"abc\",\n" + "    \"prop__RouteName\": \"xyz\",\n"
+                                + "    \"LogLevel\": \"Debug\",\n" + "    \"EventId\": \"1\",\n"
+                                + "    \"prop__RouteTemplate\": \"route/template\",\n"
+                                + "    \"Category\": \"192.168.3.1\",\n" + "    \"EventName\": \"event-name\"\n"
+                                + "  },\n" + "  \"ResourceGUID\": \"123456789\",\n"
+                                + "  \"SDKVersion\": \"12: 192.168.x.x\",\n" + "  \"SessionId\": \"12345567890\",\n"
+                                + "  \"SeverityLevel\": 1,\n" + "  \"SourceSystem\": \"Azure\",\n"
+                                + "  \"SyntheticSource\": \"AzureAgain\",\n" + "  \"Target\": \"WebServer1\",\n"
+                                + "  \"TenantId\": \"12\",\n"
+                                + "  \"TimeGenerated\": \"2020-01-01T01:02:34.5678999Z\",\n"
+                                + "  \"Type\": \"AppExceptions\",\n" + "  \"_BilledSize\": 1,\n"
+                                + "  \"_ItemId\": \"12-34-56-78\",\n"
+                                + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_SubscriptionId\": \"{subscriptionId}\"\n" + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("app-role-name", syslogMessage.getAppName());
+        Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+    }
+
+    @Test
+    void appRequestsType() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/apprequests.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"AppRoleInstance\": \"app-role-instance\",\n"
+                                + "  \"AppRoleName\": \"app-role-name\",\n" + "  \"AppVersion\": \"1.0.0\",\n"
+                                + "  \"ClientBrowser\": \"Browser-1\",\n" + "  \"ClientIP\": \"192.168.1.2\",\n"
+                                + "  \"ClientModel\": \"Model-1\",\n" + "  \"ClientOS\": \"OS-1\",\n"
+                                + "  \"ClientStateOrProvince\": \"State-1\",\n" + "  \"ClientType\": \"client-type\",\n"
+                                + "  \"Details\": {},\n" + "  \"DurationMs\": 1234,\n" + "  \"Id\": \"1234567\",\n"
+                                + "  \"IKey\": \"i-key\",\n" + "  \"ItemCount\": 1,\n" + "  \"Measurements\": {},\n"
+                                + "  \"Name\": \"Request-1\",\n" + "  \"OperationId\": \"123\",\n"
+                                + "  \"OperationName\": \"Operation-1\",\n" + "  \"ParentId\": \"456\",\n"
+                                + "  \"Properties\": {\n" + "    \"ProcessId\": \"1234\",\n"
+                                + "    \"HostInstanceId\": \"123456\",\n" + "    \"prop__{OriginalFormat}\": \"abc\",\n"
+                                + "    \"prop__RouteName\": \"xyz\",\n" + "    \"LogLevel\": \"Debug\",\n"
+                                + "    \"EventId\": \"1\",\n" + "    \"prop__RouteTemplate\": \"route/template\",\n"
+                                + "    \"Category\": \"192.168.3.1\",\n" + "    \"EventName\": \"event-name\"\n"
+                                + "  },\n" + "  \"ReferencedItemId\": \"12345678\",\n"
+                                + "  \"ReferencedType\": \"Table-1\",\n" + "  \"ResourceGUID\": \"123456789\",\n"
+                                + "  \"ResultCode\": \"400\",\n" + "  \"SDKVersion\": \"12: 192.168.x.x\",\n"
+                                + "  \"SessionId\": \"12345567890\",\n" + "  \"Source\": \"Source-1\",\n"
+                                + "  \"SourceSystem\": \"Azure\",\n" + "  \"Success\": true,\n"
+                                + "  \"SyntheticSource\": \"AzureAgain\",\n" + "  \"TenantId\": \"12\",\n"
+                                + "  \"TimeGenerated\": \"2020-01-01T01:02:34.5678999Z\",\n"
+                                + "  \"Type\": \"AppRequests\",\n" + "  \"Url\": \"url://localhost.example.test\",\n"
+                                + "  \"UserAccountId\": \"1234567\",\n" + "  \"UserAuthenticatedId\": \"12345678\",\n"
+                                + "  \"UserId\": \"1234\",\n" + "  \"_BilledSize\": 1,\n"
+                                + "  \"_ItemId\": \"12-34-56-78\",\n"
+                                + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_SubscriptionId\": \"{subscriptionId}\"\n" + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("app-role-name", syslogMessage.getAppName());
+        Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(AppInsightType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+    }
+
+    @Test
     void ccType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/cc.json")));
