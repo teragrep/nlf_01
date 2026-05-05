@@ -98,56 +98,57 @@ public final class NLFPlugin implements Plugin {
         if (
             jsonObject.containsKey("Type") && jsonObject.get("Type").getValueType().equals(JsonValue.ValueType.STRING)
         ) {
-            if (jsonObject.getString("Type").equals("ADFActivityRun")) {
+            final String type = jsonObject.getString("Type");
+            if (type.equals("ADFActivityRun")) {
                 eventTypes.add(new ADFActivityRunType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").equals("ADFPipelineRun")) {
+            else if (type.equals("ADFPipelineRun")) {
                 eventTypes.add(new ADFPipelineRunType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").equals("AppEvents")) {
+            else if (type.equals("AppEvents")) {
                 eventTypes.add(new AppEventsType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").equals("AppServiceConsoleLogs")) {
+            else if (type.equals("AppServiceConsoleLogs")) {
                 eventTypes.add(new AppServiceConsoleLogsType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").equals("AppTraces")) {
+            else if (type.equals("AppTraces")) {
                 eventTypes.add(new AppInsightType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").equals("AzureDiagnostics")) {
+            else if (type.equals("AzureDiagnostics")) {
                 eventTypes.add(new AzureDiagnosticsType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").equals("ContainerAppConsoleLogs")) {
+            else if (type.equals("ContainerAppConsoleLogs")) {
                 eventTypes.add(new ContainerAppConsoleLogsType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").equals("DataverseActivity")) {
+            else if (type.equals("DataverseActivity")) {
                 eventTypes.add(new DataverseActivityType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").equals("Event")) {
+            else if (type.equals("Event")) {
                 eventTypes.add(new WindowsEventType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").equals("FunctionAppLogs")) {
+            else if (type.equals("FunctionAppLogs")) {
                 eventTypes.add(new FunctionAppLogsType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").equals("LogicAppWorkflowRuntime")) {
+            else if (type.equals("LogicAppWorkflowRuntime")) {
                 eventTypes.add(new LogicAppWorkflowRuntimeType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").equals("PGSQLServerLogs")) {
+            else if (type.equals("PGSQLServerLogs")) {
                 eventTypes.add(new PGSQLServerLogsType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").equals("PowerAutomateActivity")) {
+            else if (type.equals("PowerAutomateActivity")) {
                 eventTypes.add(new PowerAutomateActivityType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").equals("PowerPlatformAdminActivity")) {
+            else if (type.equals("PowerPlatformAdminActivity")) {
                 eventTypes
                         .add(new PowerPlatformAdminActivityType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").endsWith("fluent_audit_log_events_CL")) {
+            else if (type.endsWith("fluent_audit_log_events_CL")) {
                 eventTypes.add(new CCType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").endsWith("_CL")) {
+            else if (type.endsWith("_CL")) {
                 eventTypes.add(new CLType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (jsonObject.getString("Type").equals("ContainerLogV2")) {
+            else if (type.equals("ContainerLogV2")) {
                 if (
                     jsonObject.containsKey("PodNamespace")
                             && jsonObject.getString("PodNamespace").equals("aks-istio-ingress")
@@ -168,7 +169,7 @@ public final class NLFPlugin implements Plugin {
                             );
                 }
             }
-            else if (jsonObject.getString("Type").equals("Syslog")) {
+            else if (type.equals("Syslog")) {
                 eventTypes
                         .add(
                                 new SyslogType(
