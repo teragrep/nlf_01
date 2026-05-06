@@ -60,6 +60,7 @@ import jakarta.json.JsonValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public final class NLFPlugin implements Plugin {
 
@@ -99,49 +100,46 @@ public final class NLFPlugin implements Plugin {
             jsonObject.containsKey("Type") && jsonObject.get("Type").getValueType().equals(JsonValue.ValueType.STRING)
         ) {
             final String type = jsonObject.getString("Type");
-            if (type.equals("ADFActivityRun")) {
+            if ("ADFActivityRun".equals(type)) {
                 eventTypes.add(new ADFActivityRunType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (type.equals("ADFPipelineRun")) {
+            else if ("ADFPipelineRun".equals(type)) {
                 eventTypes.add(new ADFPipelineRunType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (type.equals("AppEvents")) {
+            else if ("AppEvents".equals(type)) {
                 eventTypes.add(new AppEventsType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (type.equals("AppServiceConsoleLogs")) {
+            else if ("AppServiceConsoleLogs".equals(type)) {
                 eventTypes.add(new AppServiceConsoleLogsType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (
-                type.equals("AppTraces") || type.equals("AppDependencies") || type.equals("AppExceptions")
-                        || type.equals("AppRequests")
-            ) {
+            else if (Set.of("AppTraces", "AppDependencies", "AppExceptions", "AppRequests").contains(type)) {
                 eventTypes.add(new AppInsightType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (type.equals("AzureDiagnostics")) {
+            else if ("AzureDiagnostics".equals(type)) {
                 eventTypes.add(new AzureDiagnosticsType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (type.equals("ContainerAppConsoleLogs")) {
+            else if ("ContainerAppConsoleLogs".equals(type)) {
                 eventTypes.add(new ContainerAppConsoleLogsType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (type.equals("DataverseActivity")) {
+            else if ("DataverseActivity".equals(type)) {
                 eventTypes.add(new DataverseActivityType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (type.equals("Event")) {
+            else if ("Event".equals(type)) {
                 eventTypes.add(new WindowsEventType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (type.equals("FunctionAppLogs")) {
+            else if ("FunctionAppLogs".equals(type)) {
                 eventTypes.add(new FunctionAppLogsType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (type.equals("LogicAppWorkflowRuntime")) {
+            else if ("LogicAppWorkflowRuntime".equals(type)) {
                 eventTypes.add(new LogicAppWorkflowRuntimeType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (type.equals("PGSQLServerLogs")) {
+            else if ("PGSQLServerLogs".equals(type)) {
                 eventTypes.add(new PGSQLServerLogsType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (type.equals("PowerAutomateActivity")) {
+            else if ("PowerAutomateActivity".equals(type)) {
                 eventTypes.add(new PowerAutomateActivityType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (type.equals("PowerPlatformAdminActivity")) {
+            else if ("PowerPlatformAdminActivity".equals(type)) {
                 eventTypes
                         .add(new PowerPlatformAdminActivityType(parsedEvent, realHostname, componentNameForPartitions));
             }
@@ -151,10 +149,10 @@ public final class NLFPlugin implements Plugin {
             else if (type.endsWith("_CL")) {
                 eventTypes.add(new CLType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if (type.equals("ContainerLogV2")) {
+            else if ("ContainerLogV2".equals(type)) {
                 if (
                     jsonObject.containsKey("PodNamespace")
-                            && jsonObject.getString("PodNamespace").equals("aks-istio-ingress")
+                            && "aks-istio-ingress".equals(jsonObject.getString("PodNamespace"))
                 ) {
                     eventTypes
                             .add(new IstioIngressContainerType(parsedEvent, realHostname, componentNameForPartitions));
@@ -172,7 +170,7 @@ public final class NLFPlugin implements Plugin {
                             );
                 }
             }
-            else if (type.equals("Syslog")) {
+            else if ("Syslog".equals(type)) {
                 eventTypes
                         .add(
                                 new SyslogType(
@@ -188,7 +186,7 @@ public final class NLFPlugin implements Plugin {
             jsonObject.containsKey("AppType")
                     && jsonObject.get("AppType").getValueType().equals(JsonValue.ValueType.STRING)
         ) {
-            if (jsonObject.getString("AppType").equals("PostgreSQL")) {
+            if ("PostgreSQL".equals(jsonObject.getString("AppType"))) {
                 eventTypes.add(new PostgreSQLType(parsedEvent, realHostname, componentNameForPartitions));
             }
         }
