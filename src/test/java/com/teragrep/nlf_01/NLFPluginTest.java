@@ -62,24 +62,7 @@ import com.teragrep.akv_01.plugin.PluginException;
 import com.teragrep.nlf_01.fakes.ConfigurableSourceable;
 import com.teragrep.nlf_01.fakes.EmptySourceable;
 import com.teragrep.nlf_01.fakes.FakeSourceable;
-import com.teragrep.nlf_01.types.ADFActivityRunType;
-import com.teragrep.nlf_01.types.ADFPipelineRunType;
-import com.teragrep.nlf_01.types.AppEventsType;
-import com.teragrep.nlf_01.types.AppInsightType;
-import com.teragrep.nlf_01.types.AppServiceConsoleLogsType;
-import com.teragrep.nlf_01.types.CCType;
-import com.teragrep.nlf_01.types.ContainerAppConsoleLogsType;
-import com.teragrep.nlf_01.types.ContainerType;
-import com.teragrep.nlf_01.types.DataverseActivityType;
-import com.teragrep.nlf_01.types.FunctionAppLogsType;
-import com.teragrep.nlf_01.types.IstioIngressContainerType;
-import com.teragrep.nlf_01.types.LogicAppWorkflowRuntimeType;
-import com.teragrep.nlf_01.types.PostgreSQLType;
-import com.teragrep.nlf_01.types.PowerAutomateActivityType;
-import com.teragrep.nlf_01.types.PowerPlatformAdminActivityType;
-import com.teragrep.nlf_01.types.SQLSecurityAuditEventsType;
-import com.teragrep.nlf_01.types.SyslogType;
-import com.teragrep.nlf_01.types.WindowsEventType;
+import com.teragrep.nlf_01.types.*;
 import com.teragrep.nlf_01.util.Sourceable;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.SDParam;
@@ -94,6 +77,40 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class NLFPluginTest {
+
+    @Test
+    void azureDiagnosticsType() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/azurediagnostics.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions.assertEquals(json, syslogMessage.getMsg());
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("AzureDiagnostics", syslogMessage.getAppName());
+        Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(AzureDiagnosticsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
+        Assertions.assertEquals("2020-01-01T00:00Z", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+    }
 
     @Test
     void containerType() {

@@ -113,6 +113,9 @@ public final class NLFPlugin implements Plugin {
             else if (jsonObject.getString("Type").equals("AppTraces")) {
                 eventTypes.add(new AppInsightType(parsedEvent, realHostname, componentNameForPartitions));
             }
+            else if (jsonObject.getString("Type").equals("AzureDiagnostics")) {
+                eventTypes.add(new AzureDiagnosticsType(parsedEvent, realHostname, componentNameForPartitions));
+            }
             else if (jsonObject.getString("Type").equals("ContainerAppConsoleLogs")) {
                 eventTypes.add(new ContainerAppConsoleLogsType(parsedEvent, realHostname, componentNameForPartitions));
             }
