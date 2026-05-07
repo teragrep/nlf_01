@@ -50,7 +50,6 @@
   "event_class_s": "event-class1",
   "event_s": "event1",
   "event_subclass_s": "event-subclass1",
-  "event_time_t": "2020-01-01T01:02:34.5678999Z",
   "EventName_s": "event-name1",
   "execution_type_d": 1.2,
   "executionInfo_endTime_t": "2020-01-01T01:02:34.5678999Z",
@@ -146,7 +145,6 @@
   "resource_workflowId_g": "12345678-1234-1234-abcd-1234567890lm",
   "resource_workflowName_s": "resource-workflow-name1",
   "ResourceGroup": "resourcegroup1",
-  "_ResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
   "ResourceProvider": "MICROSOFT.EXAMPLE",
   "ResourceType": "EXAMPLE",
   "response_rows_d": 2.0,
@@ -168,6 +166,5 @@
   "sequence_group_id_g": "12345678-1234-1234-abcd-1234567890no",
   "sequence_number_d": 876.5,
   "server_principal_sid_s": "sercer-principal-sid1",
-  "session_id_d": 6543.2,
-  "Type": "AzureDiagnostics"
+  "session_id_d": 6543.2
 }
