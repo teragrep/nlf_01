@@ -946,7 +946,7 @@ public class NLFPluginTest {
 
         Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
         Assertions
-                .assertEquals(AppServiceConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+                .assertEquals(DefaultEventType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
         Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
     }
