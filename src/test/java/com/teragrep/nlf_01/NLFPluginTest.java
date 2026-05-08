@@ -952,6 +952,66 @@ public class NLFPluginTest {
     }
 
     @Test
+    void laQueryLogsType() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/laquerylogs.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"AADClientId\": \"12345678-1234-1234-abcd-1234567890ab\",\n"
+                                + "  \"AADEmail\": \"example@localhost.test\",\n"
+                                + "  \"AADObjectId\": \"12345678-1234-1234-abcd-1234567890bc\",\n"
+                                + "  \"AADTenantId\": \"12345678-1234-1234-abcd-1234567890cd\",\n"
+                                + "  \"ConditionalDataAccess\": \"conditional-data-access\",\n"
+                                + "  \"CorrelationId\": \"1234\",\n" + "  \"IsBillableQuery\": true,\n"
+                                + "  \"IsWorkspaceInFailover\": false,\n" + "  \"QueryText\": \"example\",\n"
+                                + "  \"QueryThumbprint\": \"123abc456def789ghi\",\n"
+                                + "  \"QueryTimeRangeEnd\": \"2020-01-01T02:02:34.5678999Z\",\n"
+                                + "  \"QueryTimeRangeStart\": \"2020-01-01T00:02:34.5678999Z\",\n"
+                                + "  \"RequestClientApp\": \"application1\",\n" + "  \"RequestContext\": {},\n"
+                                + "  \"RequestContextFilters\": {},\n"
+                                + "  \"RequestTarget\": \"/subscriptions/{subscriptionId1}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"ResponseCode\": 200,\n" + "  \"ResponseDurationMs\": 123,\n"
+                                + "  \"ResponseRowCount\": 234,\n" + "  \"ScannedGB\": 1.23,\n"
+                                + "  \"SourceSystem\": \"Azure\",\n" + "  \"StatsCPUTimeMs\": 345,\n"
+                                + "  \"StatsDataProcessedEnd\": \"2021-01-01T01:02:34.5678999Z\",\n"
+                                + "  \"StatsDataProcessedStart\": \"2021-01-01T00:02:34.5678999Z\",\n"
+                                + "  \"StatsRegionCount\": 1,\n" + "  \"StatsWorkspaceCount\": 1,\n"
+                                + "  \"TenantId\": \"12\",\n"
+                                + "  \"TimeGenerated\": \"2020-01-01T01:02:34.5678999Z\",\n"
+                                + "  \"Type\": \"LAQueryLogs\",\n" + "  \"WorkspaceRegion\": \"region1\",\n"
+                                + "  \"_BilledSize\": 1,\n" + "  \"_ItemId\": \"12-34-56-78\",\n"
+                                + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
+                                + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("LAQueryLogs", syslogMessage.getAppName());
+        Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(DefaultEventType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+    }
+
+    @Test
     void functionAppLogsType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/function.json")));
