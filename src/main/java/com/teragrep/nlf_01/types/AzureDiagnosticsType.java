@@ -57,7 +57,6 @@ import java.util.Set;
 
 public final class AzureDiagnosticsType implements EventType {
 
-    private final static String applicationName = "AzureDiagnostics";
     private final ParsedEvent parsedEvent;
     private final String realHostname;
     private final String componentNameForPartitions;
