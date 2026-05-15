@@ -130,6 +130,9 @@ public final class NLFPlugin implements Plugin {
             else if ("FunctionAppLogs".equals(type)) {
                 eventTypes.add(new FunctionAppLogsType(parsedEvent, realHostname, componentNameForPartitions));
             }
+            else if ("KubeEvents".equals(type)) {
+                eventTypes.add(new KubeEventsType(parsedEvent, realHostname, componentNameForPartitions));
+            }
             else if ("LogicAppWorkflowRuntime".equals(type)) {
                 eventTypes.add(new LogicAppWorkflowRuntimeType(parsedEvent, realHostname, componentNameForPartitions));
             }
