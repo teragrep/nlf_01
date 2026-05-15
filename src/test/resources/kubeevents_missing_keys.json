@@ -1,0 +1,18 @@
+{
+  "ClusterId": "cluster1234567",
+  "Computer": "computer1",
+  "Count": 10,
+  "FirstSeen": "2020-01-01T00:23:34.5678999Z",
+  "KubeEventType": "Normal",
+  "LastSeen": "2020-01-01T01:23:34.5678999Z",
+  "Message": "message1",
+  "Name": "autoschedulejob-158393400-gkv4g",
+  "Namespace": "kube-system",
+  "ObjectKind": "pod",
+  "Reason": "reason1",
+  "SourceComponent": "default-scheduler",
+  "SourceSystem": "Azure",
+  "Type": "KubeEvents",
+  "_Internal_WorkspaceResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+  "_SubscriptionId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18"
+}
