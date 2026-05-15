@@ -115,6 +115,9 @@ public final class NLFPlugin implements Plugin {
             else if (Set.of("AppTraces", "AppDependencies", "AppExceptions", "AppRequests").contains(type)) {
                 eventTypes.add(new AppInsightType(parsedEvent, realHostname, componentNameForPartitions));
             }
+            else if ("AzureActivity".equals(type)) {
+                eventTypes.add(new AzureActivityType(parsedEvent, realHostname, componentNameForPartitions));
+            }
             else if ("AzureDiagnostics".equals(type)) {
                 eventTypes.add(new AzureDiagnosticsType(parsedEvent, realHostname, componentNameForPartitions));
             }

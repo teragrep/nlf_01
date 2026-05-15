@@ -1,0 +1,37 @@
+{
+  "ActivityStatus": "activity-status1",
+  "ActivityStatusValue": "Started",
+  "ActivitySubstatus": "Started substatus",
+  "ActivitySubstatusValue": "200",
+  "Authorization": "{\"action\": \"action1\"}",
+  "Authorization_d": {
+    "action": "action1"
+  },
+  "Caller": "12345678-1234-1234-abcd-1234567890ab",
+  "CallerIpAddress": "127.0.0.1",
+  "Category": "category1",
+  "CategoryValue": "Administrative",
+  "Claims": "\"token\": \"123456788\"",
+  "Claims_d": {
+    "token": "123456788"
+  },
+  "CorrelationId": "12345678-1234-1234-abcd-1234567890bc",
+  "EventDataId": "1234567889",
+  "EventSubmissionTimestamp": "2020-01-01T01:02:34.5678999Z",
+  "Hierarchy": "hierarchy1",
+  "HTTPRequest": "PUT",
+  "Level": "Debug",
+  "OperationId": "operation-1",
+  "OperationName": "operation-name1",
+  "OperationNameValue": "operation-name-value1",
+  "Properties": "{}",
+  "Properties_d": {},
+  "Resource": "{resourceName}",
+  "ResourceGroup": "{resourceGroupName}",
+  "ResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+  "ResourceProvider": "{resourceProviderNamespace}",
+  "ResourceProviderValue": "Microsoft.Storage",
+  "SourceSystem": "Azure",
+  "TenantId": "12",
+  "_BilledSize": 1
+}

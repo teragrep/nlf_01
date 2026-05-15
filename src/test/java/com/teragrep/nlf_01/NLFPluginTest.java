@@ -952,6 +952,71 @@ public class NLFPluginTest {
     }
 
     @Test
+    void azureActivityType() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/azureactivity.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"ActivityStatus\": \"activity-status1\",\n"
+                                + "  \"ActivityStatusValue\": \"Started\",\n"
+                                + "  \"ActivitySubstatus\": \"Started substatus\",\n"
+                                + "  \"ActivitySubstatusValue\": \"200\",\n"
+                                + "  \"Authorization\": \"{\\\"action\\\": \\\"action1\\\"}\",\n"
+                                + "  \"Authorization_d\": {\n" + "    \"action\": \"action1\"\n" + "  },\n"
+                                + "  \"Caller\": \"12345678-1234-1234-abcd-1234567890ab\",\n"
+                                + "  \"CallerIpAddress\": \"127.0.0.1\",\n" + "  \"Category\": \"category1\",\n"
+                                + "  \"CategoryValue\": \"Administrative\",\n"
+                                + "  \"Claims\": \"\\\"token\\\": \\\"123456788\\\"\",\n" + "  \"Claims_d\": {\n"
+                                + "    \"token\": \"123456788\"\n" + "  },\n"
+                                + "  \"CorrelationId\": \"12345678-1234-1234-abcd-1234567890bc\",\n"
+                                + "  \"EventDataId\": \"1234567889\",\n"
+                                + "  \"EventSubmissionTimestamp\": \"2020-01-01T01:02:34.5678999Z\",\n"
+                                + "  \"Hierarchy\": \"hierarchy1\",\n" + "  \"HTTPRequest\": \"PUT\",\n"
+                                + "  \"Level\": \"Debug\",\n" + "  \"OperationId\": \"operation-1\",\n"
+                                + "  \"OperationName\": \"operation-name1\",\n"
+                                + "  \"OperationNameValue\": \"operation-name-value1\",\n"
+                                + "  \"Properties\": \"{}\",\n" + "  \"Properties_d\": {},\n"
+                                + "  \"Resource\": \"{resourceName}\",\n"
+                                + "  \"ResourceGroup\": \"{resourceGroupName}\",\n"
+                                + "  \"ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"ResourceProvider\": \"{resourceProviderNamespace}\",\n"
+                                + "  \"ResourceProviderValue\": \"Microsoft.Storage\",\n"
+                                + "  \"SourceSystem\": \"Azure\",\n" + "  \"SubscriptionId\": \"{subscriptionId}\",\n"
+                                + "  \"TenantId\": \"12\",\n"
+                                + "  \"TimeGenerated\": \"2020-01-01T01:02:34.5678999Z\",\n"
+                                + "  \"Type\": \"AzureActivity\",\n" + "  \"_BilledSize\": 1,\n"
+                                + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
+                                + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-9ccb3400a4e3cc188a82048d7d632a31", syslogMessage.getHostname());
+        Assertions.assertEquals("AzureActivity", syslogMessage.getAppName());
+        Assertions.assertEquals("2020-01-01T01:02:34.567Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(AzureActivityType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+    }
+
+    @Test
     void functionAppLogsType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/function.json")));

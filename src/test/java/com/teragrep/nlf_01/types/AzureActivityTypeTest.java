@@ -1,0 +1,260 @@
+/*
+ * Teragrep Neon log format plugin for AKV_01
+ * Copyright (C) 2025 Suomen Kanuuna Oy
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ * Additional permission under GNU Affero General Public License version 3
+ * section 7
+ *
+ * If you modify this Program, or any covered work, by linking or combining it
+ * with other code, such other code is not for that reason alone subject to any
+ * of the requirements of the GNU Affero GPL version 3 as long as this Program
+ * is the same Program as licensed from Suomen Kanuuna Oy without any additional
+ * modifications.
+ *
+ * Supplemented terms under GNU Affero General Public License version 3
+ * section 7
+ *
+ * Origin of the software must be attributed to Suomen Kanuuna Oy. Any modified
+ * versions must be marked as "Modified version of" The Program.
+ *
+ * Names of the licensors and authors may not be used for publicity purposes.
+ *
+ * No rights are granted for use of trade names, trademarks, or service marks
+ * which are in The Program if any.
+ *
+ * Licensee must indemnify licensors and authors for any liability that these
+ * contractual assumptions impose on licensors and authors.
+ *
+ * To the extent this program is licensed as part of the Commercial versions of
+ * Teragrep, the applicable Commercial License may apply to this file if you as
+ * a licensee so wish it.
+ */
+package com.teragrep.nlf_01.types;
+
+import com.teragrep.akv_01.event.ParsedEvent;
+import com.teragrep.akv_01.event.ParsedEventFactory;
+import com.teragrep.akv_01.event.UnparsedEventImpl;
+import com.teragrep.akv_01.event.metadata.offset.EventOffset;
+import com.teragrep.akv_01.event.metadata.offset.EventOffsetImpl;
+import com.teragrep.akv_01.event.metadata.offset.EventOffsetStub;
+import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContext;
+import com.teragrep.akv_01.event.metadata.partitionContext.EventPartitionContextStub;
+import com.teragrep.akv_01.event.metadata.properties.EventProperties;
+import com.teragrep.akv_01.event.metadata.properties.EventPropertiesStub;
+import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemProperties;
+import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemPropertiesStub;
+import com.teragrep.akv_01.event.metadata.time.EnqueuedTime;
+import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeImpl;
+import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeStub;
+import com.teragrep.akv_01.plugin.PluginException;
+import com.teragrep.nlf_01.fakes.EventPartitionContextFake;
+import com.teragrep.nlf_01.fakes.EventPropertiesFake;
+import com.teragrep.nlf_01.fakes.EventSystemPropertiesFake;
+import com.teragrep.rlo_14.Facility;
+import com.teragrep.rlo_14.SDElement;
+import com.teragrep.rlo_14.SDParam;
+import com.teragrep.rlo_14.Severity;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+final class AzureActivityTypeTest {
+
+    private ParsedEvent testEvent(
+            final String path,
+            final EventPartitionContext partitionCtx,
+            final EventProperties props,
+            final EventSystemProperties sysProps,
+            final EnqueuedTime enqueuedTime,
+            final EventOffset offset
+    ) {
+        final InputStream is = Assertions.assertDoesNotThrow(() -> Files.newInputStream(Paths.get(path)));
+        final JsonReader reader = Json.createReader(is);
+
+        final JsonObject json = reader.readObject();
+
+        Assertions.assertDoesNotThrow(is::close);
+        Assertions.assertDoesNotThrow(reader::close);
+
+        return new ParsedEventFactory(
+                new UnparsedEventImpl(json.toString(), partitionCtx, props, sysProps, enqueuedTime, offset)
+        ).parsedEvent();
+    }
+
+    @Test
+    void testIdealCase() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/azureactivity.json", new EventPartitionContextFake(), new EventPropertiesFake(),
+                new EventSystemPropertiesFake(), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
+        );
+
+        final AzureActivityType type = new AzureActivityType(parsedEvent, "localhost", "aer");
+
+        final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
+        final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
+        final String actualHostname = Assertions.assertDoesNotThrow(type::hostname);
+        final String actualMsg = Assertions.assertDoesNotThrow(type::msg);
+        final String actualMsgId = Assertions.assertDoesNotThrow(type::msgId);
+        final Severity actualSeverity = Assertions.assertDoesNotThrow(type::severity);
+        final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
+        final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
+
+        Assertions.assertEquals("AzureActivity", actualAppName);
+        Assertions.assertEquals(Facility.AUDIT, actualFacility);
+        Assertions.assertEquals("md5-9ccb3400a4e3cc188a82048d7d632a31", actualHostname);
+        Assertions
+                .assertEquals(
+                        "{\"ActivityStatus\":\"activity-status1\",\"ActivityStatusValue\":\"Started\",\"ActivitySubstatus\":\"Started substatus\",\"ActivitySubstatusValue\":\"200\",\"Authorization\":\"{\\\"action\\\": \\\"action1\\\"}\",\"Authorization_d\":{\"action\":\"action1\"},\"Caller\":\"12345678-1234-1234-abcd-1234567890ab\",\"CallerIpAddress\":\"127.0.0.1\",\"Category\":\"category1\",\"CategoryValue\":\"Administrative\",\"Claims\":\"\\\"token\\\": \\\"123456788\\\"\",\"Claims_d\":{\"token\":\"123456788\"},\"CorrelationId\":\"12345678-1234-1234-abcd-1234567890bc\",\"EventDataId\":\"1234567889\",\"EventSubmissionTimestamp\":\"2020-01-01T01:02:34.5678999Z\",\"Hierarchy\":\"hierarchy1\",\"HTTPRequest\":\"PUT\",\"Level\":\"Debug\",\"OperationId\":\"operation-1\",\"OperationName\":\"operation-name1\",\"OperationNameValue\":\"operation-name-value1\",\"Properties\":\"{}\",\"Properties_d\":{},\"Resource\":\"{resourceName}\",\"ResourceGroup\":\"{resourceGroupName}\",\"ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"ResourceProvider\":\"{resourceProviderNamespace}\",\"ResourceProviderValue\":\"Microsoft.Storage\",\"SourceSystem\":\"Azure\",\"SubscriptionId\":\"{subscriptionId}\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-01T01:02:34.5678999Z\",\"Type\":\"AzureActivity\",\"_BilledSize\":1,\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        actualMsg
+                );
+        Assertions.assertEquals("12345678900", actualMsgId);
+        Assertions.assertEquals(Severity.NOTICE, actualSeverity);
+        Assertions.assertEquals(1577840554567L, actualTimestamp);
+
+        final Map<String, Map<String, String>> sdElementMap = actualSDElements
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions
+                .assertEquals("fully-qualified-namespace", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("event-hub-name", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("123", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("consumer-group", sdElementMap.get("aer_partition@48577").get("consumer_group"));
+
+        Assertions.assertEquals("0", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("2010-01-01T00:00Z", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("456", sdElementMap.get("aer_event@48577").get("partition_key"));
+        Assertions
+                .assertEquals(
+                        "{\"null\":\"important-null-value\",\"prop-key\":\"prop-value\",\"important-key\":null}",
+                        sdElementMap.get("aer_event@48577").get("properties")
+                );
+
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
+
+        Assertions
+                .assertEquals(AzureActivityType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+    }
+
+    @Test
+    void testWithAllMetadataStubs() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/azureactivity.json", new EventPartitionContextStub(), new EventPropertiesStub(),
+                new EventSystemPropertiesStub(), new EnqueuedTimeStub(), new EventOffsetStub()
+        );
+
+        final AzureActivityType type = new AzureActivityType(parsedEvent, "localhost", "aer");
+
+        final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
+        final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
+        final String actualHostname = Assertions.assertDoesNotThrow(type::hostname);
+        final String actualMsg = Assertions.assertDoesNotThrow(type::msg);
+        final String actualMsgId = Assertions.assertDoesNotThrow(type::msgId);
+        final Severity actualSeverity = Assertions.assertDoesNotThrow(type::severity);
+        final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
+        final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
+
+        Assertions.assertEquals("AzureActivity", actualAppName);
+        Assertions.assertEquals(Facility.AUDIT, actualFacility);
+        Assertions.assertEquals("md5-9ccb3400a4e3cc188a82048d7d632a31", actualHostname);
+        Assertions
+                .assertEquals(
+                        "{\"ActivityStatus\":\"activity-status1\",\"ActivityStatusValue\":\"Started\",\"ActivitySubstatus\":\"Started substatus\",\"ActivitySubstatusValue\":\"200\",\"Authorization\":\"{\\\"action\\\": \\\"action1\\\"}\",\"Authorization_d\":{\"action\":\"action1\"},\"Caller\":\"12345678-1234-1234-abcd-1234567890ab\",\"CallerIpAddress\":\"127.0.0.1\",\"Category\":\"category1\",\"CategoryValue\":\"Administrative\",\"Claims\":\"\\\"token\\\": \\\"123456788\\\"\",\"Claims_d\":{\"token\":\"123456788\"},\"CorrelationId\":\"12345678-1234-1234-abcd-1234567890bc\",\"EventDataId\":\"1234567889\",\"EventSubmissionTimestamp\":\"2020-01-01T01:02:34.5678999Z\",\"Hierarchy\":\"hierarchy1\",\"HTTPRequest\":\"PUT\",\"Level\":\"Debug\",\"OperationId\":\"operation-1\",\"OperationName\":\"operation-name1\",\"OperationNameValue\":\"operation-name-value1\",\"Properties\":\"{}\",\"Properties_d\":{},\"Resource\":\"{resourceName}\",\"ResourceGroup\":\"{resourceGroupName}\",\"ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"ResourceProvider\":\"{resourceProviderNamespace}\",\"ResourceProviderValue\":\"Microsoft.Storage\",\"SourceSystem\":\"Azure\",\"SubscriptionId\":\"{subscriptionId}\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-01T01:02:34.5678999Z\",\"Type\":\"AzureActivity\",\"_BilledSize\":1,\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        actualMsg
+                );
+        Assertions.assertEquals("", actualMsgId);
+        Assertions.assertEquals(Severity.NOTICE, actualSeverity);
+        Assertions.assertEquals(1577840554567L, actualTimestamp);
+
+        final Map<String, Map<String, String>> sdElementMap = actualSDElements
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("consumer_group"));
+
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("partition_key"));
+        Assertions.assertEquals("{}", sdElementMap.get("aer_event@48577").get("properties"));
+
+        Assertions.assertEquals("generated", sdElementMap.get("aer@48577").get("timestamp_source"));
+
+        Assertions
+                .assertEquals(AzureActivityType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+    }
+
+    @Test
+    void testWithMissingJsonKeys() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/azureactivity_missing_keys.json", new EventPartitionContextStub(),
+                new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
+                new EventOffsetStub()
+        );
+
+        final AzureActivityType type = new AzureActivityType(parsedEvent, "localhost", "aer");
+
+        // Should throw an Exception since the Type field is missing, but this would probably hinder the actual logic of using this class in a real scenario
+        Assertions.assertThrows(PluginException.class, type::appName);
+        final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
+        Assertions.assertThrows(PluginException.class, type::hostname);
+        final String actualMsg = Assertions.assertDoesNotThrow(type::msg);
+        final String actualMsgId = Assertions.assertDoesNotThrow(type::msgId);
+        final Severity actualSeverity = Assertions.assertDoesNotThrow(type::severity);
+        Assertions.assertThrows(PluginException.class, type::timestamp);
+        final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
+
+        Assertions.assertEquals(Facility.AUDIT, actualFacility);
+        Assertions
+                .assertEquals(
+                        "{\"ActivityStatus\":\"activity-status1\",\"ActivityStatusValue\":\"Started\",\"ActivitySubstatus\":\"Started substatus\",\"ActivitySubstatusValue\":\"200\",\"Authorization\":\"{\\\"action\\\": \\\"action1\\\"}\",\"Authorization_d\":{\"action\":\"action1\"},\"Caller\":\"12345678-1234-1234-abcd-1234567890ab\",\"CallerIpAddress\":\"127.0.0.1\",\"Category\":\"category1\",\"CategoryValue\":\"Administrative\",\"Claims\":\"\\\"token\\\": \\\"123456788\\\"\",\"Claims_d\":{\"token\":\"123456788\"},\"CorrelationId\":\"12345678-1234-1234-abcd-1234567890bc\",\"EventDataId\":\"1234567889\",\"EventSubmissionTimestamp\":\"2020-01-01T01:02:34.5678999Z\",\"Hierarchy\":\"hierarchy1\",\"HTTPRequest\":\"PUT\",\"Level\":\"Debug\",\"OperationId\":\"operation-1\",\"OperationName\":\"operation-name1\",\"OperationNameValue\":\"operation-name-value1\",\"Properties\":\"{}\",\"Properties_d\":{},\"Resource\":\"{resourceName}\",\"ResourceGroup\":\"{resourceGroupName}\",\"ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"ResourceProvider\":\"{resourceProviderNamespace}\",\"ResourceProviderValue\":\"Microsoft.Storage\",\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"_BilledSize\":1}",
+                        actualMsg
+                );
+        Assertions.assertEquals("", actualMsgId);
+        Assertions.assertEquals(Severity.NOTICE, actualSeverity);
+
+        final Map<String, Map<String, String>> sdElementMap = actualSDElements
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("consumer_group"));
+
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("partition_key"));
+        Assertions.assertEquals("{}", sdElementMap.get("aer_event@48577").get("properties"));
+
+        Assertions.assertEquals("generated", sdElementMap.get("aer@48577").get("timestamp_source"));
+
+        Assertions
+                .assertEquals(AzureActivityType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+    }
+}
