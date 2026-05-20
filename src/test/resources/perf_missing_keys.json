@@ -1,0 +1,18 @@
+{
+  "BucketEndTime": "2021-01-01T01:23:34.5678999Z",
+  "BucketStartTime": "2022-01-01T01:23:34.5678999Z",
+  "CounterName": "counter1",
+  "CounterPath": "\\computer1\\instance1\\counter1",
+  "CounterValue": 1.1,
+  "InstanceName": "instance1",
+  "Max": 1.2,
+  "Min": 1.0,
+  "ObjectName": "object1",
+  "SampleCount": 1,
+  "SourceSystem": "Azure",
+  "StandardDeviation": 2.0,
+  "TenantId": "456",
+  "Type": "Perf",
+  "_ItemId": "123",
+  "_Internal_WorkspaceResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}"
+}
