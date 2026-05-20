@@ -139,6 +139,9 @@ public final class NLFPlugin implements Plugin {
             else if ("LogicAppWorkflowRuntime".equals(type)) {
                 eventTypes.add(new LogicAppWorkflowRuntimeType(parsedEvent, realHostname, componentNameForPartitions));
             }
+            else if ("Perf".equals(type)) {
+                eventTypes.add(new PerfType(parsedEvent, realHostname, componentNameForPartitions));
+            }
             else if ("PGSQLServerLogs".equals(type)) {
                 eventTypes.add(new PGSQLServerLogsType(parsedEvent, realHostname, componentNameForPartitions));
             }

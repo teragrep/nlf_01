@@ -1209,6 +1209,52 @@ public class NLFPluginTest {
     }
 
     @Test
+    void perfTypeTest() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/perf.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"BucketEndTime\": \"2021-01-01T01:23:34.5678999Z\",\n"
+                                + "  \"BucketStartTime\": \"2022-01-01T01:23:34.5678999Z\",\n"
+                                + "  \"Computer\": \"computer1\",\n" + "  \"CounterName\": \"counter1\",\n"
+                                + "  \"CounterPath\": \"\\\\computer1\\\\instance1\\\\counter1\",\n"
+                                + "  \"CounterValue\": 1.1,\n" + "  \"InstanceName\": \"instance1\",\n"
+                                + "  \"Max\": 1.2,\n" + "  \"Min\": 1.0,\n" + "  \"ObjectName\": \"object1\",\n"
+                                + "  \"SampleCount\": 1,\n" + "  \"SourceSystem\": \"Azure\",\n"
+                                + "  \"StandardDeviation\": 2.0,\n"
+                                + "  \"TimeGenerated\": \"2020-01-01T01:23:34.5678999Z\",\n"
+                                + "  \"TenantId\": \"456\",\n" + "  \"Type\": \"Perf\",\n" + "  \"_ItemId\": \"123\",\n"
+                                + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
+                                + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("computer1", syslogMessage.getAppName());
+        Assertions.assertEquals("2020-01-01T01:23:34.567Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions.assertEquals(PerfType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+    }
+
+    @Test
     void powerAutomateActivityType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/powerautomateactivity.json")));
