@@ -1,0 +1,21 @@
+{
+  "ActionName": "ActionName-46",
+  "Category": "category-46",
+  "Identity": "identity-46",
+  "LogId": "12345678-1234-1234-abcd-1234567890bc",
+  "OperationName": "Operation-46",
+  "OperationVersion": "1.0.0",
+  "RequestId": "12345678-1234-1234-abcd-1234567890cd",
+  "RequestParams": "\"key\":\"value\"",
+  "Response": "Success",
+  "ServiceName": "service-46",
+  "SessionId": "12345678-1234-1234-abcd-1234567890de",
+  "SourceIPAddress": "127.0.0.1",
+  "SourceSystem": "Azure",
+  "TenantId": "12345678-1234-1234-abcd-1234567890ef",
+  "TimeGenerated": "2025-10-06T00:00:00.0000000Z",
+  "Type": "DatabricksSQLPermissions",
+  "UserAgent": "User-Agent: Mozilla/5.0 (<system-information>) <platform> (<platform-details>) <extensions>",
+  "_ResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+  "_SubscriptionId": "12345678-1234-1234-abcd-1234567890fg"
+}

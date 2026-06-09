@@ -157,6 +157,9 @@ public final class NLFPlugin implements Plugin {
             ) {
                 eventTypes.add(new StorageType(parsedEvent, realHostname, componentNameForPartitions));
             }
+            else if (type.startsWith("Databricks")) {
+                eventTypes.add(new DefaultEventType(parsedEvent, realHostname, componentNameForPartitions));
+            }
             else if (type.endsWith("fluent_audit_log_events_CL")) {
                 eventTypes.add(new CCType(parsedEvent, realHostname, componentNameForPartitions));
             }
