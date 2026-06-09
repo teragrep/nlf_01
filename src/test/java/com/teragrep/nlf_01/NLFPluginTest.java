@@ -563,6 +563,53 @@ public class NLFPluginTest {
     }
 
     @Test
+    void azkvPolicyEvaluationDetailsLogsTest() {
+        final String json = Assertions
+                .assertDoesNotThrow(
+                        () -> Files.readString(Paths.get("src/test/resources/azkvpolicyevaluationdetailslogs.json"))
+                );
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"DurationMs\": 123,\n" + "  \"EvaluationDetails\": {},\n"
+                                + "  \"IsComplianceCheck\": true,\n" + "  \"ObjectName\": \"operation1\",\n"
+                                + "  \"ObjectType\": \"1.0\",\n" + "  \"OperationName\": \"1.0\",\n"
+                                + "  \"Properties\": {},\n" + "  \"ResultDescription\": \"Success\",\n"
+                                + "  \"ResultSignature\": \"signature1\",\n" + "  \"ResultType\": \"Success\",\n"
+                                + "  \"SourceSystem\": \"Azure\",\n"
+                                + "  \"TenantId\": \"12345678-1234-1234-abcd-1234567890ab\",\n"
+                                + "  \"TimeGenerated\": \"2020-10-01T11:59:26.256Z\",\n"
+                                + "  \"Type\": \"AZKVPolicyEvaluationDetailsLogs\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_SubscriptionId\": \"{subscriptionId}\"\n" + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("AZKVPolicyEvaluationDetailsLogs", syslogMessage.getAppName());
+        Assertions.assertEquals("2020-10-01T11:59:26.256Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(DefaultEventType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+    }
+
+    @Test
     void ccType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/cc.json")));

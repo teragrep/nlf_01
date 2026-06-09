@@ -1,0 +1,18 @@
+{
+  "DurationMs": 123,
+  "EvaluationDetails": {},
+  "IsComplianceCheck": true,
+  "ObjectName": "operation1",
+  "ObjectType": "1.0",
+  "OperationName": "1.0",
+  "Properties": {},
+  "ResultDescription": "Success",
+  "ResultSignature": "signature1",
+  "ResultType": "Success",
+  "SourceSystem": "Azure",
+  "TenantId": "12345678-1234-1234-abcd-1234567890ab",
+  "TimeGenerated": "2020-10-01T11:59:26.256Z",
+  "Type": "AZKVPolicyEvaluationDetailsLogs",
+  "_ResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+  "_SubscriptionId": "{subscriptionId}"
+}
