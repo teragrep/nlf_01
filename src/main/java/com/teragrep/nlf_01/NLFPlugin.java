@@ -125,7 +125,7 @@ public final class NLFPlugin implements Plugin {
             else if ("AzureDiagnostics".equals(type)) {
                 eventTypes.add(new AzureDiagnosticsType(parsedEvent, realHostname, componentNameForPartitions));
             }
-            else if ("ContainerAppConsoleLogs".equals(type)) {
+            else if (Set.of("ContainerAppConsoleLogs", "ContainerAppSystemLogs").contains(type)) {
                 eventTypes.add(new ContainerAppLogsType(parsedEvent, realHostname, componentNameForPartitions));
             }
             else if ("DataverseActivity".equals(type)) {
