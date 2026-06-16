@@ -64,13 +64,13 @@ import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
 import java.util.Set;
 
-public final class ContainerAppConsoleLogsType implements EventType {
+public final class ContainerAppLogsType implements EventType {
 
     private final ParsedEvent parsedEvent;
     private final String realHostname;
     private final String componentNameForPartitions;
 
-    public ContainerAppConsoleLogsType(
+    public ContainerAppLogsType(
             final ParsedEvent parsedEvent,
             final String realHostname,
             final String componentNameForPartitions

@@ -115,7 +115,7 @@ final class ContainerAppConsoleLogsTypeTest {
                 new EventPropertiesFake(), new EventSystemPropertiesFake(), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
-        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost", "aer");
+        final EventType type = new ContainerAppLogsType(parsedEvent, "localhost", "aer");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -160,7 +160,7 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
 
         Assertions
-                .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+                .assertEquals(ContainerAppLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
 
     @Test
@@ -171,7 +171,7 @@ final class ContainerAppConsoleLogsTypeTest {
                 new EventPropertiesFake(), new EventSystemPropertiesFake(), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
-        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost", "aer");
+        final EventType type = new ContainerAppLogsType(parsedEvent, "localhost", "aer");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -216,7 +216,7 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
 
         Assertions
-                .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+                .assertEquals(ContainerAppLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
 
     @Test
@@ -227,7 +227,7 @@ final class ContainerAppConsoleLogsTypeTest {
                 new EventOffsetStub()
         );
 
-        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost", "aer");
+        final EventType type = new ContainerAppLogsType(parsedEvent, "localhost", "aer");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -267,7 +267,7 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals("generated", sdElementMap.get("aer@48577").get("timestamp_source"));
 
         Assertions
-                .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+                .assertEquals(ContainerAppLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
 
     @Test
@@ -278,7 +278,7 @@ final class ContainerAppConsoleLogsTypeTest {
                 new EventOffsetStub()
         );
 
-        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost", "aer");
+        final EventType type = new ContainerAppLogsType(parsedEvent, "localhost", "aer");
 
         final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -318,7 +318,7 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals("generated", sdElementMap.get("aer@48577").get("timestamp_source"));
 
         Assertions
-                .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+                .assertEquals(ContainerAppLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
 
     @Test
@@ -329,7 +329,7 @@ final class ContainerAppConsoleLogsTypeTest {
                 new EventOffsetStub()
         );
 
-        final EventType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost", "aer");
+        final EventType type = new ContainerAppLogsType(parsedEvent, "localhost", "aer");
 
         Assertions.assertThrows(PluginException.class, type::appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
@@ -366,7 +366,7 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals("generated", sdElementMap.get("aer@48577").get("timestamp_source"));
 
         Assertions
-                .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+                .assertEquals(ContainerAppLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
 
     @Test
@@ -394,7 +394,7 @@ final class ContainerAppConsoleLogsTypeTest {
                 new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
-        final ContainerAppConsoleLogsType type = new ContainerAppConsoleLogsType(parsedEvent, "localhost", "aer");
+        final ContainerAppLogsType type = new ContainerAppLogsType(parsedEvent, "localhost", "aer");
 
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
@@ -420,6 +420,6 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
 
         Assertions
-                .assertEquals(ContainerAppConsoleLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+                .assertEquals(ContainerAppLogsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
 }
