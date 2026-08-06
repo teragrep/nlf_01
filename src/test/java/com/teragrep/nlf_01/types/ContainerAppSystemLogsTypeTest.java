@@ -74,6 +74,10 @@ import com.teragrep.rlo_14.Severity;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -81,11 +85,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 
-final class ContainerAppConsoleLogsTypeTest {
+final class ContainerAppSystemLogsTypeTest {
 
     private ParsedEvent testEvent(
             final String path,
@@ -111,7 +112,7 @@ final class ContainerAppConsoleLogsTypeTest {
     @Test
     void testIdealCaseWithContainerAppName() {
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/containerappconsolelogswithcontainerappname.json", new EventPartitionContextFake(),
+                "src/test/resources/containerappsystemlogswithcontainerappname.json", new EventPartitionContextFake(),
                 new EventPropertiesFake(), new EventSystemPropertiesFake(), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
@@ -131,7 +132,7 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals("md5-c17ef061422271d0c5a9528446dd144e-resourceName", actualHostname);
         Assertions
                 .assertEquals(
-                        "{\"Computer\":\"computer\",\"ContainerAppName\":\"container-app-name\",\"ContainerGroupId\":\"container-group-id\",\"ContainerGroupName\":\"container-group-name\",\"ContainerId\":\"container-id\",\"ContainerImage\":\"container-image\",\"ContainerName\":\"container-name\",\"EnvironmentName\":\"container-app-environment\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"Stream\":\"stream-1\",\"TenantId\":\"456\",\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Type\":\"ContainerAppConsoleLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
+                        "{\"ComponentName\":\"component-1\",\"ComponentType\":\"SpringCloudConfig\",\"ContainerAppName\":\"container-app-name\",\"ContainerName\":\"container-name\",\"Count\":1,\"EnvironmentName\":\"container-app-environment\",\"EventSource\":\"dapr\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"Reason\":\"reason\",\"ReplicaName\":\"replica-1\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"TenantId\":\"456\",\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Type\":\"ContainerAppSystemLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
                         actualMsg
                 );
         Assertions.assertEquals("12345678900", actualMsgId);
@@ -167,7 +168,7 @@ final class ContainerAppConsoleLogsTypeTest {
     void testIdealCaseWithJobName() {
 
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/containerappconsolelogswithjobname.json", new EventPartitionContextFake(),
+                "src/test/resources/containerappsystemlogswithjobname.json", new EventPartitionContextFake(),
                 new EventPropertiesFake(), new EventSystemPropertiesFake(), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
@@ -182,12 +183,12 @@ final class ContainerAppConsoleLogsTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("job-name", actualAppName);
+        Assertions.assertEquals("job-1", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-c17ef061422271d0c5a9528446dd144e-resourceName", actualHostname);
         Assertions
                 .assertEquals(
-                        "{\"Computer\":\"computer\",\"ContainerGroupId\":\"container-group-id\",\"ContainerGroupName\":\"container-group-name\",\"ContainerId\":\"container-id\",\"ContainerImage\":\"container-image\",\"ContainerName\":\"container-name\",\"EnvironmentName\":\"container-app-environment\",\"JobName\":\"job-name\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"Stream\":\"stream-1\",\"TenantId\":\"456\",\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Type\":\"ContainerAppConsoleLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
+                        "{\"ComponentName\":\"component-1\",\"ComponentType\":\"SpringCloudConfig\",\"ContainerName\":\"container-name\",\"Count\":1,\"EnvironmentName\":\"container-app-environment\",\"EventSource\":\"dapr\",\"JobName\":\"job-1\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"Reason\":\"reason\",\"ReplicaName\":\"replica-1\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"TenantId\":\"456\",\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Type\":\"ContainerAppSystemLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
                         actualMsg
                 );
         Assertions.assertEquals("12345678900", actualMsgId);
@@ -222,7 +223,7 @@ final class ContainerAppConsoleLogsTypeTest {
     @Test
     void testWithAllMetadataStubsWithContainerAppName() {
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/containerappconsolelogswithcontainerappname.json", new EventPartitionContextStub(),
+                "src/test/resources/containerappsystemlogswithcontainerappname.json", new EventPartitionContextStub(),
                 new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
                 new EventOffsetStub()
         );
@@ -243,7 +244,7 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals("md5-c17ef061422271d0c5a9528446dd144e-resourceName", actualHostname);
         Assertions
                 .assertEquals(
-                        "{\"Computer\":\"computer\",\"ContainerAppName\":\"container-app-name\",\"ContainerGroupId\":\"container-group-id\",\"ContainerGroupName\":\"container-group-name\",\"ContainerId\":\"container-id\",\"ContainerImage\":\"container-image\",\"ContainerName\":\"container-name\",\"EnvironmentName\":\"container-app-environment\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"Stream\":\"stream-1\",\"TenantId\":\"456\",\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Type\":\"ContainerAppConsoleLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
+                        "{\"ComponentName\":\"component-1\",\"ComponentType\":\"SpringCloudConfig\",\"ContainerAppName\":\"container-app-name\",\"ContainerName\":\"container-name\",\"Count\":1,\"EnvironmentName\":\"container-app-environment\",\"EventSource\":\"dapr\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"Reason\":\"reason\",\"ReplicaName\":\"replica-1\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"TenantId\":\"456\",\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Type\":\"ContainerAppSystemLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
                         actualMsg
                 );
         Assertions.assertEquals("", actualMsgId);
@@ -273,7 +274,7 @@ final class ContainerAppConsoleLogsTypeTest {
     @Test
     void testWithAllMetadataStubsWithJobName() {
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/containerappconsolelogswithjobname.json", new EventPartitionContextStub(),
+                "src/test/resources/containerappsystemlogswithjobname.json", new EventPartitionContextStub(),
                 new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
                 new EventOffsetStub()
         );
@@ -289,12 +290,12 @@ final class ContainerAppConsoleLogsTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("job-name", actualAppName);
+        Assertions.assertEquals("job-1", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-c17ef061422271d0c5a9528446dd144e-resourceName", actualHostname);
         Assertions
                 .assertEquals(
-                        "{\"Computer\":\"computer\",\"ContainerGroupId\":\"container-group-id\",\"ContainerGroupName\":\"container-group-name\",\"ContainerId\":\"container-id\",\"ContainerImage\":\"container-image\",\"ContainerName\":\"container-name\",\"EnvironmentName\":\"container-app-environment\",\"JobName\":\"job-name\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"Stream\":\"stream-1\",\"TenantId\":\"456\",\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Type\":\"ContainerAppConsoleLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
+                        "{\"ComponentName\":\"component-1\",\"ComponentType\":\"SpringCloudConfig\",\"ContainerName\":\"container-name\",\"Count\":1,\"EnvironmentName\":\"container-app-environment\",\"EventSource\":\"dapr\",\"JobName\":\"job-1\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"Reason\":\"reason\",\"ReplicaName\":\"replica-1\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"TenantId\":\"456\",\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Type\":\"ContainerAppSystemLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
                         actualMsg
                 );
         Assertions.assertEquals("", actualMsgId);
@@ -324,7 +325,7 @@ final class ContainerAppConsoleLogsTypeTest {
     @Test
     void testWithMissingJsonKeys() {
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/containerappconsolelogs_missing_keys.json", new EventPartitionContextStub(),
+                "src/test/resources/containerappsystemlogs_missing_keys.json", new EventPartitionContextStub(),
                 new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
                 new EventOffsetStub()
         );
@@ -343,7 +344,7 @@ final class ContainerAppConsoleLogsTypeTest {
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions
                 .assertEquals(
-                        "{\"Computer\":\"computer\",\"ContainerGroupId\":\"container-group-id\",\"ContainerGroupName\":\"container-group-name\",\"ContainerId\":\"container-id\",\"ContainerImage\":\"container-image\",\"ContainerName\":\"container-name\",\"EnvironmentName\":\"container-app-environment\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"Stream\":\"stream-1\",\"TenantId\":\"456\",\"Type\":\"ContainerAppConsoleLogs\",\"_ItemId\":\"123\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
+                        "{\"ComponentName\":\"component-1\",\"ComponentType\":\"SpringCloudConfig\",\"ContainerName\":\"container-name\",\"Count\":1,\"EnvironmentName\":\"container-app-environment\",\"EventSource\":\"dapr\",\"Location\":\"location-1\",\"Log\":\"log-message\",\"OperationName\":\"job-operation\",\"Reason\":\"reason\",\"ReplicaName\":\"replica-1\",\"RevisionName\":\"revision-1\",\"SourceSystem\":\"Linux\",\"TenantId\":\"456\",\"Type\":\"ContainerAppSystemLogs\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"}",
                         actualMsg
                 );
         Assertions.assertEquals("", actualMsgId);
@@ -388,7 +389,7 @@ final class ContainerAppConsoleLogsTypeTest {
         propertiesMap.put("important-key", null);
 
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/containerappconsolelogswithcontainerappname.json", new EventPartitionContextImpl(
+                "src/test/resources/containerappsystemlogswithcontainerappname.json", new EventPartitionContextImpl(
                         partitionContextMap
                 ), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap),
                 new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")

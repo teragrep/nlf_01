@@ -1,0 +1,20 @@
+{
+  "ComponentName": "component-1",
+  "ComponentType": "SpringCloudConfig",
+  "ContainerName": "container-name",
+  "Count": 1,
+  "EnvironmentName": "container-app-environment",
+  "EventSource": "dapr",
+  "Location": "location-1",
+  "Log": "log-message",
+  "OperationName": "job-operation",
+  "Reason": "reason",
+  "ReplicaName": "replica-1",
+  "RevisionName": "revision-1",
+  "SourceSystem": "Linux",
+  "TenantId": "456",
+  "Type": "ContainerAppSystemLogs",
+  "_ItemId": "123",
+  "_Internal_WorkspaceResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+  "_SubscriptionId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18"
+}
