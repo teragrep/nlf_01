@@ -55,12 +55,15 @@ import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class ContainerType implements EventType {
 
     private final ParsedEvent parsedEvent;
     private final String containerLogHostnameKey;
     private final String containerLogAppNameKey;
+    private final Pattern businessSystemPattern;
     private final String realHostname;
     private final String componentNameForPartitions;
 
@@ -71,9 +74,28 @@ public final class ContainerType implements EventType {
             final String realHostname,
             final String componentNameForPartitions
     ) {
+        this(
+                parsedEvent,
+                containerLogHostnameKey,
+                containerLogAppNameKey,
+                Pattern.compile("CI\\d{6,8}"),
+                realHostname,
+                componentNameForPartitions
+        );
+    }
+
+    private ContainerType(
+            final ParsedEvent parsedEvent,
+            final String containerLogHostnameKey,
+            final String containerLogAppNameKey,
+            final Pattern businessSystemPattern,
+            final String realHostname,
+            final String componentNameForPartitions
+    ) {
         this.parsedEvent = parsedEvent;
         this.containerLogHostnameKey = containerLogHostnameKey;
         this.containerLogAppNameKey = containerLogAppNameKey;
+        this.businessSystemPattern = businessSystemPattern;
         this.realHostname = realHostname;
         this.componentNameForPartitions = componentNameForPartitions;
     }
@@ -92,24 +114,8 @@ public final class ContainerType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey<JsonObject> kubernetesMetadataValidKey = new ValidJsonObjectKey(
-                mainObject,
-                "KubernetesMetadata"
-        );
-        final JsonObject kubernetesMetadata = kubernetesMetadataValidKey.value();
-
-        final ValidKey<JsonObject> podAnnotationsValidKey = new ValidJsonObjectKey(
-                kubernetesMetadata,
-                "podAnnotations"
-        );
-        final JsonObject podAnnotations = podAnnotationsValidKey.value();
-
-        final ValidKey<String> containerLogHostnameKeyValidKey = new ValidStringKey(
-                podAnnotations,
-                containerLogHostnameKey
-        );
-
-        return new ValidRFC5424Hostname(containerLogHostnameKeyValidKey.value()).validHostname();
+        final ValidKey<String> containerLogHostNameKeyValidKey = containerLogHostNameKeyValidKey(mainObject);
+        return new ValidRFC5424Hostname(containerLogHostNameKeyValidKey.value()).validHostname();
     }
 
     @Override
@@ -186,7 +192,30 @@ public final class ContainerType implements EventType {
         elems
                 .add(new SDElement("origin@48577").addSDParam("subscription", subscriptionId).addSDParam("clusterName", clusterName).addSDParam("namespace", podNamespace).addSDParam("pod", podName).addSDParam("containerId", containerId));
 
+        // Insert businessSystem SDElement and systemId SDParam if the hostName value matches the RegEx pattern
+        final ValidKey<String> containerLogHostNameKeyValidKey = containerLogHostNameKeyValidKey(mainObject);
+        final String value = containerLogHostNameKeyValidKey.value();
+        final Matcher matcher = businessSystemPattern.matcher(value);
+        if (matcher.find()) {
+            elems.add(new SDElement("businessSystem@48577").addSDParam("systemId", value));
+        }
+
         return elems;
+    }
+
+    private ValidKey<String> containerLogHostNameKeyValidKey(final JsonObject mainObject) throws PluginException {
+        final ValidKey<JsonObject> kubernetesMetadataValidKey = new ValidJsonObjectKey(
+                mainObject,
+                "KubernetesMetadata"
+        );
+        final JsonObject kubernetesMetadata = kubernetesMetadataValidKey.value();
+
+        final ValidKey<JsonObject> podAnnotationsValidKey = new ValidJsonObjectKey(
+                kubernetesMetadata,
+                "podAnnotations"
+        );
+        final JsonObject podAnnotations = podAnnotationsValidKey.value();
+        return new ValidStringKey(podAnnotations, containerLogHostnameKey);
     }
 
     @Override

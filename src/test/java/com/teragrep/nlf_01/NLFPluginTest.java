@@ -127,7 +127,7 @@ public class NLFPluginTest {
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals(json, syslogMessage.getMsg());
-        Assertions.assertEquals("HOST-NAME", syslogMessage.getHostname());
+        Assertions.assertEquals("CI123456", syslogMessage.getHostname());
         Assertions.assertEquals("APP-NAME.o", syslogMessage.getAppName());
         Assertions.assertEquals("2020-01-01T01:23:34.567Z", syslogMessage.getTimestamp());
 
@@ -226,7 +226,7 @@ public class NLFPluginTest {
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals(json, syslogMessage.getMsg());
-        Assertions.assertEquals("HOST-NAME", syslogMessage.getHostname());
+        Assertions.assertEquals("CI123456", syslogMessage.getHostname());
         Assertions.assertEquals("APP-NAME.o", syslogMessage.getAppName());
         Assertions.assertEquals("2020-01-01T01:23:34.567Z", syslogMessage.getTimestamp());
 

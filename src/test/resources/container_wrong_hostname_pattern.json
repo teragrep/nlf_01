@@ -20,7 +20,7 @@
     "imageTag": "imagetag",
     "podAnnotations": {
       "appname-annotation": "APP-NAME",
-      "hostname-annotation": "CI123456"
+      "hostname-annotation": "AB123456"
     },
     "podLabels": {
       "x":"y"
