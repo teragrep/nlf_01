@@ -74,8 +74,6 @@ import com.teragrep.rlo_14.Severity;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
-import jakarta.json.JsonValue;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -90,22 +88,20 @@ import org.junit.jupiter.api.Test;
 public final class ContainerTypeTest {
 
     private ParsedEvent testEvent(
-            String path,
-            EventPartitionContext partitionCtx,
-            EventProperties props,
-            EventSystemProperties sysProps,
-            EnqueuedTime enqueuedTime,
-            EventOffset offset
+            final String path,
+            final EventPartitionContext partitionCtx,
+            final EventProperties props,
+            final EventSystemProperties sysProps,
+            final EnqueuedTime enqueuedTime,
+            final EventOffset offset
     ) {
-        JsonObject json = JsonValue.EMPTY_JSON_OBJECT;
-        try (
-                final InputStream is = Files.newInputStream(Paths.get(path)); final JsonReader reader = Json.createReader(is)
-        ) {
-            json = reader.readObject();
-        }
-        catch (final IOException e) {
-            Assertions.fail("Failed to read test data from file", e);
-        }
+        final InputStream is = Assertions.assertDoesNotThrow(() -> Files.newInputStream(Paths.get(path)));
+        final JsonReader reader = Json.createReader(is);
+
+        final JsonObject json = Assertions.assertDoesNotThrow(reader::readObject);
+
+        Assertions.assertDoesNotThrow(is::close);
+        Assertions.assertDoesNotThrow(reader::close);
 
         return new ParsedEventFactory(
                 new UnparsedEventImpl(json.toString(), partitionCtx, props, sysProps, enqueuedTime, offset)
@@ -138,10 +134,10 @@ public final class ContainerTypeTest {
 
         Assertions.assertEquals("APP-NAME.o", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
-        Assertions.assertEquals("HOST-NAME", actualHostname);
+        Assertions.assertEquals("CI123456", actualHostname);
         Assertions
                 .assertEquals(
-                        "{\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Computer\":\"computer\",\"ContainerId\":\"container-id\",\"ContainerName\":\"container-name\",\"PodName\":\"pod-name\",\"PodNamespace\":\"pod-namespace\",\"LogMessage\":{\"level\":\"info\",\"ts\":\"2020-01-01T01:23:45.678Z\",\"logger\":\"logger\",\"msg\":\"message\",\"namespace\":\"namespace\"},\"LogSource\":\"stdout\",\"KubernetesMetadata\":{\"image\":\"image\",\"imageID\":\"123-456-789\",\"imageRepo\":\"imagerepo\",\"imageTag\":\"imagetag\",\"podAnnotations\":{\"appname-annotation\":\"APP-NAME\",\"hostname-annotation\":\"HOST-NAME\"},\"podLabels\":{\"x\":\"y\"},\"podUid\":\"123\"},\"LogLevel\":\"info\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"Type\":\"ContainerLogV2\",\"TenantId\":\"456\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        "{\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Computer\":\"computer\",\"ContainerId\":\"container-id\",\"ContainerName\":\"container-name\",\"PodName\":\"pod-name\",\"PodNamespace\":\"pod-namespace\",\"LogMessage\":{\"level\":\"info\",\"ts\":\"2020-01-01T01:23:45.678Z\",\"logger\":\"logger\",\"msg\":\"message\",\"namespace\":\"namespace\"},\"LogSource\":\"stdout\",\"KubernetesMetadata\":{\"image\":\"image\",\"imageID\":\"123-456-789\",\"imageRepo\":\"imagerepo\",\"imageTag\":\"imagetag\",\"podAnnotations\":{\"appname-annotation\":\"APP-NAME\",\"hostname-annotation\":\"CI123456\"},\"podLabels\":{\"x\":\"y\"},\"podUid\":\"123\"},\"LogLevel\":\"info\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"Type\":\"ContainerLogV2\",\"TenantId\":\"456\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
                         actualMsg
                 );
         Assertions.assertEquals("12345678900", actualMsgId);
@@ -204,10 +200,10 @@ public final class ContainerTypeTest {
 
         Assertions.assertEquals("APP-NAME.o", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
-        Assertions.assertEquals("HOST-NAME", actualHostname);
+        Assertions.assertEquals("CI123456", actualHostname);
         Assertions
                 .assertEquals(
-                        "{\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Computer\":\"computer\",\"ContainerId\":\"container-id\",\"ContainerName\":\"container-name\",\"PodName\":\"pod-name\",\"PodNamespace\":\"pod-namespace\",\"LogMessage\":{\"level\":\"info\",\"ts\":\"2020-01-01T01:23:45.678Z\",\"logger\":\"logger\",\"msg\":\"message\",\"namespace\":\"namespace\"},\"LogSource\":\"stdout\",\"KubernetesMetadata\":{\"image\":\"image\",\"imageID\":\"123-456-789\",\"imageRepo\":\"imagerepo\",\"imageTag\":\"imagetag\",\"podAnnotations\":{\"appname-annotation\":\"APP-NAME\",\"hostname-annotation\":\"HOST-NAME\"},\"podLabels\":{\"x\":\"y\"},\"podUid\":\"123\"},\"LogLevel\":\"info\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"Type\":\"ContainerLogV2\",\"TenantId\":\"456\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        "{\"TimeGenerated\":\"2020-01-01T01:23:34.5678999Z\",\"Computer\":\"computer\",\"ContainerId\":\"container-id\",\"ContainerName\":\"container-name\",\"PodName\":\"pod-name\",\"PodNamespace\":\"pod-namespace\",\"LogMessage\":{\"level\":\"info\",\"ts\":\"2020-01-01T01:23:45.678Z\",\"logger\":\"logger\",\"msg\":\"message\",\"namespace\":\"namespace\"},\"LogSource\":\"stdout\",\"KubernetesMetadata\":{\"image\":\"image\",\"imageID\":\"123-456-789\",\"imageRepo\":\"imagerepo\",\"imageTag\":\"imagetag\",\"podAnnotations\":{\"appname-annotation\":\"APP-NAME\",\"hostname-annotation\":\"CI123456\"},\"podLabels\":{\"x\":\"y\"},\"podUid\":\"123\"},\"LogLevel\":\"info\",\"_ItemId\":\"123\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"Type\":\"ContainerLogV2\",\"TenantId\":\"456\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
                         actualMsg
                 );
         Assertions.assertEquals("", actualMsgId);
@@ -296,7 +292,13 @@ public final class ContainerTypeTest {
                 "src/test/resources/container.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
-        final ContainerType type = new ContainerType(parsedEvent, "key1", "key2", "localhost", "aer");
+        final ContainerType type = new ContainerType(
+                parsedEvent,
+                "hostname-annotation",
+                "appname-annotation",
+                "localhost",
+                "aer"
+        );
 
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
@@ -328,5 +330,37 @@ public final class ContainerTypeTest {
         Assertions.assertEquals("pod-namespace", sdElementMap.get("origin@48577").get("namespace"));
         Assertions.assertEquals("pod-name", sdElementMap.get("origin@48577").get("pod"));
         Assertions.assertEquals("container-id", sdElementMap.get("origin@48577").get("containerId"));
+
+        // BusinessSystem
+        Assertions.assertTrue(sdElementMap.containsKey("businessSystem@48577"));
+        final Map<String, String> businessSystemMap = sdElementMap.get("businessSystem@48577");
+        Assertions.assertEquals(1, businessSystemMap.size());
+        Assertions.assertTrue(businessSystemMap.containsKey("systemId"));
+        Assertions.assertEquals("CI123456", businessSystemMap.get("systemId"));
+    }
+
+    @Test
+    @DisplayName("test that businessSystem is not added if regex pattern does not match")
+    void testThatBusinessSystemIsNotAddedIfRegexPatternDoesNotMatch() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/container_wrong_hostname_pattern.json", new EventPartitionContextStub(),
+                new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
+                new EventOffsetStub()
+        );
+
+        final ContainerType type = new ContainerType(
+                parsedEvent,
+                "hostname-annotation",
+                "appname-annotation",
+                "localhost",
+                "aer"
+        );
+
+        final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
+        final Map<String, Map<String, String>> sdElementMap = actualSDElements
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertFalse(sdElementMap.containsKey("businessSystem@48577"));
     }
 }
