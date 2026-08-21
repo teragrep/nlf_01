@@ -140,8 +140,9 @@ public final class AuditLogsCLType implements EventType {
 
     @Override
     public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass())
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         final AuditLogsCLType that = (AuditLogsCLType) o;
         return Objects.equals(parsedEvent, that.parsedEvent) && Objects.equals(realHostname, that.realHostname)
                 && Objects.equals(componentNameForPartitions, that.componentNameForPartitions);
