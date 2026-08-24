@@ -115,7 +115,7 @@ public final class AppInsightTypeTest {
     @Test
     void testIdealCase() {
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/appinsight_object.json", new EventPartitionContextFake(), new EventPropertiesFake(),
+                "src/test/resources/apptraces_object.json", new EventPartitionContextFake(), new EventPropertiesFake(),
                 new EventSystemPropertiesFake(), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
@@ -170,7 +170,7 @@ public final class AppInsightTypeTest {
     @Test
     void testWithAllMetadataStubs() {
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/appinsight_object.json", new EventPartitionContextStub(), new EventPropertiesStub(),
+                "src/test/resources/apptraces_object.json", new EventPartitionContextStub(), new EventPropertiesStub(),
                 new EventSystemPropertiesStub(), new EnqueuedTimeStub(), new EventOffsetStub()
         );
 
@@ -220,7 +220,7 @@ public final class AppInsightTypeTest {
     @Test
     void testWithMissingJsonKeys() {
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/appinsight_missing_keys.json", new EventPartitionContextStub(),
+                "src/test/resources/apptraces_missing_keys.json", new EventPartitionContextStub(),
                 new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
                 new EventOffsetStub()
         );
@@ -284,7 +284,7 @@ public final class AppInsightTypeTest {
         propertiesMap.put("important-key", null);
 
         final ParsedEvent parsedEvent = testEvent(
-                "src/test/resources/appinsight_object.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
+                "src/test/resources/apptraces_object.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
         );
 
         final AppInsightType type = new AppInsightType(parsedEvent, "localhost", "aer");
