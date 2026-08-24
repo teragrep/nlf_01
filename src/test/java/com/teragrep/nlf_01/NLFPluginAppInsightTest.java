@@ -71,9 +71,9 @@ import java.util.stream.Collectors;
 public final class NLFPluginAppInsightTest {
 
     @Test
-    void appInsightType() {
+    void appTracesTest() {
         final String json = Assertions
-                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/appinsight.json")));
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/apptraces.json")));
         final ParsedEvent parsedEvent = new ParsedEventFactory(
                 new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
         ).parsedEvent();
