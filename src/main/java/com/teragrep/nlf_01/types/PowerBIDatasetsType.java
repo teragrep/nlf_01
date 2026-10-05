@@ -100,8 +100,7 @@ public final class PowerBIDatasetsType implements EventType {
 
         final ValidKey<String> validKey = new ValidStringKey(record, "PowerBIWorkspaceName");
 
-        return new ValidRFC5424AppName(new ASCIIString( validKey.value()).withNonAsciiCharsRemoved())
-                .appName();
+        return new ValidRFC5424AppName(new ASCIIString(validKey.value()).withNonAsciiCharsRemoved()).appName();
     }
 
     @Override
