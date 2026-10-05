@@ -159,6 +159,9 @@ public final class NLFPlugin implements Plugin {
             else if ("PowerAutomateActivity".equals(type)) {
                 eventTypes.add(new PowerAutomateActivityType(parsedEvent, realHostname, componentNameForPartitions));
             }
+            else if (Set.of("PowerBIDatasetsTenant", "PowerBIDatasetsWorkspace").contains(type)) {
+                eventTypes.add(new PowerBIDatasetsType(parsedEvent, realHostname, componentNameForPartitions));
+            }
             else if ("PowerPlatformAdminActivity".equals(type)) {
                 eventTypes
                         .add(new PowerPlatformAdminActivityType(parsedEvent, realHostname, componentNameForPartitions));

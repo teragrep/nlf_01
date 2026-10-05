@@ -1279,6 +1279,134 @@ public final class NLFPluginTest {
     }
 
     @Test
+    void powerBiDatasetsTenantTest() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/powerbidatasetstenant.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"ApplicationContext\": {},\n" + "  \"ApplicationName\": \"application1\",\n"
+                                + "  \"ArtifactId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"ArtifactKind\": \"Dataset\",\n" + "  \"ArtifactName\": \"artifact1\",\n"
+                                + "  \"CorrelationId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"CpuTimeMs\": 1.0,\n"
+                                + "  \"CustomerTenantId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"DatasetMode\": \"Composite\",\n" + "  \"DurationMs\": 1.1,\n"
+                                + "  \"EventText\": \"event1\",\n" + "  \"ExecutingUser\": \"user1\",\n"
+                                + "  \"Identity\": {\n" + "    \"id\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"\n"
+                                + "  },\n" + "  \"Level\": \"Informational\",\n"
+                                + "  \"LogAnalyticsCategory\": \"Audit\",\n"
+                                + "  \"OperationDetailName\": \"operationNameDetail1\",\n"
+                                + "  \"OperationName\": \"operation1\",\n"
+                                + "  \"PowerBIWorkspaceId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"PowerBIWorkspaceName\": \"workspace1\",\n"
+                                + "  \"PremiumCapacityId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"ProgressCounter\": 2.0,\n" + "  \"SourceSystem\": \"Azure\",\n"
+                                + "  \"Status\": \"Complete\",\n" + "  \"StatusCode\": \"200\",\n"
+                                + "  \"TenantId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"TimeGenerated\": \"2025-10-06T00:00:00.0000000Z\",\n"
+                                + "  \"Type\": \"PowerBIDatasetsTenant\",\n" + "  \"User\": \"user1\",\n"
+                                + "  \"XmlaObjectPath\": \"path1\",\n" + "  \"XmlaProperties\": \"properties1\",\n"
+                                + "  \"XmlaRequestId\": \"request1\",\n" + "  \"XmlaSessionId\": \"session1\",\n"
+                                + "  \"_ItemId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_SubscriptionId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"_TimeReceived\": \"2025-10-06T00:00:00.0000000Z\",\n"
+                                + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
+                                + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("workspace1", syslogMessage.getAppName());
+        Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(PowerBIDatasetsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+    }
+
+    @Test
+    void powerBiDatasetsWorkspaceTest() {
+        final String json = Assertions
+                .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/powerbidatasetsworkspace.json")));
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions
+                .assertEquals(
+                        "{\n" + "  \"ApplicationContext\": {},\n" + "  \"ApplicationName\": \"application1\",\n"
+                                + "  \"ArtifactId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"ArtifactKind\": \"Dataset\",\n" + "  \"ArtifactName\": \"artifact1\",\n"
+                                + "  \"CorrelationId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"CpuTimeMs\": 1.0,\n"
+                                + "  \"CustomerTenantId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"DatasetMode\": \"Composite\",\n" + "  \"DurationMs\": 1.1,\n"
+                                + "  \"EventText\": \"event1\",\n" + "  \"ExecutingUser\": \"user1\",\n"
+                                + "  \"Identity\": {\n" + "    \"id\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"\n"
+                                + "  },\n" + "  \"Level\": \"Informational\",\n"
+                                + "  \"LogAnalyticsCategory\": \"Audit\",\n"
+                                + "  \"OperationDetailName\": \"operationNameDetail1\",\n"
+                                + "  \"OperationName\": \"operation1\",\n"
+                                + "  \"PowerBIWorkspaceId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"PowerBIWorkspaceName\": \"workspace1\",\n"
+                                + "  \"PremiumCapacityId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"ProgressCounter\": 2.0,\n"
+                                + "  \"ReplicaId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"SourceSystem\": \"Azure\",\n" + "  \"Status\": \"Complete\",\n"
+                                + "  \"StatusCode\": \"200\",\n"
+                                + "  \"TenantId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"TimeGenerated\": \"2025-10-06T00:00:00.0000000Z\",\n"
+                                + "  \"Type\": \"PowerBIDatasetsWorkspace\",\n" + "  \"User\": \"user1\",\n"
+                                + "  \"XmlaObjectPath\": \"path1\",\n" + "  \"XmlaProperties\": \"properties1\",\n"
+                                + "  \"XmlaRequestId\": \"request1\",\n" + "  \"XmlaSessionId\": \"session1\",\n"
+                                + "  \"_ItemId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_SubscriptionId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
+                                + "  \"_TimeReceived\": \"2025-10-06T00:00:00.0000000Z\",\n"
+                                + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
+                                + "}",
+                        syslogMessage.getMsg()
+                );
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("workspace1", syslogMessage.getAppName());
+        Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(PowerBIDatasetsType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+    }
+
+    @Test
     void testPostgreSQLType() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/postgre.json")));
