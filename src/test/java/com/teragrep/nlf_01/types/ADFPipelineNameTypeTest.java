@@ -701,4 +701,212 @@ final class ADFPipelineNameTypeTest {
         Assertions
                 .assertEquals(ADFPipelineNameType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
+
+    @Test
+    void testSandboxPipelineRunIdealCase() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/adfsandboxpipelinerun.json", new EventPartitionContextFake(),
+                new EventPropertiesFake(), new EventSystemPropertiesFake(), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
+        );
+
+        final ADFPipelineNameType type = new ADFPipelineNameType(parsedEvent, "localhost", "aer");
+
+        final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
+        final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
+        final String actualHostname = Assertions.assertDoesNotThrow(type::hostname);
+        final String actualMsg = Assertions.assertDoesNotThrow(type::msg);
+        final String actualMsgId = Assertions.assertDoesNotThrow(type::msgId);
+        final Severity actualSeverity = Assertions.assertDoesNotThrow(type::severity);
+        final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
+        final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
+
+        Assertions.assertEquals("Pipeline-1", actualAppName);
+        Assertions.assertEquals(Facility.AUDIT, actualFacility);
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
+        Assertions
+                .assertEquals(
+                        "{\"Annotations\":\"[]\",\"Category\":\"PipelineRuns\",\"CorrelationId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"End\":\"2025-10-06T00:00:00.0000000Z\",\"ErrorCode\":\"InternalServerError\",\"ErrorMessage\":\"InternalServerError\",\"EventMessage\":\"EventMessage1\",\"FailureType\":\"Error-1\",\"Input\":\"{\\\"pipeline\\\":{\\\"referenceName\\\":\\\"abc_reference_one\\\",\\\"type\\\":\\\"PipelineReference\\\"},\\\"waitOnCompletion\\\":true,\\\"parameters\\\":{\\\"BillingMonth\\\":\\\"LastMonth\\\"}}\",\"Level\":\"Error\",\"Location\":\"locationcentral\",\"OperationName\":\"Export - Failed\",\"Output\":\"{\\\"pipelineName\\\":\\\"abc_reference_one\\\",\\\"pipelineRunId\\\":\\\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\\\",\\\"pipelineReturnValue\\\":{}}\",\"Parameters\":\"parameter1\",\"PipelineName\":\"Pipeline-1\",\"Predecessors\":\"predecessor1\",\"ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"RunId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"SourceSystem\":\"Azure\",\"Start\":\"2025-10-06T00:00:00.0000000Z\",\"Status\":\"Failed\",\"SystemParameters\":\"parameters2\",\"Tags\":\"{}\",\"TenantId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"TimeGenerated\":\"2025-10-06T00:00:00.0000000Z\",\"Type\":\"ADFSandboxPipelineRun\",\"UserProperties\":\"{}\",\"_ItemId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_TimeReceived\":\"2025-10-06T00:00:00.0000000Z\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        actualMsg
+                );
+        Assertions.assertEquals("12345678900", actualMsgId);
+        Assertions.assertEquals(Severity.NOTICE, actualSeverity);
+        final long expectedTimestamp = 1759708800000L; // Epoch of 2025-10-06T00:00:00.0000000Z
+        Assertions.assertEquals(expectedTimestamp, actualTimestamp);
+
+        final Map<String, Map<String, String>> sdElementMap = actualSDElements
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions
+                .assertEquals("fully-qualified-namespace", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("event-hub-name", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("123", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("consumer-group", sdElementMap.get("aer_partition@48577").get("consumer_group"));
+
+        Assertions.assertEquals("0", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("2010-01-01T00:00Z", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("456", sdElementMap.get("aer_event@48577").get("partition_key"));
+        Assertions
+                .assertEquals(
+                        "{\"null\":\"important-null-value\",\"prop-key\":\"prop-value\",\"important-key\":null}",
+                        sdElementMap.get("aer_event@48577").get("properties")
+                );
+
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
+
+        Assertions
+                .assertEquals(ADFPipelineNameType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+    }
+
+    @Test
+    void testSandboxPipelineRunWithAllMetadataStubs() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/adfsandboxpipelinerun.json", new EventPartitionContextStub(),
+                new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
+                new EventOffsetStub()
+        );
+
+        final ADFPipelineNameType type = new ADFPipelineNameType(parsedEvent, "localhost", "aer");
+
+        final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
+        final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
+        final String actualHostname = Assertions.assertDoesNotThrow(type::hostname);
+        final String actualMsg = Assertions.assertDoesNotThrow(type::msg);
+        final String actualMsgId = Assertions.assertDoesNotThrow(type::msgId);
+        final Severity actualSeverity = Assertions.assertDoesNotThrow(type::severity);
+        final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
+        final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
+
+        Assertions.assertEquals("Pipeline-1", actualAppName);
+        Assertions.assertEquals(Facility.AUDIT, actualFacility);
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
+        Assertions
+                .assertEquals(
+                        "{\"Annotations\":\"[]\",\"Category\":\"PipelineRuns\",\"CorrelationId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"End\":\"2025-10-06T00:00:00.0000000Z\",\"ErrorCode\":\"InternalServerError\",\"ErrorMessage\":\"InternalServerError\",\"EventMessage\":\"EventMessage1\",\"FailureType\":\"Error-1\",\"Input\":\"{\\\"pipeline\\\":{\\\"referenceName\\\":\\\"abc_reference_one\\\",\\\"type\\\":\\\"PipelineReference\\\"},\\\"waitOnCompletion\\\":true,\\\"parameters\\\":{\\\"BillingMonth\\\":\\\"LastMonth\\\"}}\",\"Level\":\"Error\",\"Location\":\"locationcentral\",\"OperationName\":\"Export - Failed\",\"Output\":\"{\\\"pipelineName\\\":\\\"abc_reference_one\\\",\\\"pipelineRunId\\\":\\\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\\\",\\\"pipelineReturnValue\\\":{}}\",\"Parameters\":\"parameter1\",\"PipelineName\":\"Pipeline-1\",\"Predecessors\":\"predecessor1\",\"ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"RunId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"SourceSystem\":\"Azure\",\"Start\":\"2025-10-06T00:00:00.0000000Z\",\"Status\":\"Failed\",\"SystemParameters\":\"parameters2\",\"Tags\":\"{}\",\"TenantId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"TimeGenerated\":\"2025-10-06T00:00:00.0000000Z\",\"Type\":\"ADFSandboxPipelineRun\",\"UserProperties\":\"{}\",\"_ItemId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_ResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_TimeReceived\":\"2025-10-06T00:00:00.0000000Z\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        actualMsg
+                );
+        Assertions.assertEquals("", actualMsgId);
+        Assertions.assertEquals(Severity.NOTICE, actualSeverity);
+
+        final long expectedTimestamp = 1759708800000L; // Epoch of 2025-10-06T00:00:00.0000000Z
+        Assertions.assertEquals(expectedTimestamp, actualTimestamp);
+
+        final Map<String, Map<String, String>> sdElementMap = actualSDElements
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("consumer_group"));
+
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("partition_key"));
+        Assertions.assertEquals("{}", sdElementMap.get("aer_event@48577").get("properties"));
+
+        Assertions.assertEquals("generated", sdElementMap.get("aer@48577").get("timestamp_source"));
+
+        Assertions
+                .assertEquals(ADFPipelineNameType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+    }
+
+    @Test
+    void testSandboxPipelineRunWithMissingJsonKeys() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/adfsandboxpipelinerun_missing_keys.json", new EventPartitionContextStub(),
+                new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
+                new EventOffsetStub()
+        );
+
+        final ADFPipelineNameType type = new ADFPipelineNameType(parsedEvent, "localhost", "aer");
+
+        Assertions.assertThrows(PluginException.class, type::appName);
+        final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
+        Assertions.assertThrows(PluginException.class, type::hostname);
+        final String actualMsg = Assertions.assertDoesNotThrow(type::msg);
+        final String actualMsgId = Assertions.assertDoesNotThrow(type::msgId);
+        final Severity actualSeverity = Assertions.assertDoesNotThrow(type::severity);
+        Assertions.assertThrows(PluginException.class, type::timestamp);
+        final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
+
+        Assertions.assertEquals(Facility.AUDIT, actualFacility);
+        Assertions
+                .assertEquals(
+                        "{\"Annotations\":\"[]\",\"Category\":\"PipelineRuns\",\"CorrelationId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"End\":\"2025-10-06T00:00:00.0000000Z\",\"ErrorCode\":\"InternalServerError\",\"ErrorMessage\":\"InternalServerError\",\"EventMessage\":\"EventMessage1\",\"FailureType\":\"Error-1\",\"Input\":\"{\\\"pipeline\\\":{\\\"referenceName\\\":\\\"abc_reference_one\\\",\\\"type\\\":\\\"PipelineReference\\\"},\\\"waitOnCompletion\\\":true,\\\"parameters\\\":{\\\"BillingMonth\\\":\\\"LastMonth\\\"}}\",\"Level\":\"Error\",\"Location\":\"locationcentral\",\"OperationName\":\"Export - Failed\",\"Output\":\"{\\\"pipelineName\\\":\\\"abc_reference_one\\\",\\\"pipelineRunId\\\":\\\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\\\",\\\"pipelineReturnValue\\\":{}}\",\"Parameters\":\"parameter1\",\"Predecessors\":\"predecessor1\",\"RunId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"SourceSystem\":\"Azure\",\"Start\":\"2025-10-06T00:00:00.0000000Z\",\"Status\":\"Failed\",\"SystemParameters\":\"parameters2\",\"Tags\":\"{}\",\"TenantId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"Type\":\"ADFSandboxPipelineRun\",\"UserProperties\":\"{}\",\"_ItemId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_TimeReceived\":\"2025-10-06T00:00:00.0000000Z\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        actualMsg
+                );
+        Assertions.assertEquals("", actualMsgId);
+        Assertions.assertEquals(Severity.NOTICE, actualSeverity);
+
+        final Map<String, Map<String, String>> sdElementMap = actualSDElements
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("", sdElementMap.get("aer_partition@48577").get("consumer_group"));
+
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("", sdElementMap.get("aer_event@48577").get("partition_key"));
+        Assertions.assertEquals("{}", sdElementMap.get("aer_event@48577").get("properties"));
+
+        Assertions.assertEquals("generated", sdElementMap.get("aer@48577").get("timestamp_source"));
+
+        Assertions
+                .assertEquals(ADFPipelineNameType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+    }
+
+    @Test
+    @DisplayName("test Sandbox sdElement() return value")
+    void testSandboxPipelineRunSdElementReturnValue() {
+        final Map<String, Object> partitionContextMap = new HashMap<>();
+        partitionContextMap.put("FullyQualifiedNamespace", "fully-qualified-namespace");
+        partitionContextMap.put("EventHubName", "event-hub-name");
+        partitionContextMap.put("PartitionId", "123");
+        partitionContextMap.put("ConsumerGroup", "consumer-group");
+
+        final Map<String, Object> systemPropertiesMap = new HashMap<>();
+        systemPropertiesMap.put("PartitionKey", "456");
+        systemPropertiesMap.put("SequenceNumber", "12345678900");
+
+        final Map<String, Object> propertiesMap = new HashMap<>();
+        propertiesMap.put("prop-key", "prop-value");
+        propertiesMap.put(null, "important-null-value");
+        propertiesMap.put("important-key", null);
+
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/adfsandboxpipelinerun.json", new EventPartitionContextImpl(partitionContextMap), new EventPropertiesImpl(propertiesMap), new EventSystemPropertiesImpl(systemPropertiesMap), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
+        );
+
+        final ADFPipelineNameType type = new ADFPipelineNameType(parsedEvent, "localhost", "aer");
+
+        final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
+
+        final Map<String, Map<String, String>> sdElementMap = actualSDElements
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions
+                .assertEquals("fully-qualified-namespace", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("event-hub-name", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("123", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("consumer-group", sdElementMap.get("aer_partition@48577").get("consumer_group"));
+
+        Assertions.assertEquals("0", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("2010-01-01T00:00Z", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("456", sdElementMap.get("aer_event@48577").get("partition_key"));
+        Assertions
+                .assertEquals(
+                        "{\"null\":\"important-null-value\",\"prop-key\":\"prop-value\",\"important-key\":null}",
+                        sdElementMap.get("aer_event@48577").get("properties")
+                );
+
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
+
+        Assertions
+                .assertEquals(ADFPipelineNameType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+    }
 }
