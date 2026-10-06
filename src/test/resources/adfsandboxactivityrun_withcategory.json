@@ -4,7 +4,7 @@
   "activityRunId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
   "activityType": "ExecutePipeline",
   "annotations": "[]",
-  "category": "ActivityRuns",
+  "category": "SandboxActivityRuns",
   "correlationId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
   "end": "2025-10-06T00:00:00.0000000Z",
   "error": "{\"errorCode\":\"InternalServerError\",\"message\":\"InternalServerError\",\"failureType\":\"SystemError\",\"target\":\"Export\",\"details\":\"\"}",
