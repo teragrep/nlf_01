@@ -55,6 +55,7 @@ import com.teragrep.akv_01.event.metadata.systemProperties.EventSystemProperties
 import com.teragrep.akv_01.event.metadata.time.EnqueuedTimeImpl;
 import com.teragrep.nlf_01.fakes.FakeSourceable;
 import com.teragrep.nlf_01.types.ADFPipelineNameType;
+import com.teragrep.nlf_01.types.ADFPipelineNameTypeWithCategory;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.SDParam;
 import com.teragrep.rlo_14.SyslogMessage;
@@ -71,7 +72,7 @@ import java.util.stream.Collectors;
 final class NLFPluginAdfTypesTest {
 
     @Test
-    void adfPipelineRunType() {
+    void adfPipelineRunTypeTest() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/adfpipelinerun.json")));
         final ParsedEvent parsedEvent = new ParsedEventFactory(
@@ -107,7 +108,7 @@ final class NLFPluginAdfTypesTest {
     }
 
     @Test
-    void adfActivityRunType() {
+    void adfActivityRunTypeTest() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/adfactivityrun.json")));
         final ParsedEvent parsedEvent = new ParsedEventFactory(
@@ -138,7 +139,7 @@ final class NLFPluginAdfTypesTest {
     }
 
     @Test
-    void adfSandboxActivityRunType() {
+    void adfSandboxActivityRunTypeTest() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/adfsandboxactivityrun.json")));
         final ParsedEvent parsedEvent = new ParsedEventFactory(
@@ -169,7 +170,7 @@ final class NLFPluginAdfTypesTest {
     }
 
     @Test
-    void adfSandboxPipelineRunType() {
+    void adfSandboxPipelineRunTypeTest() {
         final String json = Assertions
                 .assertDoesNotThrow(() -> Files.readString(Paths.get("src/test/resources/adfsandboxpipelinerun.json")));
         final ParsedEvent parsedEvent = new ParsedEventFactory(
@@ -194,6 +195,143 @@ final class NLFPluginAdfTypesTest {
         Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
         Assertions
                 .assertEquals(ADFPipelineNameType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertEquals(4, sdElementMap.get("aer_event@48577").size());
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+    }
+
+    @Test
+    void adfPipelineWithCategoryRunTypeTest() {
+        final String json = Assertions
+                .assertDoesNotThrow(
+                        () -> Files.readString(Paths.get("src/test/resources/adfpipelinerun_withcategory.json"))
+                );
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions.assertEquals(json, syslogMessage.getMsg());
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("Pipeline-1", syslogMessage.getAppName());
+        Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
+
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertNotNull(sdElementMap);
+        Assertions.assertEquals(5, sdElementMap.size());
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(ADFPipelineNameTypeWithCategory.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
+        Assertions.assertEquals("2020-01-01T00:00Z", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+    }
+
+    @Test
+    void adfActivityRunWithCategoryTypeTest() {
+        final String json = Assertions
+                .assertDoesNotThrow(
+                        () -> Files.readString(Paths.get("src/test/resources/adfactivityrun_withcategory.json"))
+                );
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("Pipeline-1", syslogMessage.getAppName());
+        Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
+        Assertions.assertEquals(json, syslogMessage.getMsg());
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(ADFPipelineNameTypeWithCategory.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertEquals(4, sdElementMap.get("aer_event@48577").size());
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+    }
+
+    @Test
+    void adfSandboxActivityRunWithCategoryTypeTest() {
+        final String json = Assertions
+                .assertDoesNotThrow(
+                        () -> Files.readString(Paths.get("src/test/resources/adfsandboxactivityrun_withcategory.json"))
+                );
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("Pipeline-1", syslogMessage.getAppName());
+        Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
+        Assertions.assertEquals(json, syslogMessage.getMsg());
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(ADFPipelineNameTypeWithCategory.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+
+        Assertions.assertEquals(4, sdElementMap.get("aer_event@48577").size());
+        Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
+    }
+
+    @Test
+    void adfSandboxPipelineRunWithCategoryTypeTest() {
+        final String json = Assertions
+                .assertDoesNotThrow(
+                        () -> Files.readString(Paths.get("src/test/resources/adfsandboxpipelinerun_withcategory.json"))
+                );
+        final ParsedEvent parsedEvent = new ParsedEventFactory(
+                new UnparsedEventImpl(json, new EventPartitionContextImpl(new HashMap<>()), new EventPropertiesImpl(new HashMap<>()), new EventSystemPropertiesImpl(new HashMap<>()), new EnqueuedTimeImpl("2020-01-01T00:00:00"), new EventOffsetImpl("0"))
+        ).parsedEvent();
+
+        final NLFPlugin plugin = new NLFPlugin(new FakeSourceable());
+        final List<SyslogMessage> syslogMessages = Assertions
+                .assertDoesNotThrow(() -> plugin.syslogMessage(parsedEvent));
+        Assertions.assertEquals(1, syslogMessages.size());
+
+        final SyslogMessage syslogMessage = syslogMessages.get(0);
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("Pipeline-1", syslogMessage.getAppName());
+        Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
+        Assertions.assertEquals(json, syslogMessage.getMsg());
+        final Map<String, Map<String, String>> sdElementMap = syslogMessage
+                .getSDElements()
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
+        Assertions
+                .assertEquals(ADFPipelineNameTypeWithCategory.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
         Assertions.assertEquals(4, sdElementMap.get("aer_event@48577").size());
         Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
