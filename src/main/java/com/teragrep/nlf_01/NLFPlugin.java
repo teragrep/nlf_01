@@ -230,7 +230,14 @@ public final class NLFPlugin implements Plugin {
                     && jsonObject.get("category").getValueType().equals(JsonValue.ValueType.STRING)
         ) {
             final String category = jsonObject.getString("category");
-            if ("SQLSecurityAuditEvents".equals(category)) {
+
+            if (
+                Set.of("ActivityRuns", "PipelineRuns", "SandboxActivityRuns", "SandboxPipelineRuns").contains(category)
+            ) {
+                eventTypes
+                        .add(new ADFPipelineNameTypeWithCategory(parsedEvent, realHostname, componentNameForPartitions));
+            }
+            else if ("SQLSecurityAuditEvents".equals(category)) {
                 eventTypes.add(new SQLSecurityAuditEventsType(parsedEvent, realHostname, componentNameForPartitions));
             }
         }
