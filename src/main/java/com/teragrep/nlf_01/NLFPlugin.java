@@ -100,7 +100,11 @@ public final class NLFPlugin implements Plugin {
             jsonObject.containsKey("Type") && jsonObject.get("Type").getValueType().equals(JsonValue.ValueType.STRING)
         ) {
             final String type = jsonObject.getString("Type");
-            if (Set.of("ADFActivityRun", "ADFPipelineRun").contains(type)) {
+            if (
+                Set
+                        .of("ADFActivityRun", "ADFPipelineRun", "ADFSandboxActivityRun", "ADFSandboxPipelineRun")
+                        .contains(type)
+            ) {
                 eventTypes.add(new ADFPipelineNameType(parsedEvent, realHostname, componentNameForPartitions));
             }
             else if ("AppEvents".equals(type)) {
