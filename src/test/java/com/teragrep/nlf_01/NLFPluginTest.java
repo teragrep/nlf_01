@@ -490,7 +490,7 @@ public final class NLFPluginTest {
         Assertions.assertEquals(5, sdElementMap.size());
         Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
         Assertions
-                .assertEquals(ADFPipelineRunType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+                .assertEquals(ADFPipelineNameType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
         Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
 
@@ -669,7 +669,7 @@ public final class NLFPluginTest {
 
         Assertions.assertEquals(1, sdElementMap.get("nlf_01@48577").size());
         Assertions
-                .assertEquals(ADFActivityRunType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+                .assertEquals(ADFPipelineNameType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
 
         Assertions.assertEquals(4, sdElementMap.get("aer_event@48577").size());
         Assertions.assertTrue(sdElementMap.get("aer_event@48577").containsKey("properties"));
