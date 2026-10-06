@@ -53,23 +53,28 @@ import com.teragrep.nlf_01.util.MD5Hash;
 import com.teragrep.nlf_01.util.ResourceId;
 import com.teragrep.nlf_01.util.SDElements;
 import com.teragrep.nlf_01.util.ValidKey;
-import com.teragrep.nlf_01.util.ValidStringKey;
 import com.teragrep.nlf_01.util.ValidRFC5424AppName;
 import com.teragrep.nlf_01.util.ValidRFC5424Hostname;
 import com.teragrep.nlf_01.util.ValidRFC5424Timestamp;
+import com.teragrep.nlf_01.util.ValidStringKey;
 import com.teragrep.rlo_14.Facility;
 import com.teragrep.rlo_14.SDElement;
 import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
+
 import java.util.Set;
 
-public final class ADFActivityRunType implements EventType {
+/**
+ * This class should be used for events, that do not have a "Type" field but a "category" field. Use
+ * {@link ADFPipelineNameType} for events with the "Type" field.
+ */
+public final class ADFPipelineNameTypeWithCategory implements EventType {
 
     private final ParsedEvent parsedEvent;
     private final String realHostname;
     private final String componentNameForPartitions;
 
-    public ADFActivityRunType(
+    public ADFPipelineNameTypeWithCategory(
             final ParsedEvent parsedEvent,
             final String realHostname,
             final String componentNameForPartitions
@@ -93,7 +98,7 @@ public final class ADFActivityRunType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey<String> validKey = new ValidStringKey(record, "_ResourceId");
+        final ValidKey<String> validKey = new ValidStringKey(record, "resourceId");
 
         return new ValidRFC5424Hostname(
                 "md5-".concat(new MD5Hash(validKey.value()).md5().concat("-").concat(new ASCIIString(new ResourceId(validKey.value()).resourceName()).withNonAsciiCharsRemoved()))
@@ -104,14 +109,14 @@ public final class ADFActivityRunType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424AppName(new ValidStringKey(record, "PipelineName").value()).appName();
+        return new ValidRFC5424AppName(new ValidStringKey(record, "pipelineName").value()).appName();
     }
 
     @Override
     public long timestamp() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424Timestamp(new ValidStringKey(record, "TimeGenerated").value()).validTimestamp();
+        return new ValidRFC5424Timestamp(new ValidStringKey(record, "timestamp").value()).validTimestamp();
     }
 
     @Override
@@ -128,9 +133,12 @@ public final class ADFActivityRunType implements EventType {
 
     @Override
     public String msgId() {
-        String sequenceNumber = "";
+        final String sequenceNumber;
         if (!parsedEvent.systemProperties().isStub()) {
             sequenceNumber = String.valueOf(parsedEvent.systemProperties().asMap().getOrDefault("SequenceNumber", ""));
+        }
+        else {
+            sequenceNumber = "";
         }
         return sequenceNumber;
     }

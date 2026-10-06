@@ -63,13 +63,17 @@ import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
 import java.util.Set;
 
-public final class ADFPipelineRunType implements EventType {
+/**
+ * This class should be used for events, that do have a "Type" field but not a "category" field. Use
+ * {@link ADFPipelineNameTypeWithCategory} for events with the "category" field.
+ */
+public final class ADFPipelineNameType implements EventType {
 
     private final ParsedEvent parsedEvent;
     private final String realHostname;
     private final String componentNameForPartitions;
 
-    public ADFPipelineRunType(
+    public ADFPipelineNameType(
             final ParsedEvent parsedEvent,
             final String realHostname,
             final String componentNameForPartitions
@@ -104,9 +108,7 @@ public final class ADFPipelineRunType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424AppName(
-                new ASCIIString(new ValidStringKey(record, "PipelineName").value()).withNonAsciiCharsRemoved()
-        ).appName();
+        return new ValidRFC5424AppName(new ValidStringKey(record, "PipelineName").value()).appName();
     }
 
     @Override
@@ -130,9 +132,12 @@ public final class ADFPipelineRunType implements EventType {
 
     @Override
     public String msgId() {
-        String sequenceNumber = "";
+        final String sequenceNumber;
         if (!parsedEvent.systemProperties().isStub()) {
             sequenceNumber = String.valueOf(parsedEvent.systemProperties().asMap().getOrDefault("SequenceNumber", ""));
+        }
+        else {
+            sequenceNumber = "";
         }
         return sequenceNumber;
     }
