@@ -1,6 +1,6 @@
 {
   "annotations": "[]",
-  "category": "PipelineRuns",
+  "category": "SandboxPipelineRuns",
   "correlationId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
   "end": "2025-10-06T00:00:00.0000000Z",
   "failureType": "SystemError",
