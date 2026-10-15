@@ -320,4 +320,60 @@ final class AuditLogsCLTypeTest {
         Assertions
                 .assertEquals(AuditLogsCLType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
     }
+
+    @Test
+    @DisplayName("Test that OriginalTimestamp field is prioritized in the timestamp() method")
+    void testThatOriginalTimestampFieldIsPrioritizedInTheTimestampMethod() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/auditlogscl_original_timestamp.json", new EventPartitionContextFake(),
+                new EventPropertiesFake(), new EventSystemPropertiesFake(), new EnqueuedTimeImpl("2010-01-01T00:00:00"), new EventOffsetImpl("0")
+        );
+
+        final AuditLogsCLType type = new AuditLogsCLType(parsedEvent, "localhost", "aer");
+
+        final String actualAppName = Assertions.assertDoesNotThrow(type::appName);
+        final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
+        final String actualHostname = Assertions.assertDoesNotThrow(type::hostname);
+        final String actualMsg = Assertions.assertDoesNotThrow(type::msg);
+        final String actualMsgId = Assertions.assertDoesNotThrow(type::msgId);
+        final Severity actualSeverity = Assertions.assertDoesNotThrow(type::severity);
+        final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
+        final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
+
+        Assertions.assertEquals("name-for-resource", actualAppName);
+        Assertions.assertEquals(Facility.AUDIT, actualFacility);
+        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
+        Assertions
+                .assertEquals(
+                        "{\"AppRoleInstance\":\"app-role-instance\",\"AppRoleName\":\"app-role-name\",\"ClientIP\":\"192.168.1.2\",\"ClientType\":\"client-type\",\"IKey\":\"i-key\",\"ItemCount\":1,\"Message\":\"message\",\"OperationId\":\"123\",\"OriginalTimestamp\":\"2020-02-01T01:02:34.5678999Z\",\"ParentId\":\"456\",\"Properties\":{\"ProcessId\":\"1234\",\"HostInstanceId\":\"123456\",\"prop__{OriginalFormat}\":\"abc\",\"prop__RouteName\":\"xyz\",\"LogLevel\":\"Debug\",\"EventId\":\"1\",\"prop__RouteTemplate\":\"route/template\",\"Category\":\"192.168.3.1\",\"EventName\":\"event-name\"},\"resourceName\":\"name-for-resource\",\"SDKVersion\":\"12: 192.168.x.x\",\"SeverityLevel\":0,\"SourceSystem\":\"Azure\",\"TenantId\":\"12\",\"TimeGenerated\":\"2020-01-01T01:02:34.5678999Z\",\"Type\":\"SomeAuditLogs_CL\",\"_BilledSize\":1,\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        actualMsg
+                );
+        Assertions.assertEquals("12345678900", actualMsgId);
+        Assertions.assertEquals(Severity.NOTICE, actualSeverity);
+        Assertions.assertEquals(1580518954567L, actualTimestamp);
+
+        final Map<String, Map<String, String>> sdElementMap = actualSDElements
+                .stream()
+                .collect(Collectors.toMap((SDElement::getSdID), (sdElem) -> sdElem.getSdParams().stream().collect(Collectors.toMap(SDParam::getParamName, SDParam::getParamValue))));
+
+        Assertions
+                .assertEquals("fully-qualified-namespace", sdElementMap.get("aer_partition@48577").get("fully_qualified_namespace"));
+        Assertions.assertEquals("event-hub-name", sdElementMap.get("aer_partition@48577").get("eventhub_name"));
+        Assertions.assertEquals("123", sdElementMap.get("aer_partition@48577").get("partition_id"));
+        Assertions.assertEquals("consumer-group", sdElementMap.get("aer_partition@48577").get("consumer_group"));
+
+        Assertions.assertEquals("0", sdElementMap.get("aer_event@48577").get("offset"));
+        Assertions.assertEquals("2010-01-01T00:00Z", sdElementMap.get("aer_event@48577").get("enqueued_time"));
+        Assertions.assertEquals("456", sdElementMap.get("aer_event@48577").get("partition_key"));
+        Assertions
+                .assertEquals(
+                        "{\"null\":\"important-null-value\",\"prop-key\":\"prop-value\",\"important-key\":null}",
+                        sdElementMap.get("aer_event@48577").get("properties")
+                );
+
+        Assertions.assertEquals("timeEnqueued", sdElementMap.get("aer@48577").get("timestamp_source"));
+
+        Assertions
+                .assertEquals(AuditLogsCLType.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+    }
 }
