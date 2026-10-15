@@ -1,0 +1,20 @@
+{
+  "category": "ContainerAppConsoleLogs",
+  "location": "location-1",
+  "operationName": "job-operation",
+  "properties": {
+    "ContainerAppName": "container-app-name",
+    "ContainerGroupId": "container-group-id",
+    "ContainerGroupName": "container-group-name",
+    "ContainerId": "container-id",
+    "ContainerImage": "container-image",
+    "ContainerName": "container-name",
+    "EnvironmentName": "container-app-environment",
+    "Log": "log-message",
+    "RevisionName": "revision-1",
+    "Stream": "stream-1"
+  },
+  "resourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+  "time": "2020-01-01T01:23:34.5678999Z",
+  "Tenant": "Tenant-1"
+}

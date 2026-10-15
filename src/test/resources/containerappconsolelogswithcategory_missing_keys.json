@@ -1,0 +1,16 @@
+{
+  "category": "ContainerAppConsoleLogs",
+  "location": "location-1",
+  "operationName": "job-operation",
+  "properties": {
+    "ContainerGroupId": "container-group-id",
+    "ContainerGroupName": "container-group-name",
+    "ContainerId": "container-id",
+    "ContainerImage": "container-image",
+    "ContainerName": "container-name",
+    "Log": "log-message",
+    "RevisionName": "revision-1",
+    "Stream": "stream-1"
+  },
+  "Tenant": "Tenant-1"
+}
