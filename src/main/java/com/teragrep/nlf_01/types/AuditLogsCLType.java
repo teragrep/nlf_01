@@ -104,8 +104,17 @@ public final class AuditLogsCLType implements EventType {
     @Override
     public long timestamp() throws PluginException {
         final JsonObject mainObject = parsedEvent.asJsonStructure().asJsonObject();
+        final ValidRFC5424Timestamp validRFC5424Timestamp;
+        if (mainObject.containsKey("OriginalTimestamp")) {
+            validRFC5424Timestamp = new ValidRFC5424Timestamp(
+                    new ValidStringKey(mainObject, "OriginalTimestamp").value()
+            );
+        }
+        else {
+            validRFC5424Timestamp = new ValidRFC5424Timestamp(new ValidStringKey(mainObject, "TimeGenerated").value());
+        }
 
-        return new ValidRFC5424Timestamp(new ValidStringKey(mainObject, "TimeGenerated").value()).validTimestamp();
+        return validRFC5424Timestamp.validTimestamp();
     }
 
     @Override
