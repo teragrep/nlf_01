@@ -372,6 +372,26 @@ final class ContainerAppSystemLogsWithCategoryTypeTest {
     }
 
     @Test
+    void testWithMissingPropertiesJsonKey() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/containerappsystemlogswithcategory_missing_properties_key.json",
+                new EventPartitionContextStub(), new EventPropertiesStub(), new EventSystemPropertiesStub(),
+                new EnqueuedTimeStub(), new EventOffsetStub()
+        );
+
+        final EventType type = new ContainerAppLogsWithCategoryType(parsedEvent, "localhost", "aer");
+
+        Assertions.assertThrows(PluginException.class, type::hostname);
+        final String actualMsg = Assertions.assertDoesNotThrow(type::msg);
+
+        Assertions
+                .assertEquals(
+                        "{\"category\":\"ContainerAppSystemLogs\",\"location\":\"location-1\",\"operationName\":\"job-operation\",\"resourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\"time\":\"2020-01-01T01:23:34.5678999Z\",\"Tenant\":\"Tenant-1\"}",
+                        actualMsg
+                );
+    }
+
+    @Test
     @DisplayName("test sdElement() return value")
     void testSdElementReturnValue() {
         final Map<String, Object> partitionContextMap = new HashMap<>();

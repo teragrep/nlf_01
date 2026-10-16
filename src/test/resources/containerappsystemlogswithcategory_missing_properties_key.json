@@ -1,0 +1,8 @@
+{
+  "category": "ContainerAppSystemLogs",
+  "location": "location-1",
+  "operationName": "job-operation",
+  "resourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+  "time": "2020-01-01T01:23:34.5678999Z",
+  "Tenant": "Tenant-1"
+}
