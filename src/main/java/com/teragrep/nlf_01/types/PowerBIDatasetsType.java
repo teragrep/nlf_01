@@ -89,7 +89,7 @@ public final class PowerBIDatasetsType implements EventType {
         final String resourceId = validKey.value();
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(resourceId).md5().concat("-").concat(new ASCIIString(new ResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(resourceId).md5().concat("-").concat(new ASCIIString(new ResourceIdWithSubtype(resourceId).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
 
     }

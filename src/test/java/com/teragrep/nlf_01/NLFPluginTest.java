@@ -1318,14 +1318,14 @@ public final class NLFPluginTest {
                                 + "  \"XmlaObjectPath\": \"path1\",\n" + "  \"XmlaProperties\": \"properties1\",\n"
                                 + "  \"XmlaRequestId\": \"request1\",\n" + "  \"XmlaSessionId\": \"session1\",\n"
                                 + "  \"_ItemId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
-                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}/{resourceSubtype}/{subtypeName}\",\n"
                                 + "  \"_SubscriptionId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
                                 + "  \"_TimeReceived\": \"2025-10-06T00:00:00.0000000Z\",\n"
                                 + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
                                 + "}",
                         syslogMessage.getMsg()
                 );
-        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("md5-63a8be7673efd1bb7439550f2ad118ce-resourceName", syslogMessage.getHostname());
         Assertions.assertEquals("workspace1", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
 
@@ -1383,14 +1383,14 @@ public final class NLFPluginTest {
                                 + "  \"XmlaObjectPath\": \"path1\",\n" + "  \"XmlaProperties\": \"properties1\",\n"
                                 + "  \"XmlaRequestId\": \"request1\",\n" + "  \"XmlaSessionId\": \"session1\",\n"
                                 + "  \"_ItemId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
-                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\",\n"
+                                + "  \"_ResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}/{resourceSubtype}/{subtypeName}\",\n"
                                 + "  \"_SubscriptionId\": \"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\n"
                                 + "  \"_TimeReceived\": \"2025-10-06T00:00:00.0000000Z\",\n"
                                 + "  \"_Internal_WorkspaceResourceId\": \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"\n"
                                 + "}",
                         syslogMessage.getMsg()
                 );
-        Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
+        Assertions.assertEquals("md5-63a8be7673efd1bb7439550f2ad118ce-resourceName", syslogMessage.getHostname());
         Assertions.assertEquals("workspace1", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
 
