@@ -232,6 +232,10 @@ public final class NLFPlugin implements Plugin {
             if ("SQLSecurityAuditEvents".equals(category)) {
                 eventTypes.add(new SQLSecurityAuditEventsType(parsedEvent, realHostname, componentNameForPartitions));
             }
+            else if (Set.of("ContainerAppConsoleLogs", "ContainerAppSystemLogs").contains(category)) {
+                eventTypes
+                        .add(new ContainerAppLogsWithCategoryType(parsedEvent, realHostname, componentNameForPartitions));
+            }
         }
 
         if (eventTypes.isEmpty()) {

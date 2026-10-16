@@ -1,0 +1,16 @@
+{
+  "category": "ContainerAppSystemLogs",
+  "location": "location-1",
+  "operationName": "job-operation",
+  "properties": {
+    "ContainerGroupId": "container-group-id",
+    "ContainerGroupName": "container-group-name",
+    "ContainerId": "container-id",
+    "ContainerImage": "container-image",
+    "ContainerName": "container-name",
+    "Log": "log-message",
+    "ReplicaName": "replica-1",
+    "RevisionName": "revision-1",
+    "Type": "type-1"
+  }
+}
