@@ -1,0 +1,21 @@
+{
+  "annotations": "[]",
+  "category": "SandboxPipelineRuns",
+  "correlationId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
+  "end": "2025-10-06T00:00:00.0000000Z",
+  "failureType": "SystemError",
+  "level": "Error",
+  "location": "locationcentral",
+  "operationName": "MainPipeline - Failed",
+  "parameters": "{\"BillingMonth\":\"LastMonth\"}",
+  "predecessors": "[{\"Name\":\"Manual\",\"Id\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"InvokedByType\":\"Manual\"}]",
+  "runId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
+  "sourceSystem": "Azure",
+  "start": "2025-10-06T00:00:00.0000000Z",
+  "status": "Failed",
+  "systemParameters": "{\"ExecutionStart\":\"2025-10-06T00:00:00.0000000Z\",\"TriggerId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"PipelineRunRequestTime\":\"2025-10-06T00:00:00.0000+00:00\"}",
+  "tags": "{}",
+  "userProperties": "{}",
+  "itemId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
+  "time": "2025-10-06T00:00:00.0000000Z"
+}

@@ -63,6 +63,10 @@ import com.teragrep.rlo_14.Severity;
 import jakarta.json.JsonObject;
 import java.util.Set;
 
+/**
+ * This class should be used for events, that do have a "Type" field but not a "category" field. Use
+ * {@link ADFPipelineNameTypeWithCategory} for events with the "category" field.
+ */
 public final class ADFPipelineNameType implements EventType {
 
     private final ParsedEvent parsedEvent;
