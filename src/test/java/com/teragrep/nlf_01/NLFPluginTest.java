@@ -1155,7 +1155,7 @@ public final class NLFPluginTest {
                         syslogMessage.getMsg()
                 );
         Assertions.assertEquals("md5-63a8be7673efd1bb7439550f2ad118ce-resourceName", syslogMessage.getHostname());
-        Assertions.assertEquals("workspace1", syslogMessage.getAppName());
+        Assertions.assertEquals("PowerBIDatasetsTenant", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
 
         final Map<String, Map<String, String>> sdElementMap = syslogMessage
@@ -1220,7 +1220,7 @@ public final class NLFPluginTest {
                         syslogMessage.getMsg()
                 );
         Assertions.assertEquals("md5-63a8be7673efd1bb7439550f2ad118ce-resourceName", syslogMessage.getHostname());
-        Assertions.assertEquals("workspace1", syslogMessage.getAppName());
+        Assertions.assertEquals("PowerBIDatasetsWorkspace", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
 
         final Map<String, Map<String, String>> sdElementMap = syslogMessage

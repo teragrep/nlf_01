@@ -122,7 +122,7 @@ final class PowerBIDatasetsWorkspaceTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("workspace1", actualAppName);
+        Assertions.assertEquals("PowerBIDatasetsWorkspace", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-63a8be7673efd1bb7439550f2ad118ce-resourceName", actualHostname);
         Assertions
@@ -179,7 +179,7 @@ final class PowerBIDatasetsWorkspaceTypeTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("workspace1", actualAppName);
+        Assertions.assertEquals("PowerBIDatasetsWorkspace", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-63a8be7673efd1bb7439550f2ad118ce-resourceName", actualHostname);
         Assertions
@@ -235,7 +235,7 @@ final class PowerBIDatasetsWorkspaceTypeTest {
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions
                 .assertEquals(
-                        "{\"ApplicationContext\":{},\"ApplicationName\":\"application1\",\"ArtifactId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"ArtifactKind\":\"Dataset\",\"ArtifactName\":\"artifact1\",\"CorrelationId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"CpuTimeMs\":1.0,\"CustomerTenantId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"DatasetMode\":\"Composite\",\"DurationMs\":1.1,\"EventText\":\"event1\",\"ExecutingUser\":\"user1\",\"Identity\":{\"id\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"},\"Level\":\"Informational\",\"LogAnalyticsCategory\":\"Audit\",\"OperationDetailName\":\"operationNameDetail1\",\"OperationName\":\"operation1\",\"PowerBIWorkspaceId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"PremiumCapacityId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"ProgressCounter\":2.0,\"ReplicaId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"SourceSystem\":\"Azure\",\"Status\":\"Complete\",\"StatusCode\":\"200\",\"TenantId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"Type\":\"PowerBIDatasetsWorkspace\",\"User\":\"user1\",\"XmlaObjectPath\":\"path1\",\"XmlaProperties\":\"properties1\",\"XmlaRequestId\":\"request1\",\"XmlaSessionId\":\"session1\",\"_ItemId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_TimeReceived\":\"2025-10-06T00:00:00.0000000Z\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
+                        "{\"ApplicationContext\":{},\"ApplicationName\":\"application1\",\"ArtifactId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"ArtifactKind\":\"Dataset\",\"ArtifactName\":\"artifact1\",\"CorrelationId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"CpuTimeMs\":1.0,\"CustomerTenantId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"DatasetMode\":\"Composite\",\"DurationMs\":1.1,\"EventText\":\"event1\",\"ExecutingUser\":\"user1\",\"Identity\":{\"id\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\"},\"Level\":\"Informational\",\"LogAnalyticsCategory\":\"Audit\",\"OperationDetailName\":\"operationNameDetail1\",\"OperationName\":\"operation1\",\"PowerBIWorkspaceId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"PremiumCapacityId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"ProgressCounter\":2.0,\"ReplicaId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"SourceSystem\":\"Azure\",\"Status\":\"Complete\",\"StatusCode\":\"200\",\"TenantId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"User\":\"user1\",\"XmlaObjectPath\":\"path1\",\"XmlaProperties\":\"properties1\",\"XmlaRequestId\":\"request1\",\"XmlaSessionId\":\"session1\",\"_ItemId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_SubscriptionId\":\"bb41a487-309b-4d21-9ab8-2a8b948b2d18\",\"_TimeReceived\":\"2025-10-06T00:00:00.0000000Z\",\"_Internal_WorkspaceResourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"}",
                         actualMsg
                 );
         Assertions.assertEquals("", actualMsgId);

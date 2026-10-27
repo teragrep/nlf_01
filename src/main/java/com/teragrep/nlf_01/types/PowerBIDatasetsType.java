@@ -98,7 +98,7 @@ public final class PowerBIDatasetsType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey<String> validKey = new ValidStringKey(record, "PowerBIWorkspaceName");
+        final ValidKey<String> validKey = new ValidStringKey(record, "Type");
 
         return new ValidRFC5424AppName(new ASCIIString(validKey.value()).withNonAsciiCharsRemoved()).appName();
     }

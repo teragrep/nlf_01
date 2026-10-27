@@ -26,7 +26,6 @@
   "Status": "Complete",
   "StatusCode": "200",
   "TenantId": "bb41a487-309b-4d21-9ab8-2a8b948b2d18",
-  "Type": "PowerBIDatasetsWorkspace",
   "User": "user1",
   "XmlaObjectPath": "path1",
   "XmlaProperties": "properties1",
