@@ -108,7 +108,7 @@ public final class ADFPipelineNameType implements EventType {
     public String appName() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        return new ValidRFC5424AppName(new ValidStringKey(record, "PipelineName").value()).appName();
+        return new ValidRFC5424AppName(new ValidStringKey(record, "Type").value()).appName();
     }
 
     @Override
