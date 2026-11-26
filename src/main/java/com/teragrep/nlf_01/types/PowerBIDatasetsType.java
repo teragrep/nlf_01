@@ -85,11 +85,11 @@ public final class PowerBIDatasetsType implements EventType {
     public String hostname() throws PluginException {
         final JsonObject record = parsedEvent.asJsonStructure().asJsonObject();
 
-        final ValidKey<String> validKey = new ValidStringKey(record, "_ResourceId");
+        final ValidKey<String> validKey = new ValidStringKey(record, "_Internal_WorkspaceResourceId");
         final String resourceId = validKey.value();
 
         return new ValidRFC5424Hostname(
-                "md5-".concat(new MD5Hash(resourceId).md5().concat("-").concat(new ASCIIString(new ResourceIdWithSubtype(resourceId).resourceName()).withNonAsciiCharsRemoved()))
+                "md5-".concat(new MD5Hash(resourceId).md5().concat("-").concat(new ASCIIString(new InternalWorkspaceResourceId(resourceId).resourceName()).withNonAsciiCharsRemoved()))
         ).hostnameWithInvalidCharsRemoved();
 
     }
