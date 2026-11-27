@@ -87,7 +87,7 @@ final class NLFPluginAdfTypesTest {
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals(json, syslogMessage.getMsg());
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
-        Assertions.assertEquals("MainPipeline", syslogMessage.getAppName());
+        Assertions.assertEquals("ADFPipelineRun", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
 
         final Map<String, Map<String, String>> sdElementMap = syslogMessage
@@ -122,7 +122,7 @@ final class NLFPluginAdfTypesTest {
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
-        Assertions.assertEquals("Pipeline-1", syslogMessage.getAppName());
+        Assertions.assertEquals("ADFActivityRun", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
         Assertions.assertEquals(json, syslogMessage.getMsg());
         final Map<String, Map<String, String>> sdElementMap = syslogMessage
@@ -153,7 +153,7 @@ final class NLFPluginAdfTypesTest {
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
-        Assertions.assertEquals("Pipeline-1", syslogMessage.getAppName());
+        Assertions.assertEquals("ADFSandboxActivityRun", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
         Assertions.assertEquals(json, syslogMessage.getMsg());
         final Map<String, Map<String, String>> sdElementMap = syslogMessage
@@ -184,7 +184,7 @@ final class NLFPluginAdfTypesTest {
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
-        Assertions.assertEquals("Pipeline-1", syslogMessage.getAppName());
+        Assertions.assertEquals("ADFSandboxPipelineRun", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
         Assertions.assertEquals(json, syslogMessage.getMsg());
         final Map<String, Map<String, String>> sdElementMap = syslogMessage
@@ -218,7 +218,7 @@ final class NLFPluginAdfTypesTest {
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals(json, syslogMessage.getMsg());
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
-        Assertions.assertEquals("Pipeline-1", syslogMessage.getAppName());
+        Assertions.assertEquals("PipelineRuns", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
 
         final Map<String, Map<String, String>> sdElementMap = syslogMessage
@@ -255,7 +255,7 @@ final class NLFPluginAdfTypesTest {
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
-        Assertions.assertEquals("Pipeline-1", syslogMessage.getAppName());
+        Assertions.assertEquals("ActivityRuns", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
         Assertions.assertEquals(json, syslogMessage.getMsg());
         final Map<String, Map<String, String>> sdElementMap = syslogMessage
@@ -288,7 +288,7 @@ final class NLFPluginAdfTypesTest {
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
-        Assertions.assertEquals("Pipeline-1", syslogMessage.getAppName());
+        Assertions.assertEquals("SandboxActivityRuns", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
         Assertions.assertEquals(json, syslogMessage.getMsg());
         final Map<String, Map<String, String>> sdElementMap = syslogMessage
@@ -321,7 +321,7 @@ final class NLFPluginAdfTypesTest {
 
         final SyslogMessage syslogMessage = syslogMessages.get(0);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", syslogMessage.getHostname());
-        Assertions.assertEquals("Pipeline-1", syslogMessage.getAppName());
+        Assertions.assertEquals("SandboxPipelineRuns", syslogMessage.getAppName());
         Assertions.assertEquals("2025-10-06T00:00:00Z", syslogMessage.getTimestamp());
         Assertions.assertEquals(json, syslogMessage.getMsg());
         final Map<String, Map<String, String>> sdElementMap = syslogMessage

@@ -131,7 +131,7 @@ final class ADFPipelineNameTypeWithCategoryTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("Pipeline-1", actualAppName);
+        Assertions.assertEquals("ActivityRuns", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
         Assertions
@@ -192,7 +192,7 @@ final class ADFPipelineNameTypeWithCategoryTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("Pipeline-1", actualAppName);
+        Assertions.assertEquals("ActivityRuns", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
         Assertions
@@ -240,7 +240,8 @@ final class ADFPipelineNameTypeWithCategoryTest {
                 "aer"
         );
 
-        Assertions.assertThrows(PluginException.class, type::appName);
+        final String appName = Assertions.assertDoesNotThrow(type::appName);
+        Assertions.assertEquals("ActivityRuns", appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
         Assertions.assertThrows(PluginException.class, type::hostname);
         final String actualMsg = Assertions.assertDoesNotThrow(type::msg);
@@ -341,7 +342,7 @@ final class ADFPipelineNameTypeWithCategoryTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("Pipeline-1", actualAppName);
+        Assertions.assertEquals("PipelineRuns", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
         Assertions
@@ -402,7 +403,7 @@ final class ADFPipelineNameTypeWithCategoryTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("Pipeline-1", actualAppName);
+        Assertions.assertEquals("PipelineRuns", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
         Assertions
@@ -450,7 +451,8 @@ final class ADFPipelineNameTypeWithCategoryTest {
                 "aer"
         );
 
-        Assertions.assertThrows(PluginException.class, type::appName);
+        final String appName = Assertions.assertDoesNotThrow(type::appName);
+        Assertions.assertEquals("PipelineRuns", appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
         Assertions.assertThrows(PluginException.class, type::hostname);
         final String actualMsg = Assertions.assertDoesNotThrow(type::msg);
@@ -565,7 +567,7 @@ final class ADFPipelineNameTypeWithCategoryTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("Pipeline-1", actualAppName);
+        Assertions.assertEquals("SandboxActivityRuns", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
         Assertions
@@ -626,7 +628,7 @@ final class ADFPipelineNameTypeWithCategoryTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("Pipeline-1", actualAppName);
+        Assertions.assertEquals("SandboxActivityRuns", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
         Assertions
@@ -674,7 +676,8 @@ final class ADFPipelineNameTypeWithCategoryTest {
                 "aer"
         );
 
-        Assertions.assertThrows(PluginException.class, type::appName);
+        final String appName = Assertions.assertDoesNotThrow(type::appName);
+        Assertions.assertEquals("SandboxActivityRuns", appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
         Assertions.assertThrows(PluginException.class, type::hostname);
         final String actualMsg = Assertions.assertDoesNotThrow(type::msg);
@@ -775,7 +778,7 @@ final class ADFPipelineNameTypeWithCategoryTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("Pipeline-1", actualAppName);
+        Assertions.assertEquals("SandboxPipelineRuns", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
         Assertions
@@ -836,7 +839,7 @@ final class ADFPipelineNameTypeWithCategoryTest {
         final Long actualTimestamp = Assertions.assertDoesNotThrow(type::timestamp);
         final Set<SDElement> actualSDElements = Assertions.assertDoesNotThrow(type::sdElements);
 
-        Assertions.assertEquals("Pipeline-1", actualAppName);
+        Assertions.assertEquals("SandboxPipelineRuns", actualAppName);
         Assertions.assertEquals(Facility.AUDIT, actualFacility);
         Assertions.assertEquals("md5-0ded52ef915af563e25778bf26b0f129-resourceName", actualHostname);
         Assertions
@@ -884,7 +887,8 @@ final class ADFPipelineNameTypeWithCategoryTest {
                 "aer"
         );
 
-        Assertions.assertThrows(PluginException.class, type::appName);
+        final String appName = Assertions.assertDoesNotThrow(type::appName);
+        Assertions.assertEquals("SandboxPipelineRuns", appName);
         final Facility actualFacility = Assertions.assertDoesNotThrow(type::facility);
         Assertions.assertThrows(PluginException.class, type::hostname);
         final String actualMsg = Assertions.assertDoesNotThrow(type::msg);
@@ -978,5 +982,23 @@ final class ADFPipelineNameTypeWithCategoryTest {
 
         Assertions
                 .assertEquals(ADFPipelineNameTypeWithCategory.class.getSimpleName(), sdElementMap.get("nlf_01@48577").get("eventType"));
+    }
+
+    @Test
+    public void testAppNameWithMissingCategory() {
+        final ParsedEvent parsedEvent = testEvent(
+                "src/test/resources/adfactivityrun_missing_category.json", new EventPartitionContextStub(),
+                new EventPropertiesStub(), new EventSystemPropertiesStub(), new EnqueuedTimeStub(),
+                new EventOffsetStub()
+        );
+
+        final ADFPipelineNameTypeWithCategory type = new ADFPipelineNameTypeWithCategory(
+                parsedEvent,
+                "localhost",
+                "aer"
+        );
+
+        final PluginException pluginException = Assertions.assertThrows(PluginException.class, type::appName);
+        Assertions.assertEquals("Key <[category]> was not valid", pluginException.getMessage());
     }
 }
